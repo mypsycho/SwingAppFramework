@@ -25,9 +25,9 @@ import javax.swing.RootPaneContainer;
  */
 public class Locales {
 
-    static final String FORCED_LOCALE_PROP = "Application.ForcedLocale";
+    public static final String FORCED_LOCALE_PROP = "Application.ForcedLocale";
     /** Property used in Swing component */
-    static final String LOCALE_PROP = "locale";
+    public static final String LOCALE_PROP = "locale";
 
     public static boolean isSwing(Component comp) {
         return (comp instanceof JComponent) || (comp instanceof RootPaneContainer);

@@ -547,12 +547,12 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
                     task.setInputBlocker(createInputBlocker(task, actionEvent));
                 }
                 Object source = actionEvent.getSource();
+                Locale taskLocale = locale;
                 if (source instanceof Component) {
-                    Locale l = ((Component) source).getLocale();
-                    app.getContext().getResourceManager().inject(task, l);
-                } else { // Use application locale
-                    app.getContext().getResourceManager().inject(task, locale);
+                    taskLocale = ((Component) source).getLocale();
                 }
+                task.setLocale(taskLocale);
+                app.getContext().getResourceManager().inject(task, taskLocale);
 
                 if (context != null) {
                     context.inject("task", task);

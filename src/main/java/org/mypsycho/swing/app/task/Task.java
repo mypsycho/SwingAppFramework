@@ -9,6 +9,7 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -16,14 +17,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationContext;
+import org.mypsycho.swing.app.Locales;
 import org.mypsycho.swing.app.SwingBean;
 import org.mypsycho.swing.app.beans.ApplicationAction;
+import org.mypsycho.swing.app.utils.SwingHelper;
+import org.mypsycho.text.Localized;
+import org.mypsycho.text.StringMap;
+import org.mypsycho.text.TextMap;
 
 
 
@@ -130,12 +137,13 @@ import org.mypsycho.swing.app.beans.ApplicationAction;
  *        {@code SwingWorker's} {@code publish} and {@code process} methods
  *
  * @author Hans Muller (Hans.Muller@Sun.COM)
+ * @author Peransin Nicolas
  * @see ApplicationContext
  * @see ResourceMap
  * @see TaskListener
  * @see TaskEvent
  */
-public abstract class Task<T, V> extends SwingWorker<T, V> {
+public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized {
 
     private static final Logger logger = Logger.getLogger(Task.class.getName());
 
@@ -152,6 +160,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
     public static final String PROP_STARTED = "started";
 
 
+    private Locale locale = JComponent.getDefaultLocale();
     private List<TaskListener<T, V>> taskListeners;
     private InputBlocker inputBlocker;
     private String title = null;
@@ -163,7 +172,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
     private boolean userCanCancel = true;
     private boolean progressPropertyIsValid = false;
     private TaskService taskService = null;
-    private Map<String, String> messages = null;
+    private volatile TextMap messages = null; // double-check lock
 
 
     /**
@@ -219,6 +228,41 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
     }
 
 
+    /**
+     * Returns the messages.
+     *
+     * @return the messages
+     */
+    public Map<String, String> getMessages() {
+        if (messages == null) {
+            synchronized (this) {
+                if (messages == null) {
+                    messages = createTextMap();
+                }
+            }
+        }
+        return messages; 
+    }
+
+    
+    /**
+     * Create a TextMap instance using the locale of this task.
+     * <p>
+     * The default implementation uses a StringMap instance (using printf syntax).
+     * </p>
+     * <p>
+     * This method can be overriden to a TextMap instance to a use 
+     * java.text.MessageFormat syntax.
+     * </p>
+     *
+     * @return
+     */
+    protected TextMap createTextMap() { 
+        // Change for 'new TextMap() if your
+        return new StringMap(this);
+    }
+
+    
     /**
      * Returns the TaskService that this Task has been submitted to,
      * or null.  This property is set when a task is executed by a
@@ -435,39 +479,29 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
     /**
      * Set the message property to a string generated with {@code
      * String.format} and the specified arguments.  The {@code
-     * formatResourceKey} names a resource whose value is a format
+     * messageKey} names a resource whose value is a format
      * string.  See the Task class javadoc for an example.
      * <p>
      * Note that if the no arguments are specified, this method is
      * comparable to:
      *<pre>
-     * setMessage(getResourceMap().getString(resourceName(formatResourceKey)));
+     * setMessage(getResourceMap().getString(resourceName(messageKey)));
      *</pre>
      * <p>
      * If a {@code ResourceMap} was not specified for this Task,
      * then set the {@code message} property to {@code formatResourceKey}.
      *
-     * @param formatResourceKey the suffix of the format string's resource name.
+     * @param messageKey the suffix of the format string's resource name.
      * @param args the arguments referred to by the placeholders in the format string
      * @see #setMessage
      * @see ResourceMap#getString(String, Object...)
      * @see java.text.MessageFormat
      */
-    protected void message(String formatResourceKey, Object... args) {
-
+    protected void message(String messageKey, Object... args) {
         if (messages != null) {
-            String template = messages.get(formatResourceKey);
-            if (template == null) {
-                setMessage(formatResourceKey); // warning ??
-            } else if (args.length == 0) {
-                setMessage(template);
-            } else {
-                // Locale is defined at injection OR at runtime from the source
-                // Source may be null
-                setMessage(String.format(/* TODO:locale, */template, args));
-            }
+            setMessage(messages.get(messageKey, args));
         } else {
-            setMessage(formatResourceKey);
+            setMessage(messageKey);
         }
     }
 
@@ -1127,21 +1161,27 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
         protected abstract void unblock();
     }
 
-    /**
-     * Returns the messages.
-     *
-     * @return the messages
-     */
-    public Map<String, String> getMessages() {
-        return messages; 
-    }
 
+    
     /**
-     * Sets the messages.
+     * Returns the locale.
      *
-     * @param messages the messages to set
+     * @return the locale
      */
-    public void setMessages(Map<String, String> messages) {
-        this.messages = messages;
+    public Locale getLocale() {
+        return locale;
     }
+    
+    /**
+     * Sets the locale.
+     *
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        SwingHelper.assertNotNull(Locales.LOCALE_PROP, locale);
+        Locale old = this.locale;
+        this.locale = locale;
+        firePropertyChange(Locales.LOCALE_PROP, old, locale);
+    }
+    
 }
