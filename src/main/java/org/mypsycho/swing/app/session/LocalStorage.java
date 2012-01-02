@@ -34,7 +34,7 @@ import javax.jnlp.UnavailableServiceException;
 
 import org.mypsycho.swing.app.ApplicationContext;
 import org.mypsycho.swing.app.SwingBean;
-import org.mypsycho.swing.app.os.PlateformHook;
+import org.mypsycho.swing.app.os.Plateform.PlateformHook;
 
 
 
@@ -47,7 +47,6 @@ import org.mypsycho.swing.app.os.PlateformHook;
  */
 public class LocalStorage extends SwingBean {
 
-    // private static Logger logger = Logger.getLogger(LocalStorage.class.getName());
 
     private final ApplicationContext context;
     private long storageLimit = -1L;
@@ -67,7 +66,7 @@ public class LocalStorage extends SwingBean {
     }
 
     // FIXME - documentation
-    protected final ApplicationContext getContext() {
+    public final ApplicationContext getContext() {
         return context;
     }
 

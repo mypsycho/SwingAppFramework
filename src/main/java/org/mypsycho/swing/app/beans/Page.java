@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
 import java.awt.Color;

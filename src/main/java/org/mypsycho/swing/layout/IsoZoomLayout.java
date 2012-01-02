@@ -8,14 +8,10 @@ import java.awt.Container;
 import java.awt.Dimension;
 
 /**
- * <p>Description : </p>
  * Like ZoomLayout but Zooms on X and Y axis are the same.
  * When space is left on an axis, display is centered.
  *
- * <p>Copyright : Copyright (c) 2003</p>
- * <p>Société : </p>
  * @author PERANSIN Nicolas
- * @version 1.0
  */
 
 public class IsoZoomLayout extends ZoomLayout {

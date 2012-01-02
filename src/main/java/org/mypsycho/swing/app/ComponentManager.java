@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Locale;
 
 import javax.swing.JComponent;
+import javax.swing.RootPaneContainer;
 
 import org.mypsycho.swing.ContainerPropagator;
 import org.mypsycho.swing.app.utils.SwingHelper;
@@ -19,11 +20,18 @@ import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * This component is in charge to injecte components and propagate Locale.
+ * <p>
+ * Locale in AWT in automatically defined by the parent component.
+ * </p><p>
+ * In Swing, Locale is not propagate from parent to branch in component tree 
+ * (because of contrainst in MVC pattern where component is ready to be drawn
+ * since constructor, before being attached). 
+ * </p>
+ * This bean listens at component tree of views and deals with automatic 
+ * updates.
  *
- * @author Nicolas
- *
+ * @author Peransin Nicolas
  */
 public class ComponentManager extends ContainerPropagator {
 
@@ -76,13 +84,23 @@ public class ComponentManager extends ContainerPropagator {
         context.getResourceManager().inject(evt.getSource(), locale);
     }
 
+    JComponent getMarkable(Component c) {
+        if (c instanceof JComponent) {
+            return (JComponent) c;
+        }
+        if (c instanceof RootPaneContainer) {
+            return ((RootPaneContainer) c).getRootPane();
+        }
+        return null;
+    }
+    
     @Override
     protected void componentAdding(Component target) {
         // Install resources
-        if (target instanceof JComponent) {
-            JComponent swing = (JComponent) target;
-            swing.putClientProperty(ApplicationContext.CLIENT_PROPERTY, context);
-            swing.putClientProperty(ApplicationContext.RESOURCE_MARKER, true);
+        JComponent markable = getMarkable(target);
+        if (markable != null) {
+            markable.putClientProperty(ApplicationContext.CLIENT_PROPERTY, context);
+            markable.putClientProperty(ApplicationContext.RESOURCE_MARKER, true);
         }
         
         // Propagate the locale
@@ -114,9 +132,9 @@ public class ComponentManager extends ContainerPropagator {
         if (target instanceof ApplicationComponent) {
             ((ApplicationComponent) target).register(getApplication());
         }
-        if (target instanceof JComponent) {
-            JComponent swing = (JComponent) target;
-            swing.putClientProperty(ApplicationContext.RESOURCE_MARKER, null);
+        JComponent markable = getMarkable(target);
+        if (markable != null) {
+            markable.putClientProperty(ApplicationContext.RESOURCE_MARKER, null);
         }
     }
 

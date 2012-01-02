@@ -9,7 +9,7 @@ package org.mypsycho.beans;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public interface CollectionExtension {

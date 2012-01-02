@@ -24,7 +24,7 @@ import org.apache.commons.beanutils.ContextClassLoaderLocal;
  *
  * @author Peransin Nicolas
  */
-public class EnumMessage extends MessageFormat {
+public class EnumMessage extends BeanMessageFormat {
 
     public interface Message {
         String[] args();

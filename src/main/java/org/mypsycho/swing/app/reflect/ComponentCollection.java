@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.reflect;
 
 import java.awt.Component;
@@ -25,7 +29,7 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class ComponentCollection extends AbstractCollectionExtension {
@@ -82,7 +86,9 @@ public class ComponentCollection extends AbstractCollectionExtension {
             return ((JPopupMenu) bean).getComponent(index);
         }
         if (bean instanceof JTabbedPane) {
-            return new TabPage((JTabbedPane) bean, index);
+            JTabbedPane tabs = (JTabbedPane) bean;
+
+            return (index < tabs.getTabCount()) ? new TabPage(tabs, index) : null;
         }
         
         Container cont = (Container) bean;

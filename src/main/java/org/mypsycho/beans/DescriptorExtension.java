@@ -15,7 +15,7 @@ import org.apache.commons.beanutils.DynaBean;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  */
 public class DescriptorExtension extends PropertyDescriptor {
 

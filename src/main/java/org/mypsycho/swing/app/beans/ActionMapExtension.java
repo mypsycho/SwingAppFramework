@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
 import javax.swing.Action;
@@ -11,7 +15,7 @@ import org.mypsycho.beans.AbstractCollectionExtension;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class ActionMapExtension extends AbstractCollectionExtension {

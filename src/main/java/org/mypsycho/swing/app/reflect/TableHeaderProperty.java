@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.reflect;
 
 import java.beans.IntrospectionException;
@@ -12,7 +16,7 @@ import org.mypsycho.beans.DescriptorExtension;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class TableHeaderProperty extends DescriptorExtension {

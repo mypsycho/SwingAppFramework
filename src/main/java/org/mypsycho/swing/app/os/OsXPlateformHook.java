@@ -1,9 +1,14 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.os;
 
 import java.io.File;
 import java.util.concurrent.Callable;
 
 import org.mypsycho.swing.app.Application;
+import org.mypsycho.swing.app.os.Plateform.PlateformHook;
 
 
 
@@ -11,7 +16,7 @@ import org.mypsycho.swing.app.Application;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class OsXPlateformHook implements PlateformHook {
@@ -19,7 +24,7 @@ public class OsXPlateformHook implements PlateformHook {
 
 
     @Override
-    public void prepare(final Application application) throws IllegalStateException {
+    public void init(final Application application) throws IllegalStateException {
         try {
             OSXAdapter.setQuitHandler(new Callable<Boolean>() {
 

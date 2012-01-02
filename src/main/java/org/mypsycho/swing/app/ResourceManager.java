@@ -19,8 +19,10 @@ import org.mypsycho.beans.Injector;
 import org.mypsycho.swing.app.beans.ActionMapExtension;
 import org.mypsycho.swing.app.reflect.ActionConverter;
 import org.mypsycho.swing.app.reflect.BorderConverter;
+import org.mypsycho.swing.app.reflect.ClientComponentProperty;
 import org.mypsycho.swing.app.reflect.ComponentCollection;
 import org.mypsycho.swing.app.reflect.ComponentProperty;
+import org.mypsycho.swing.app.reflect.DerivedFontConverter;
 import org.mypsycho.swing.app.reflect.MenuConverter;
 import org.mypsycho.swing.app.reflect.MnemonicProperty;
 import org.mypsycho.swing.app.reflect.ResourceConverter;
@@ -34,7 +36,7 @@ import org.mypsycho.swing.app.reflect.WindowIconProperty;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class ResourceManager extends Injector {
@@ -74,7 +76,7 @@ public class ResourceManager extends Injector {
         register(new ResourceConverter());
         register(new ActionConverter());
         register(new BorderConverter(getConverter()));
-
+        register(new DerivedFontConverter());
 
         // collection
         register(new ComponentCollection());
@@ -93,6 +95,10 @@ public class ResourceManager extends Injector {
             // We register a more convenient name (Note: Frame.menuBar is no more accessible)
             register(new DescriptorExtension(JFrame.class, "menuBar", 
                     new PropertyDescriptor("JMenuBar", JFrame.class)));
+            
+            register(ClientComponentProperty.createComponentInstance());
+            register(ClientComponentProperty.createWindowInstance());
+            
         } catch (IntrospectionException e) {
             throw new RuntimeException(e);
         }

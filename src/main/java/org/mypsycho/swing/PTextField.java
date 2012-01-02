@@ -106,7 +106,7 @@ public class PTextField extends JTextField {
             if (isTemporaryLost) {
                 isTemporaryLost = false;
             } else {
-//            System.out.println("Focus gained");
+
                 changed = false;
                 // change document are not handled
                 getDocument().addDocumentListener(this);
@@ -117,9 +117,9 @@ public class PTextField extends JTextField {
         public void focusLost(FocusEvent e) {
             if (e.isTemporary()) {
                 isTemporaryLost = true;
-//                System.out.println("Focus temporary lost");
+
             } else {
-//                System.out.println("Focus really lost");
+
                 if (changeListened) {
                     getDocument().removeDocumentListener(this);
                     changeListened = false;
@@ -152,7 +152,14 @@ public class PTextField extends JTextField {
     };
 
 
-
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+     */
+    @Override
+    public void setText(String t) {
+        // TODO Auto-generated method stub
+        super.setText(t);
+    }
 
 
 } // endClass PTextField

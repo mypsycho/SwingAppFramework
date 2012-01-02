@@ -11,6 +11,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mypsycho.swing.app.beans.ApplicationAction;
 import org.mypsycho.swing.app.task.Task;
 import org.mypsycho.swing.app.task.Task.BlockingScope;
 

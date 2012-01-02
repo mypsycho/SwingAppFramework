@@ -1,21 +1,20 @@
 /*
-* Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
-* subject to license terms.
-*/
-
+ * Copyright (C) 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
-import java.awt.AWTEvent;
-import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
@@ -47,84 +46,60 @@ import org.mypsycho.swing.app.SwingBean;
  *
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @author Scott Violet (Scott.Violet@Sun.COM)
+ * @author Peransin Nicolas
  */
 public class TextActions extends SwingBean {
 
+    // Well-known JTextComponent
+    public static final String cutAction = "cut";
+    public static final String copyAction = "copy";
+    public static final String pasteAction = "paste";
+    public static final String deleteAction = "delete";
+    
     private static final String MARKER_ACTION_KEY = "TextActions.markerAction";
-    private static final String KFM_FOCUS_OWNER = "permanentFocusOwner";
+    // Property as defined in KeyboardFocusManager
+    private static final String KFM_FOCUS_OWNER_PROP = "permanentFocusOwner";
+    
+    // Property as defined in JTextComponent
+    private static final String TXT_EDITABLE_PROP = "editable";
+    
     private static final String[] ACTION_NAMES = {
-        "cut", "copy", "paste", "delete", "select-all"
+        cutAction, copyAction, pasteAction, 
+        deleteAction, DefaultEditorKit.selectAllAction
+    };
+    
+    private final ApplicationContext context;
+    private final Map<String, Boolean> enableds = new HashMap<String, Boolean>();
+    private JComponent focusOwner = null;
+
+
+    private final javax.swing.Action markerAction = new javax.swing.AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        }
     };
 
-    private final ApplicationContext context;
-    private final CaretListener textComponentCaretListener;
-    private final PropertyChangeListener textComponentPCL;
-    private final javax.swing.Action markerAction;
-    private boolean copyEnabled = false;    // see setCopyEnabled
-    private boolean cutEnabled = false;     // see setCutEnabled
-    private boolean pasteEnabled = false;   // see setPasteEnabled
-    private boolean deleteEnabled = false;  // see setDeleteEnabled
-    private boolean selectAllEnabled = false;  // see setSelectAllEnabled
-
-    private JComponent focusOwner = null;
-    private PropertyChangeListener keybFocusPCL = new KeyboardFocusPCL();
-    private FlavorListener clipboardL = new ClipboardListener();
-
-    public TextActions(ApplicationContext context) {
-
-        this.context = context;
-
-        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        kfm.addPropertyChangeListener(keybFocusPCL);
-
-        markerAction = new javax.swing.AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
-        };
-        textComponentCaretListener = new TextComponentCaretListener();
-        textComponentPCL = new TextComponentPCL();
-        getClipboard().addFlavorListener(clipboardL);
-
-        // Call injection here
-    }
-
-    public final ApplicationContext getContext() {
-        return context;
-    }
-
-
-
-    private Clipboard getClipboard() {
-        return getContext().getClipboard();
-    }
-
-    /**
-     * Returns the application's focus owner.
-     *
-     * @return The application's focus owner.
-     */
-    public JComponent getFocusOwner() {
-        return focusOwner;
-    }
-
-    /**
-     * Changes the application's focus owner.
-     *
-     * @param focusOwner new focus owner
-     */
-    void setFocusOwner(JComponent focusOwner) {
-        Object oldValue = this.focusOwner;
-        this.focusOwner = focusOwner;
-        firePropertyChange("focusOwner", oldValue, this.focusOwner);
-    }
-
-    private final class KeyboardFocusPCL implements PropertyChangeListener {
-
-
+    private final CaretListener textCaretLnr = new CaretListener() {
+        @Override
+        public void caretUpdate(CaretEvent e) {
+            updateTextActions((JTextComponent) (e.getSource()));
+        }
+    };
+    
+    private final PropertyChangeListener textLnr = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent e) {
-            if (KFM_FOCUS_OWNER.equals(e.getPropertyName())) {
+            String propertyName = e.getPropertyName();
+            if ((propertyName == null) || TXT_EDITABLE_PROP.equals(propertyName)) {
+                updateTextActions((JTextComponent) (e.getSource()));
+            }
+        }
+    };
+    
+    private PropertyChangeListener keybFocusLnr = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent e) {
+            if (KFM_FOCUS_OWNER_PROP.equals(e.getPropertyName())) {
                 JComponent oldOwner = getFocusOwner();
                 Object newValue = e.getNewValue();
                 JComponent newOwner =
@@ -175,33 +150,9 @@ public class TextActions extends SwingBean {
         // }
         // }
         // }
-    }
-
-    /* Called by the KeyboardFocus PropertyChangeListener in ApplicationContext,
-     * before any other focus-change related work is done.
-     */
-    void updateFocusOwner(JComponent oldOwner, JComponent newOwner) {
-        if (oldOwner instanceof JTextComponent) {
-            JTextComponent text = (JTextComponent) oldOwner;
-            text.removeCaretListener(textComponentCaretListener);
-            text.removePropertyChangeListener(textComponentPCL);
-        }
-        if (newOwner instanceof JTextComponent) {
-            JTextComponent text = (JTextComponent) newOwner;
-            maybeInstallTextActions(text);
-            updateTextActions(text);
-            text.addCaretListener(textComponentCaretListener);
-            text.addPropertyChangeListener(textComponentPCL);
-        } else if (newOwner == null) {
-            setCopyEnabled(false);
-            setCutEnabled(false);
-            setPasteEnabled(false);
-            setDeleteEnabled(false);
-            setSelectAllEnabled(false);
-        }
-    }
-
-    private final class ClipboardListener implements FlavorListener {
+    };
+    
+    private FlavorListener clipboardLnr = new FlavorListener() {
         @Override
         public void flavorsChanged(FlavorEvent e) {
             JComponent c = getFocusOwner();
@@ -209,24 +160,68 @@ public class TextActions extends SwingBean {
                 updateTextActions((JTextComponent) c);
             }
         }
+    };
+
+    
+    public TextActions(ApplicationContext context) {
+        this.context = context;
+        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        kfm.addPropertyChangeListener(keybFocusLnr);
+        getClipboard().addFlavorListener(clipboardLnr);
     }
 
-    private final class TextComponentCaretListener implements CaretListener {
-        @Override
-        public void caretUpdate(CaretEvent e) {
-            updateTextActions((JTextComponent) (e.getSource()));
+    public final ApplicationContext getContext() {
+        return context;
+    }
+
+    private Clipboard getClipboard() {
+        return getContext().getClipboard();
+    }
+
+    /**
+     * Returns the application's focus owner.
+     *
+     * @return The application's focus owner.
+     */
+    public JComponent getFocusOwner() {
+        return focusOwner;
+    }
+
+    /**
+     * Changes the application's focus owner.
+     *
+     * @param focusOwner new focus owner
+     */
+    void setFocusOwner(JComponent focusOwner) {
+        Object oldValue = this.focusOwner;
+        this.focusOwner = focusOwner;
+        firePropertyChange("focusOwner", oldValue, this.focusOwner);
+    }
+
+  
+
+    /* Called by the KeyboardFocus PropertyChangeListener in ApplicationContext,
+     * before any other focus-change related work is done.
+     */
+    void updateFocusOwner(JComponent oldOwner, JComponent newOwner) {
+        if (oldOwner instanceof JTextComponent) {
+            JTextComponent text = (JTextComponent) oldOwner;
+            text.removeCaretListener(textCaretLnr);
+            text.removePropertyChangeListener(textLnr);
         }
-    }
-
-    private final class TextComponentPCL implements PropertyChangeListener {
-        @Override
-        public void propertyChange(PropertyChangeEvent e) {
-            String propertyName = e.getPropertyName();
-            if ((propertyName == null) || "editable".equals(propertyName)) {
-                updateTextActions((JTextComponent) (e.getSource()));
+        if (newOwner instanceof JTextComponent) {
+            JTextComponent text = (JTextComponent) newOwner;
+            maybeInstallTextActions(text);
+            updateTextActions(text);
+            text.addCaretListener(textCaretLnr);
+            text.addPropertyChangeListener(textLnr);
+        } else if (newOwner == null) {
+            for (String actionName : ACTION_NAMES) {
+                setEnabled(actionName, false);    
             }
         }
     }
+
 
     private void updateTextActions(JTextComponent text) {
         Caret caret = text.getCaret();
@@ -234,21 +229,26 @@ public class TextActions extends SwingBean {
         final int mark = caret.getMark();
         boolean selection = (dot != mark);
         boolean editable = text.isEditable();
-        setCopyEnabled(selection);
-        setCutEnabled(editable && selection);
-        setDeleteEnabled(editable && selection);
+        setEnabled(copyAction, selection);
+        setEnabled(cutAction, editable && selection);
+        setEnabled(deleteAction, editable && selection);
+        
         final int length = text.getDocument().getLength();
-        setSelectAllEnabled(editable && (Math.abs(mark - dot) != length));
+        boolean allSelected = Math.abs(mark - dot) == length;
+        setEnabled(DefaultEditorKit.selectAllAction, editable && allSelected);
+
         try {
-            boolean data = getClipboard().isDataFlavorAvailable(DataFlavor.stringFlavor);
-            setPasteEnabled(editable && data);
+            boolean stringCb = getClipboard().isDataFlavorAvailable(DataFlavor.stringFlavor);
+            setEnabled(pasteAction, editable && stringCb);
+
         } catch (IllegalStateException e) {
             //ignore
-            setPasteEnabled(editable);
+            setEnabled(pasteAction, editable);
         }
     }
 
-    // TBD: what if text.getActionMap is null, or if it's parent isn't the UI-installed actionMap
+    // TBD: what if text.getActionMap is null, 
+    // or if it's parent isn't the UI-installed actionMap
     private void maybeInstallTextActions(JTextComponent text) {
         ActionMap actionMap = text.getActionMap();
         if (actionMap.get(MARKER_ACTION_KEY) != markerAction) {
@@ -261,125 +261,78 @@ public class TextActions extends SwingBean {
     }
 
 
-    /* This method lifted from JTextComponent.java
-     */
-    private int getCurrentEventModifiers() {
-        int modifiers = 0;
-        AWTEvent currentEvent = EventQueue.getCurrentEvent();
-        if (currentEvent instanceof InputEvent) {
-            modifiers = ((InputEvent) currentEvent).getModifiers();
-        } else if (currentEvent instanceof ActionEvent) {
-            modifiers = ((ActionEvent) currentEvent).getModifiers();
-        }
-        return modifiers;
-    }
 
-    private void invokeTextAction(JTextComponent text, String actionName) {
+    private void invokeTextAction(String actionName, ActionEvent e) {
+        if (!(focusOwner instanceof JTextComponent)) {
+            return;
+        }
+        JTextComponent text = (JTextComponent) focusOwner;
+        
+        // We expect the parent.actionMap to be the one installed by the component-UI
         ActionMap actionMap = text.getActionMap().getParent();
-        long eventTime = EventQueue.getMostRecentEventTime();
-        int eventMods = getCurrentEventModifiers();
+        
         ActionEvent actionEvent =
-                new ActionEvent(text, ActionEvent.ACTION_PERFORMED, actionName, eventTime, eventMods);
+                new ActionEvent(text, ActionEvent.ACTION_PERFORMED, actionName, 
+                        e.getWhen(), e.getModifiers());
         actionMap.get(actionName).actionPerformed(actionEvent);
     }
 
-    @Action(enabledProperty = "cutEnabled")
+    @Action(enabledProperty = "enabled(" + cutAction + ")")
     public void cut(ActionEvent e) {
-        Object src = e.getSource();
-        if (src instanceof JTextComponent) {
-            invokeTextAction((JTextComponent) src, "cut");
-        }
+        invokeTextAction(cutAction, e);
     }
 
-    public boolean isCutEnabled() {
-        return cutEnabled;
-    }
-
-    public void setCutEnabled(boolean cutEnabled) {
-        boolean oldValue = this.cutEnabled;
-        this.cutEnabled = cutEnabled;
-        firePropertyChange("cutEnabled", oldValue, this.cutEnabled);
-    }
-
-    @Action(enabledProperty = "copyEnabled")
+    @Action(enabledProperty = "enabled(" + copyAction + ")")
     public void copy(ActionEvent e) {
-        Object src = e.getSource();
-        if (src instanceof JTextComponent) {
-            invokeTextAction((JTextComponent) src, "copy");
-        }
+        invokeTextAction(copyAction, e);
     }
 
-    public boolean isCopyEnabled() {
-        return copyEnabled;
-    }
 
-    public void setCopyEnabled(boolean copyEnabled) {
-        boolean oldValue = this.copyEnabled;
-        this.copyEnabled = copyEnabled;
-        firePropertyChange("copyEnabled", oldValue, this.copyEnabled);
-    }
-
-    @Action(enabledProperty = "pasteEnabled")
+    @Action(enabledProperty = "enabled(" + pasteAction + ")")
     public void paste(ActionEvent e) {
-        Object src = e.getSource();
-        if (src instanceof JTextComponent) {
-            invokeTextAction((JTextComponent) src, "paste");
-        }
+        invokeTextAction(pasteAction, e);
     }
 
-    public boolean isPasteEnabled() {
-        return pasteEnabled;
-    }
-
-    public void setPasteEnabled(boolean pasteEnabled) {
-        boolean oldValue = this.pasteEnabled;
-        this.pasteEnabled = pasteEnabled;
-        firePropertyChange("pasteEnabled", oldValue, this.pasteEnabled);
-    }
-
-    @Action(enabledProperty = "deleteEnabled")
+    @Action(enabledProperty = "enabled(" + deleteAction + ")")
     public void delete(ActionEvent e) {
-        Object src = e.getSource();
-        if (src instanceof JTextComponent) {
-            /* The deleteNextCharAction is bound to the delete key in
-              * text components.  The name appears to be a misnomer,
-              * however it's really a compromise.  Calling the method
-              * by a more accurate name,
-              *   "IfASelectionExistsThenDeleteItOtherwiseDeleteTheNextCharacter"
-              * would be rather unwieldy.
-              */
-            invokeTextAction((JTextComponent) src, DefaultEditorKit.deleteNextCharAction);
-        }
+        /* The DefaultEditorKit.deleteNextCharAction is bound to the delete 
+         * key in text components.  The name appears to be a misnomer,
+         * however it's really a compromise.  Calling the method
+         * by a more accurate name,
+         *   "IfASelectionExistsThenDeleteItOtherwiseDeleteTheNextCharacter"
+         * would be rather unwieldy.
+         */
+        invokeTextAction(DefaultEditorKit.deleteNextCharAction, e);
     }
 
-    public boolean isDeleteEnabled() {
-        return deleteEnabled;
-    }
 
-    public void setDeleteEnabled(boolean deleteEnabled) {
-        boolean oldValue = this.deleteEnabled;
-        this.deleteEnabled = deleteEnabled;
-        firePropertyChange("deleteEnabled", oldValue, this.deleteEnabled);
-    }
-
-    @Action(enabledProperty = "selectAllEnabled", name = "select-all")
+    @Action(enabledProperty = "enabled(" + DefaultEditorKit.selectAllAction + ")")
     public void selectAll(ActionEvent e) {
-        Object src = e.getSource();
-        if (src instanceof JTextComponent) {
-            invokeTextAction((JTextComponent) src, DefaultEditorKit.selectAllAction);
-        }
-    }
-
-    public boolean isSelectAllEnabled() {
-        return selectAllEnabled;
-    }
-
-    public void setSelectAllEnabled(boolean selectAllEnabled) {
-        boolean oldValue = this.selectAllEnabled;
-        this.selectAllEnabled = selectAllEnabled;
-        firePropertyChange("selectAllEnabled", oldValue, this.selectAllEnabled);
+        invokeTextAction(DefaultEditorKit.selectAllAction, e);
     }
 
 
+    
+    /**
+     * Returns the enableds.
+     *
+     * @return the enableds
+     */
+    public boolean getEnabled(String prop) {
+        Boolean b = enableds.get(prop);
+        return b != null ? b : false;
+    }
+
+    
+    /**
+     * Sets the enableds.
+     *
+     * @param enableds the enableds to set
+     */
+    public void setEnabled(String prop, boolean enabled) {
+        boolean old = getEnabled(prop);
+        enableds.put(prop, enabled);
+        firePropertyChange("enabled(" + prop + ")", old, enabled);
+    }
 
 }

@@ -52,7 +52,7 @@ public class CompositeBehaviour implements ViewBehaviour {
      */
     @Override
     public void onRelease(View view) {
-        for (int i = behaviours.size() - 1; i <= 0; i--) {
+        for (int i = behaviours.size() - 1; 0 <= i; i--) {
             ViewBehaviour b = behaviours.get(i);
             if (b != null) {
                 b.onRelease(view);

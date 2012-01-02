@@ -225,6 +225,9 @@ public class SwingHelper {
         }
         if (name.endsWith(VIEW_SUFFIX)) {
             String subName = name.substring(0, name.length() - VIEW_SUFFIX.length());
+            if (subName.isEmpty()) {
+                return parent;
+            }
             return getContainer(getChild(parent, subName));   
         }
         

@@ -12,7 +12,7 @@ import java.util.List;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class InjectionStack {

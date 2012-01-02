@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
+/*
+ * Copyright (C) 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
 import java.beans.PropertyChangeEvent;
@@ -7,8 +16,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.SwingWorker.StateValue;
 
 import org.mypsycho.swing.app.ApplicationContext;
 import org.mypsycho.swing.app.SwingBean;
@@ -70,7 +77,8 @@ import org.mypsycho.swing.app.task.TaskService;
  */
 public class TaskMonitor extends SwingBean {
 
-    public static final String PROP_FOREGROUND_TASK = "foregroundTask";
+    public static final String FOREGROUND_TASK_PROP = "foregroundTask";
+    
     private final PropertyChangeListener applicationPCL;
     private final PropertyChangeListener taskServicePCL;
     private final PropertyChangeListener taskPCL;
@@ -116,7 +124,7 @@ public class TaskMonitor extends SwingBean {
         if (newTask != null) {
             newTask.addPropertyChangeListener(taskPCL);
         }
-        firePropertyChange(PROP_FOREGROUND_TASK, oldTask, newTask);
+        firePropertyChange(FOREGROUND_TASK_PROP, oldTask, newTask);
     }
 
     /**
@@ -287,18 +295,9 @@ public class TaskMonitor extends SwingBean {
             Task<?, ?> task = (Task<?, ?>) (e.getSource());
             if ((task != null) && (task == getForegroundTask())) {
                 firePropertyChange(e);
+                // utility of synonyms ??
                 if (Task.STATE_PROP.equals(propertyName)) {
-                    StateValue newState = (StateValue) (e.getNewValue());
-                    switch (newState) {
-                        case PENDING:
-                            fireStateChange(task, "pending");
-                            break;
-                        case STARTED:
-                            fireStateChange(task, "started");
-                            break;
-                        case DONE:
-                            fireStateChange(task, "done");
-                    }
+                    fireStateChange(task, task.getState().name().toLowerCase());
                 }
                 if (Task.PROP_COMPLETED.equals(propertyName)) {
                     if (autoUpdateForegroundTask) {

@@ -32,6 +32,13 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 
+/**
+ * Class for ...
+ * <p>Details</p>
+ *
+ * @author Peransin Nicolas
+ *
+ */
 public class InputBlockerPane extends JOptionPane {
 
     Task<?, ?> task;

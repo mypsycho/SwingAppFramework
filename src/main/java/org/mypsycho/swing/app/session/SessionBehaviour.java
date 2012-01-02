@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.session;
 
 import java.awt.Container;
@@ -10,15 +14,11 @@ import org.mypsycho.swing.app.View;
 import org.mypsycho.swing.app.ViewBehaviour;
 
 
-
-
-
 /**
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
- *
+ * @author Peransin Nicolas
  */
 public class SessionBehaviour extends ViewBehaviour.Adapter {
 
@@ -31,16 +31,11 @@ public class SessionBehaviour extends ViewBehaviour.Adapter {
         }
     }
 
-    protected void saveSession(Window window) {
-        View view = View.getView(window);
-        if (view == null) {
-            return;
-        }
+    protected void saveSession(Application app, Window window) {
         String filename = sessionFilename(window);
         if (filename == null) {
             return;
         }
-        Application app = view.getApplication();
         try {
             app.getContext().getSessionStorage().save(window, filename);
         } catch (IOException e) {
@@ -80,7 +75,7 @@ public class SessionBehaviour extends ViewBehaviour.Adapter {
         if (!(parent instanceof Window)) {
             return;
         }
-        Window window = (Window) parent;
-        saveSession(window);
+
+        saveSession(view.getApplication(), (Window) parent);
     }
 }

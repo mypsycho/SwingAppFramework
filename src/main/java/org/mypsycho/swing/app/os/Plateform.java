@@ -1,16 +1,19 @@
 /*
  * Copyright (C) 2009 Illya Yalovyy
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
  * Use is subject to license terms.
  */
-
 package org.mypsycho.swing.app.os;
 
+import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ServiceLoader;
+
+import org.mypsycho.swing.app.Application;
 
 
 
@@ -21,6 +24,14 @@ import java.util.ServiceLoader;
  */
 public interface Plateform { // enum should be replace by something more dynamic
 
+    public interface PlateformHook {
+
+        void init(Application application) throws IllegalStateException;
+
+        File getApplicationHome(String vendorId, String applicationId);
+
+    }
+    
     ServiceIdentification identification = new ServiceIdentification();
 
     String getDisplay();
@@ -148,9 +159,6 @@ public interface Plateform { // enum should be replace by something more dynamic
         }
 
     }
-
-
-
 
 
 }

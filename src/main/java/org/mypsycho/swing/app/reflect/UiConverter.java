@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.reflect;
 
 import java.awt.Color;
@@ -20,7 +24,7 @@ import org.mypsycho.beans.converter.AbstractTypeConverter;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class UiConverter extends AbstractTypeConverter {
@@ -153,4 +157,7 @@ public class UiConverter extends AbstractTypeConverter {
         throw new IllegalArgumentException("Unexpected type" + expected.getName());
     }
 
+    
+    
+    
 }

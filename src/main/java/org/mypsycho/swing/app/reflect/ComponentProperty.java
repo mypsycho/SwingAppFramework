@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.reflect;
 
 import java.awt.Component;
@@ -14,13 +18,13 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class ComponentProperty extends DescriptorExtension {
 
     public ComponentProperty() throws IntrospectionException {
-        super(Container.class, "component" );
+        super(Container.class, "component");
     }
 
 
@@ -39,10 +43,7 @@ public class ComponentProperty extends DescriptorExtension {
 
     @Override
     public Class<?> getPropertyType(boolean collection) {
-        if (collection) {
-            return Component.class;
-        }
-        return Container.class; // TBD: Use case ??
+        return collection ? Component.class : null;
     }
 
     @Override

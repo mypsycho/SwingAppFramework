@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.swing.JComponent;
 
 /**
- * <p>Description : </p>
  * Layout similaire au null layout mais permettant de definir une taille de
  * reference qui sera la taille preferee et de faire zoomer les composants.
  * Les composant doivent être ajoutes avec une ZoomConstraint.

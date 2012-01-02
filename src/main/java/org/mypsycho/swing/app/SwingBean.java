@@ -28,7 +28,7 @@ public class SwingBean {
 
     private final PropertyChangeSupport pcs = new SwingPropertyChangeSupport(this, true);;
 
-    private volatile ActionMap actionMap = new ActionMap();
+    private volatile ActionMap actionMap = null;
 
     public ActionMap getActionMap() {
         if (actionMap != null) { // Double Checked Locking with volatile ! :@

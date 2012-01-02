@@ -265,15 +265,18 @@ public class View extends SwingBean {
         if (root.getClientProperty(VIEW_MARKER) != this) {
             return;
         }
-        getApplication().removePropertyChangeListener(Locales.LOCALE_PROP, localeListener);
-        root.putClientProperty(VIEW_MARKER, null); // set view !!
-
+        
+        // Note: release if before cleaning component as behaviour need to id
         if (behaviour != null) {
             behaviour.onRelease(this);
         }
+        
+        // Clean application context from component
+        getApplication().removePropertyChangeListener(Locales.LOCALE_PROP, localeListener);
+        root.putClientProperty(VIEW_MARKER, null); // set view !!
         getContext().getComponentManager().dispose(getRootPane());
 
-        // root.getParent().dispose ?
+        // root.getParent().dispose // ? usefull or required ? 
     }
 
 

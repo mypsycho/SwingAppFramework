@@ -480,7 +480,7 @@ public class PropertyUtilsBean {
         name = resolver.getProperty(name);
 
         // Request the specified indexed property value
-        return (getMappedProperty(bean, name, key));
+        return getMappedProperty(bean, name, key);
     }
 
 

@@ -22,11 +22,14 @@ import org.apache.commons.beanutils.expression.Resolver;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public class Injection {
 
+    static final Object NULL_VALUE = new Object();
+    
+    
     public enum Nature {
         SIMPLE, INDEXED, MAPPED 
     }
@@ -283,7 +286,7 @@ public class Injection {
             // invoker.getCollection(value, key)
 
             if (value != null) {
-                getInvoker().setMapped(bean, key, value);
+                getInvoker().setMapped(bean, key, value != NULL_VALUE ? value : null);
             } else {
                 value = getInvoker().getMapped(bean, key);
             }
@@ -291,7 +294,7 @@ public class Injection {
         } else if (nature == Nature.INDEXED) {
             int index = (Integer) id;
             if (value != null) {
-                getInvoker().setIndexed(bean, index, value);
+                getInvoker().setIndexed(bean, index, value != NULL_VALUE ? value : null);
             } else {
                 value = getInvoker().getIndexed(bean, index);
             }
@@ -300,7 +303,7 @@ public class Injection {
             throw new UnsupportedOperationException("Invalid nature " + nature);
         }
 
-        if (!hasChildren()) {
+        if (!hasChildren() || value == NULL_VALUE) {
             return;
         }
 
@@ -316,7 +319,7 @@ public class Injection {
             if (isCollection(Nature.INDEXED)) {
                 dimension = String.valueOf(size);
             }
-            value = getInjector().getConverter().convert(type, dimension, context);
+            value = convert(type, dimension, bean, context);
 
             if (nature == Nature.MAPPED) {
                 String key = (String) id;
@@ -381,7 +384,7 @@ public class Injection {
                     }
                     
                     // instantiate
-                    value = getInjector().getConverter().convert(targetType, dimension, context);
+                    value = convert(targetType, dimension, bean, context);
                     toSet = true;
 
                 } else {
@@ -393,9 +396,11 @@ public class Injection {
 
 
         if (value != null) {
-            injectChildren(getInvoker().getCollectedType(value.getClass()), value, context);
+            if (value != NULL_VALUE) {
+                injectChildren(getInvoker().getCollectedType(value.getClass()), value, context);
+            }
             if (toSet) { // setter is performed once the bean is complete
-                getInvoker().set(bean, descr, value);
+                getInvoker().set(bean, descr, value != NULL_VALUE ? value : null);
             }            
             return;
         } else if (toSet) {
@@ -523,13 +528,22 @@ public class Injection {
 
     protected Object convert(Class<?> expected, Object parent, InjectionContext context)
             throws IllegalArgumentException {
+        return convert(expected, definition, parent, context);
+    }
+            
+    protected Object convert(Class<?> expected, String content, Object parent, InjectionContext context)
+            throws IllegalArgumentException {
         Object value = (cache != null) ? cache.get() : null;
         if (value != null) {
             return value;
         }
 
+        if (getInjector().getNullTag().equals(content)) {
+            return NULL_VALUE;
+        }
+        
         context.update(expected, this, parent);
-        value = getInjector().getConverter().convert(expected, definition, context);
+        value = getInjector().getConverter().convert(expected, content, context);
         if (value instanceof Reference) {
             cache = (Reference<?>) value;
             return cache.get();

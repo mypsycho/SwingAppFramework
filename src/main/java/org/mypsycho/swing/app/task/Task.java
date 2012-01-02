@@ -21,9 +21,9 @@ import javax.swing.SwingWorker;
 
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
-import org.mypsycho.swing.app.ApplicationAction;
 import org.mypsycho.swing.app.ApplicationContext;
 import org.mypsycho.swing.app.SwingBean;
+import org.mypsycho.swing.app.beans.ApplicationAction;
 
 
 
@@ -1133,7 +1133,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
      * @return the messages
      */
     public Map<String, String> getMessages() {
-        return messages;
+        return messages; 
     }
 
     /**

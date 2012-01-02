@@ -33,6 +33,7 @@ import org.mypsycho.beans.Injectable;
 import org.mypsycho.beans.InjectionContext;
 import org.mypsycho.swing.app.task.DoWaitForEmptyEventQ;
 import org.mypsycho.swing.app.utils.SwingHelper;
+import org.mypsycho.text.Localized;
 
 
 
@@ -132,7 +133,7 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 @Inject(order="actionMap")
-public abstract class Application extends SwingBean implements Injectable {
+public abstract class Application extends SwingBean implements Injectable, Localized {
 
     // Lifecycle list is not a enum to allow aggregation
     public static final String LAUNCH_LIFECYCLE = "launch";
@@ -822,6 +823,18 @@ public abstract class Application extends SwingBean implements Injectable {
      */
     public Object show(EventObject evt, JOptionPane option) {
         return show(getParentComponent(evt), option);
+    }
+    
+    
+    /**
+     * Do something TODO.
+     * <p>Details of the function.</p>
+     *
+     * @param pagedFrame
+     * @param option
+     */
+    public Object show(EventObject evt, String name, JOptionPane option) {
+        return show(getParentComponent(evt), name, option);
     }
     
     

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
 import java.awt.BorderLayout;
@@ -33,18 +37,16 @@ import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
- * <p>Titre : </p>
- * <p>Description : </p>
- * <p>Copyright : Copyright (c) 2003</p>
- * <p>Company : </p>
+ *
+ *
  * @author PERANSIN Nicolas
  * @version 1.0
  */
-// NOTE: Surprisingly, property is 'JMenuBar' not 'jMenuBar'
-@Inject(order={ "actions", "JMenuBar", "menuBar" })
+//as actions are referenced by toolbar or menu, they must be injected first
+@Inject(order={ "actionMap" }) 
 public class MenuFrame extends JFrame {
 
-    public static final String COMPONENT_PROP = "component";
+    public static final String MAIN_PROP = "main";
     public static final String CONSOLE_VISIBLE_PROP = "consoleVisible";
     public static final String STATUS_VISIBLE_PROP = "statusVisible";
     public static final String CONSOLE_PROP = "console";
@@ -54,11 +56,11 @@ public class MenuFrame extends JFrame {
     public static final String TOOL_BARS_PROP = "toolbars";
 
 
-    ActionMap actions = new ActionMap();
+    ActionMap actionMap = new ActionMap();
     
     
     // private JComponent mainPane = null; // navSplit or consoleSplit or viewer.comp
-    private JComponent component = null;
+    private JComponent main = null;
     private JComponent statusBar = null;
     private List<JToolBar> toolBars = Collections.emptyList();
     final JSplitPane consoleSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -139,8 +141,8 @@ public class MenuFrame extends JFrame {
      * @return The {@code component} for this View
      * @see #setComponent
      */
-    public JComponent getComponent() {
-        return component;
+    public JComponent getMain() {
+        return main;
     }
 
     /**
@@ -151,22 +153,22 @@ public class MenuFrame extends JFrame {
      * <p>
      * This is a bound property.  The default value is null.
      *
-     * @param component The {@code component} for this View
+     * @param pComponent The {@code component} for this View
      * @see #getComponent
      */
-    public void setComponent(JComponent pComponent) {
-        Component oldValue = this.component;
-        component = pComponent;
+    public void setMain(JComponent pComponent) {
+        Component oldValue = this.main;
+        main = pComponent;
         
         if (isConsoleVisible()) {
-            consoleSplit.setTopComponent(component);
+            consoleSplit.setTopComponent(main);
         } else if (navigation != null) {
-            navSplit.setRightComponent(component);
+            navSplit.setRightComponent(main);
         } else {
-            replaceContentPaneChild(component, BorderLayout.CENTER);
+            replaceContentPaneChild(main, BorderLayout.CENTER);
         }
 
-        firePropertyChange(COMPONENT_PROP, oldValue, component);
+        firePropertyChange(MAIN_PROP, oldValue, main);
     }
     
     
@@ -261,7 +263,7 @@ public class MenuFrame extends JFrame {
 
 
         if (visible) { // showConsole
-            consoleSplit.setTopComponent(component);
+            consoleSplit.setTopComponent(main);
             if (navigation != null) {
                 navSplit.setLeftComponent(consoleSplit);
             } else { // (mainPane == viewer.comp)
@@ -271,9 +273,9 @@ public class MenuFrame extends JFrame {
         } else { // hideConsole
             consoleDivLoc = consoleSplit.getDividerLocation();
             if (navigation != null) {
-                navSplit.setLeftComponent(component);
+                navSplit.setLeftComponent(main);
             } else { // (mainPane == viewedPane)
-                replaceContentPaneChild(component, BorderLayout.CENTER);
+                replaceContentPaneChild(main, BorderLayout.CENTER);
             }
         }
         validate();
@@ -284,7 +286,7 @@ public class MenuFrame extends JFrame {
     }
     
 
-    public void help() {
+    public void showHelp() {
         URL help = SwingHelper.getDefaultResource(app, "help", "README");
         JOptionPane option;
         if (help != null) {
@@ -305,7 +307,7 @@ public class MenuFrame extends JFrame {
         app.show(this, "help", option);
     }
     
-    public void about() {
+    public void showAbout() {
         app.show(this, "about", new AboutPane(app));        
     }
 
@@ -455,8 +457,8 @@ public class MenuFrame extends JFrame {
      *
      * @return the actions
      */
-    public ActionMap getActions() {
-        return actions;
+    public ActionMap getActionMap() {
+        return actionMap;
     }
 
 } // endclass StudioFrame

@@ -5,10 +5,6 @@
 package org.mypsycho.swing.layout;
 
 /**
- * <p>Titre : </p>
- * <p>Description : </p>
- * <p>Copyright : Copyright (c) 2003</p>
- * <p>Société : </p>
  * @author PERANSIN Nicolas
  * @version 1.0
  */

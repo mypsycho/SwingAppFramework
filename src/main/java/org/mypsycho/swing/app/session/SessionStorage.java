@@ -160,7 +160,7 @@ public class SessionStorage {
 	 * {@code SessionStorage} object.
 	 * @return the application context for this session storage object
 	 */
-    protected final ApplicationContext getContext() {
+    public final ApplicationContext getContext() {
         return context;
     }
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
 import java.awt.BorderLayout;
@@ -25,12 +29,9 @@ import org.mypsycho.swing.app.View;
 
 
 /**
- * <p>Titre : </p>
- * <p>Description : </p>
- * <p>Copyright : Copyright (c) 2003</p>
- * <p>Company : </p>
+ * 
+ * 
  * @author PERANSIN Nicolas
- * @version 1.0
  */
 // NOTE: Surprisingly, 'menu bar' property is 'JMenuBar' not 'jMenuBar'
 @Inject(order={ "actions", "JMenuBar", "menuBar", "pageMenuOffset"})
@@ -307,7 +308,7 @@ public class PagedFrame extends MenuFrame {
      */ 
     public PagedFrame(Application pApp) {
         super(pApp);
-        setComponent(viewer.comp);
+        setMain(viewer.comp);
     }
 
     // public Frame getFrame() { return this; }
@@ -420,7 +421,7 @@ public class PagedFrame extends MenuFrame {
         viewer = (visible) ? tabsViewer : plainViewer;
         dirty = true;
         
-        setComponent(viewer.comp);
+        setMain(viewer.comp);
         int index = 0;
         for (Page p : pages) {
             viewer.insert(p, index);

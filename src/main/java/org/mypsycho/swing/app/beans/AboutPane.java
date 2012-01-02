@@ -1,7 +1,10 @@
+/*
+ * Copyright (C) 2011 Peransin Nicolas. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.beans;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -21,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.TableColumnModel;
 
 import org.mypsycho.swing.app.Application;
@@ -30,10 +34,8 @@ import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
- * <p>Titre : </p>
- * <p>Description : </p>
- * <p>Copyright : Copyright (c) 2003</p>
- * <p>Société : </p>
+ *
+ *
  * @author PERANSIN Nicolas
  * @version 1.0
  */
@@ -114,11 +116,11 @@ public class AboutPane extends JOptionPane {
             // Note : Style BOLD or PLAIN depends of LNF. 
             // We force the difference to make clearer.
             JLabel name = new JLabel(labels.get(label));
-            name.setFont(name.getFont().deriveFont(Font.BOLD));
             names.add(name);
             String text = app.getProperty(label);
-            JLabel value = new JLabel(text != null ? text : " ", JLabel.LEADING);
-            value.setFont(name.getFont().deriveFont(Font.PLAIN));
+            JTextField value = new JTextField(text != null ? text : " ", JLabel.LEADING);
+            value.setEditable(false);
+            value.setBorder(null);
             values.add(value);
         }
         h.back().back();

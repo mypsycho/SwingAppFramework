@@ -14,7 +14,7 @@ import java.util.List;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public abstract class AbstractTypeConverter implements TypeConverter {

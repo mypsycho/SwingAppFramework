@@ -18,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mypsycho.beans.converter.TypeConverter;
+import org.mypsycho.swing.app.beans.ApplicationAction;
 import org.mypsycho.swing.app.beans.TaskMonitor;
 import org.mypsycho.swing.app.beans.TextActions;
 import org.mypsycho.swing.app.os.Plateform;
@@ -102,6 +103,12 @@ public class ApplicationContext extends SwingBean {
     }
 
 
+    void assertCompatible(String name, ApplicationContext context) throws IllegalArgumentException {
+        if (context != this) {
+            throw new IllegalArgumentException("Property " + name 
+                    + " must be bound to this context");
+        }
+    }
     
     private void updateLocaleSharedContext() {
         for (Object shared : localeShareds) {
@@ -121,9 +128,9 @@ public class ApplicationContext extends SwingBean {
          */
         plateform = Plateform.identification.getInstance(plateformStrategy).getPlateform();
         try {
-            plateform.getHook().prepare(getApplication());
+            plateform.getHook().init(getApplication());
         } catch (IllegalStateException e) {
-            application.exceptionThrown(Level.SEVERE, plateform, "Plateform preparation failed", e);
+            application.exceptionThrown(Level.SEVERE, plateform, "Plateform initialization failed", e);
         }
     }
 
@@ -139,7 +146,7 @@ public class ApplicationContext extends SwingBean {
         String packageName = "noPackage";
         if (appClass.getPackage() != null) {
             packageName = appClass.getPackage().getName();
-        } // else : naughty boy !!
+        } // else no package : naughty boy !!
         resourceManager.addGlobal(ENV_PREFIX + "AppClassName", simpleName);
         if (TRIM_SUFFIX.equals(simpleName)) {
             int lastPart = packageName.lastIndexOf('.');
@@ -216,8 +223,9 @@ public class ApplicationContext extends SwingBean {
      * @see #getResourceManager
      */
     protected void setResourceManager(ResourceManager resourceManager) {
-        
         SwingHelper.assertNotNull(RESOURCE_MANAGER_PROPERTY, resourceManager);
+        assertCompatible(RESOURCE_MANAGER_PROPERTY, resourceManager.getContext());
+
         Object oldValue = this.resourceManager;
         this.resourceManager = resourceManager;
         firePropertyChange(RESOURCE_MANAGER_PROPERTY, oldValue, this.resourceManager);
@@ -242,6 +250,7 @@ public class ApplicationContext extends SwingBean {
      */
     protected void setLocalStorage(LocalStorage localStorage) {
         SwingHelper.assertNotNull(LOCAL_STORAGE_PROPERTY, localStorage);
+        assertCompatible(LOCAL_STORAGE_PROPERTY, localStorage.getContext());
         Object oldValue = this.localStorage;
         this.localStorage = localStorage;
         firePropertyChange(LOCAL_STORAGE_PROPERTY, oldValue, this.localStorage);
@@ -263,6 +272,7 @@ public class ApplicationContext extends SwingBean {
      */
     protected void setSessionStorage(SessionStorage sessionStorage) {
         SwingHelper.assertNotNull(SESSION_STORAGE_PROPERTY, sessionStorage);
+        assertCompatible(SESSION_STORAGE_PROPERTY, sessionStorage.getContext());
         Object oldValue = this.sessionStorage;
         this.sessionStorage = sessionStorage;
         firePropertyChange(SESSION_STORAGE_PROPERTY, oldValue, this.sessionStorage);

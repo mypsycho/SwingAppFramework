@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2011 Nicolas Peransin. All rights reserved.
+ * Use is subject to license terms.
+ */
 package org.mypsycho.swing.app.reflect;
 
 import java.lang.reflect.Method;
@@ -126,8 +130,8 @@ public class BorderConverter extends AbstractTypeConverter {
 
         for (int i = 1; i < invocation.size(); i++) {
             String arg = invocation.get(i);
-            while ((arg.charAt(0) == '(') && (arg.charAt(arg.length() - 1) == ')')) {
-                arg = arg.substring(0, arg.length() - 1);
+            if ((arg.charAt(0) == '(') && (arg.charAt(arg.length() - 1) == ')')) {
+                arg = arg.substring(1, arg.length() - 1);
             }
             invocation.set(i, arg);
         }

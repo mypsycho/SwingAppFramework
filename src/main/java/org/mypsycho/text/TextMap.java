@@ -4,6 +4,7 @@
  */
 package org.mypsycho.text;
 
+import java.awt.Component;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,9 +48,43 @@ public class TextMap extends HashMap<String, String> {
         abstract String prefix(Enum<?> e);
     }
     
-    Locale locale = Locale.getDefault();
+    final Localized source;
+    Locale locale = null;
     EnumPrefix prefix = EnumPrefix.none;
     
+    
+    public TextMap(final Component src) {
+        this(EnumPrefix.none, new Localized() {
+            @Override
+            public Locale getLocale() {
+                return src.getLocale();
+            }
+        });
+    }
+    
+    public TextMap(Localized src) {
+        this(EnumPrefix.none, src);
+    }
+
+    public TextMap(EnumPrefix p, Localized src) {
+        prefix = p;
+        source = src;
+    }
+    
+    public TextMap() {
+        this(Locale.getDefault());
+    }
+    
+    public TextMap(Locale locale) {
+        this(EnumPrefix.none, locale);
+    }
+    
+    public TextMap(EnumPrefix p, Locale locale) {
+        this(p, (Localized) null);
+        this.locale = locale;
+    }
+
+
     /* (non-Javadoc)
      * @see java.util.HashMap#get(java.lang.Object)
      */
@@ -70,13 +105,13 @@ public class TextMap extends HashMap<String, String> {
             key = prefix.prefix(e) + e.name();  
         }
         String result = super.get(key);
-        if (result != null) {
-            return new MessageFormat(result, locale).format(args);
-        } else {
-            return key + Arrays.toString(args);
-        }
+        return (result != null) ? format(result, args) : key + Arrays.toString(args);
     }
 
+    
+    protected String format(String format, Object[] args) {
+        return new MessageFormat(format, getLocale()).format(args);
+    }
     
     /**
      * Returns the locale.
@@ -84,7 +119,7 @@ public class TextMap extends HashMap<String, String> {
      * @return the locale
      */
     public Locale getLocale() {
-        return locale;
+        return source != null ? source.getLocale() : locale;
     }
 
     
@@ -96,6 +131,8 @@ public class TextMap extends HashMap<String, String> {
     public void setLocale(Locale locale) {
         if (locale == null) {
             throw new NullPointerException();
+        } else if (source != null) {
+            throw new IllegalStateException("TextMap is bound to a source");
         }
         this.locale = locale;
     }
@@ -106,7 +143,7 @@ public class TextMap extends HashMap<String, String> {
      *
      * @return the prefix
      */
-    public EnumPrefix getPrefix() {
+    public EnumPrefix getEnumPrefix() {
         return prefix;
     }
 
@@ -116,7 +153,7 @@ public class TextMap extends HashMap<String, String> {
      *
      * @param prefix the prefix to set
      */
-    public void setPrefix(EnumPrefix prefix) {
+    public void setEnumPrefix(EnumPrefix prefix) {
         if (prefix == null) {
             throw new NullPointerException();
         }

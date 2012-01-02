@@ -13,7 +13,7 @@ import java.util.Map;
  * Class for ...
  * <p>Details</p>
  *
- * @author Nicolas
+ * @author Peransin Nicolas
  *
  */
 public final class InjectionContext implements Cloneable {

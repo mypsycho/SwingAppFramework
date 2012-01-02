@@ -32,7 +32,8 @@ import org.mypsycho.util.PropertiesLoader;
 public class Injector extends PropertyUtilsBean {
 
     public static final String LOCALE_PROPERTY = "locale";
-    public static final String DEFAULT_DEPRECATED_TAG = "***@deprecated@***";
+    public static final String DEFAULT_DEPRECATED_TAG = "@deprecated";
+    public static final String DEFAULT_NULL_TAG = "@null";
 
     // For convience, we ignore warning from attribute with upper-cased initial.
     // It is a common way to distingue constant from attribute.
@@ -70,6 +71,7 @@ public class Injector extends PropertyUtilsBean {
 
     private PropertiesLoader valuesLoader = DEFAULT_LOADER;
     private String deprecated = DEFAULT_DEPRECATED_TAG;
+    private String nullTag = DEFAULT_NULL_TAG;
     
     public Injector() {
         ((FastHashMap) descriptors).setFast(true);
@@ -276,6 +278,30 @@ public class Injector extends PropertyUtilsBean {
             throw new NullPointerException();
         }
         this.deprecated = deprecated;
+        clearDescriptors();
+    }
+
+    
+    /**
+     * Returns the nullTag.
+     *
+     * @return the nullTag
+     */
+    public String getNullTag() {
+        return nullTag;
+    }
+
+    
+    /**
+     * Sets the nullTag.
+     *
+     * @param nullTag the nullTag to set
+     */
+    public void setNullTag(String nullTag) {
+        if (nullTag == null) {
+            throw new NullPointerException();
+        }
+        this.nullTag = nullTag;
         clearDescriptors();
     }
 }

@@ -19,13 +19,16 @@ public class FrameView extends View {
 
     public FrameView(Application application) {
         super(application);
-        register(CLOSE_LISTENER);
+        super.register(CLOSE_LISTENER);
     }
     
     public FrameView(Application application, JFrame f) {
         this(application, MAIN_FRAME_NAME, f);
     }
     
+    public FrameView(Application application, String name) {
+        this(application, name, new JFrame());
+    }
     
     public FrameView(Application application, String name, JFrame f) {
         this(application);

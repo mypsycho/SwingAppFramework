@@ -44,6 +44,7 @@ public class CheckTree extends JTree {
     public CheckTree(CheckTreeModel newModel) {
         super(newModel);
         
+        
         setCellRenderer(new DefaultCheckTreeCellRenderer());
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent event) {
