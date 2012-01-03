@@ -9,11 +9,17 @@ API has changed, starting with the package name, so migration (and new design)
 is required. I hope the client code will be significantly reduced once 
 migration perform.
 
-The main idea are:
+The main ideas are:
 
 - No need to invoke resource manager in most case :
-  as a component enters in the hierarchie of view, the resource manage is automatically
-  called. If the Locale of the component is changed, the content is also updated.
+  as a component enters in the hierarchy of an application view, the resource 
+  manage is automatically called. 
+  If the Locale of the component is changed, the content is also updated.
+  
+- Locale is automatically propagated :
+  In AWT, locale is propagate from parent to child
+  In Swing, locale is specific to all components. With application in 
+  multi-language, it may be a nightmare.
   
 - Properties descriptions support nested properties, beans are created by reflection.
   Arrays and maps are supported (see Apache common-beans)
@@ -27,19 +33,31 @@ The main idea are:
   icons[1] = ko.png
   icons[2] = abort.png
   # Create an array of 3 icons when the property is typed as Icon[] using the 
-  #   containing class as relative path
+  #   containing object class as relative path
 
-- No need to declare actions (except for advanced usage) in bean, use on
+- No need to declare actions with annotation (except for advanced usage) in bean, 
+  simply use property descriptors to reference a method in an action property.
 
-- MenuBar and Popup Menu can fully defined in properties file
+- MenuBar and Popup Menu can be fully defined in properties file.
 
-- Application lifecycle are modifiable et extensible
+- Application lifecycles are modifiable and extensible.
 
-- View strategies are not bound to a type of Application but can be shared
+- View strategies are not bound to a class of Application but can be shared.
 
-- Resource syntax is extensible
+- Property interpretation syntax is extensible, modifiable.
 
- 
+- A lot of annoying details have been cleaned: 
+   Strategy for Plateform type, 
+
+- Contains some nice components (Tree Table, CheckBox Tree, auto-fireAction text field)
+
+To be improved:
+- Comments are all obsolete.
+- Error management in TaskService (and application in general)
+- Migrate all examples
+- Improve property syntax to have a better reference mechanism (maybe a reflection call) 
+- No JUnit
+- ...
 
 
 The code is organized as a Maven project and it's been built for
