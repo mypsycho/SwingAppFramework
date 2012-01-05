@@ -1,9 +1,8 @@
-
 /*
- * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
- * subject to license terms.
+ * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. 
+ * Copyright (C) 2011 Peransin Nicolas.
+ * Use is subject to license terms.
  */ 
-
 package examples;
 
 import java.awt.BorderLayout;
@@ -17,30 +16,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 
-import javax.swing.ActionMap;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationContext;
+import org.mypsycho.swing.app.ApplicationListener;
+import org.mypsycho.swing.app.FrameView;
 import org.mypsycho.swing.app.SingleFrameApplication;
-import org.mypsycho.swing.app.beans.TaskMonitor;
 import org.mypsycho.swing.app.task.Task;
 import org.mypsycho.swing.app.task.Task.BlockingScope;
 import org.mypsycho.swing.app.task.Task.InputBlocker;
+import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
@@ -94,102 +89,53 @@ import org.mypsycho.swing.app.task.Task.InputBlocker;
  * @see TaskMonitor
  * @see StatusBar
  */
-
 public class BlockingExample1 extends SingleFrameApplication {
 
-    private JFrame mainFrame = null;
+
     private StatusBar statusBar = null;
     private BusyIndicator busyIndicator = null;
 
     @Override protected void startup() {
+        
+        
+        
         statusBar = new StatusBar(this, getContext().getTaskMonitor());
         busyIndicator = new BusyIndicator();
-        mainFrame = getMainFrame();
-        mainFrame.setJMenuBar(createMenuBar());
-        mainFrame.add(createToolBar(), BorderLayout.NORTH);
-        mainFrame.add(createMainPanel(), BorderLayout.CENTER);
-        mainFrame.add(statusBar, BorderLayout.SOUTH);
-        mainFrame.setGlassPane(busyIndicator);
-        show(mainFrame);
+        
+        // A MenuFrame is a better choice for an more realistic application
+        JFrame f = new JFrame(); // frame.name is set 
+        f.setGlassPane(busyIndicator);
+        
+        SwingHelper h = new SwingHelper(f);
+        h.add("toolbar", new JToolBar(), BorderLayout.PAGE_START);
+        h.with("body", new BorderLayout(), BorderLayout.CENTER)
+            .add("space", new JSeparator(), BorderLayout.PAGE_START)
+            .with("buttons", new FlowLayout(FlowLayout.CENTER), BorderLayout.CENTER)
+                .add("action", new JButton())
+                .add("component", new JButton())
+                .add("window", new JButton())
+                .add("application", new JButton())
+                .back()
+           .back();
+        h.add("status", statusBar, BorderLayout.PAGE_END);
+
+        
+        show(new FrameView(this, f));
     }
 
-    private ActionMap actionMap() {
-        return getContext().getActionMap();
-    }
 
-    private JMenu createMenu(String menuName, String[] actionNames) {
-        JMenu menu = new JMenu();
-        menu.setName(menuName);
-        for (String actionName : actionNames) {
-            JMenuItem menuItem = new JMenuItem();
-            menuItem.setAction(actionMap().get(actionName));
-            menu.add(menuItem);
-        }
-        return menu;
-    }
-
-    private JMenuBar createMenuBar() {
-        String[] demoMenuActionNames = {
-                "blockAction",
-                "blockComponent",
-                "blockApplication",
-                "blockWindow",
-                "quit"
-        };
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(createMenu("demoMenu", demoMenuActionNames));
-        return menuBar;
-    }
-
-    private JComponent createToolBar() {
-        String[] toolbarActionNames = {
-                "blockAction",
-                "blockComponent",
-                "blockApplication",
-                "blockWindow",
-        };
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        for (String actionName : toolbarActionNames) {
-            JButton button = new JButton();
-            button.setRequestFocusEnabled(false);
-            button.setAction(actionMap().get(actionName));
-            button.setVerticalTextPosition(JButton.BOTTOM);
-            button.setHorizontalTextPosition(JButton.CENTER);
-            button.setName(actionName + "ToolBarButton");
-            toolBar.add(button);
-        }
-        return toolBar;
-    }
-
-    private JComponent createMainPanel() {
-        JButton actionButton = new JButton(actionMap().get("blockAction"));
-        JButton componentButton = new JButton(actionMap().get("blockComponent"));
-        JButton applicationButton = new JButton(actionMap().get("blockApplication"));
-        JButton windowButton = new JButton(actionMap().get("blockWindow"));
-        JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
-        panel1.add(actionButton);
-        panel1.add(componentButton);
-        panel1.add(applicationButton);
-        panel1.add(windowButton);
-        JPanel panel2 = new JPanel(new BorderLayout());
-        panel2.add(new JSeparator(), BorderLayout.NORTH);
-        panel2.add(panel1, BorderLayout.CENTER);
-        panel2.setBorder(new EmptyBorder(0, 2, 0, 2)); // top, left, bottom, right
-        return panel2;
-    }
 
     /* Progress is interdeterminate for the first 150ms, then
      * run for another 7500ms, marking progress every 150ms.
      */
     private class DoNothingTask extends Task<Void, Void> {
         DoNothingTask() {
-            setUserCanCancel(true);
+            setUserCancellable(true);
         }
         @Override 
         protected Void doInBackground() throws InterruptedException {
             for(int i = 0; i < 50; i++) {
-                setMessage("Working... [" + i + "]");
+                message("step", i);
                 Thread.sleep(150L);
                 setProgress(i, 0, 49);
             }
@@ -197,10 +143,10 @@ public class BlockingExample1 extends SingleFrameApplication {
             return null;
         }
         @Override protected void succeeded(Void ignored) {
-            setMessage("Done");
+            message("succeeded");
         }
         @Override protected void cancelled() {
-            setMessage("Canceled");
+            message("cancelled");
         }
 
     }
@@ -228,7 +174,10 @@ public class BlockingExample1 extends SingleFrameApplication {
     }
 
     public static void main(String[] args) {
-        new BlockingExample1().launch(args);
+        Application app = new BlockingExample1();
+        
+        app.addApplicationListener(ApplicationListener.console);        
+        app.launch(args);
     }
 
     /* This component is intended to be used as a GlassPane.  It's
@@ -312,10 +261,12 @@ public class BlockingExample1 extends SingleFrameApplication {
         BusyIndicatorInputBlocker(Task<?,?> task) {
             super(task, Task.BlockingScope.WINDOW, busyIndicator);
         }
-        @Override protected void block() {
+        @Override 
+        protected void block() {
             busyIndicator.start();
         }
-        @Override protected void unblock() {
+        @Override 
+        protected void unblock() {
             busyIndicator.stop();
         }
     }

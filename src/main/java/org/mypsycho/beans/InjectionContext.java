@@ -90,7 +90,7 @@ public final class InjectionContext implements Cloneable {
         Injection property = injection.getPath(path, false);
         if (property != null) { // some properties defined
             Class<?> collectedType = injector.getInvoker().getCollectedType(value.getClass());
-            injection.injectChildren(collectedType, value, clone());
+            property.injectChildren(collectedType, value, clone());
         }
     }
 
@@ -106,4 +106,12 @@ public final class InjectionContext implements Cloneable {
         return injection.getLocale();
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return injection.toString();
+    }
+    
 }

@@ -17,32 +17,43 @@ import java.util.List;
  */
 public class InjectionStack {
 
+
+    // Usually injectable have Class context and 1 parent context
+    // Several redefinition layer are not easyly maintenable
+    List<InjectionContext> contexts = new ArrayList<InjectionContext>(2);
     Object value;
 
     public InjectionStack(Object target) {
         value = target;
     }
 
-    // Usually injectable have Class context and 1 parent context
-    List<InjectionContext> contexts = new ArrayList<InjectionContext>(2);
 
-    public void addContext(InjectionContext context) {
+    public synchronized void addContext(InjectionContext context) {
         if (context.getParent() != value) {
             throw new IllegalArgumentException("Injection context cannot be shared");
         }
         contexts.add(context);
     }
 
-    public void clear() {
+    public synchronized void clear() {
         contexts.clear();
     }
+    
+    public synchronized boolean isEmpty() {
+        return contexts.isEmpty();
+    }
 
-    public void inject(String path, Object value) {
-        List<InjectionContext> oldContexts = contexts;
-
-        contexts = new ArrayList<InjectionContext>(oldContexts.size());
-        for (InjectionContext context : oldContexts) {
+    public synchronized void inject(String path, Object value) {
+        for (InjectionContext context : contexts) {
             context.inject(path, value);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return !isEmpty() ? contexts.get(0).toString() : super.toString();
     }
 }

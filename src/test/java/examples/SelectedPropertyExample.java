@@ -7,8 +7,9 @@ package examples;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
+import java.util.EventObject;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -66,7 +67,8 @@ public class SelectedPropertyExample extends SingleFrameApplication {
     }
 
     @Action(selectedProperty = "selected") 
-    public void toggleAction(ActionEvent e) {
+    public void toggleAction(EventObject e, AbstractButton src) {
+        System.out.println(e.toString());
     }
 
     public boolean isSelected() { 

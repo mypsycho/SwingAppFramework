@@ -37,13 +37,29 @@ public interface ApplicationListener {
     void willExit(EventObject event);
 
     /**
-     * This method is called when a recoverable exception has
-     * been caught.
+     * This method is called when a recoverable exception has been caught.
      *
      * @param e The exception that was caught.
      */
     void exceptionThrown(Level level, Object id, String context, Throwable e);
 
+    
+    /**
+     * Called beafor a transition of an application. 
+     *
+     * @param life id of the lifecyle
+     * @param event trigger of the lifecyle 
+     */
+    void beforeCycle(String life, EventObject event);
+    
+    
+    /**
+     * Called beafor a transition of an application. 
+     *
+     * @param life id of the lifecyle
+     * @param event trigger of the lifecyle 
+     */
+    void afterCycle(String life, EventObject event, Exception failure);
 
     class Adapter implements ApplicationListener {
 
@@ -53,23 +69,27 @@ public interface ApplicationListener {
         }
 
         @Override
-        public void willExit(EventObject event) {
-        }
+        public void willExit(EventObject event) {}
 
         @Override
-        public void exceptionThrown(Level level, Object id, String context, Throwable t) {
-        }
+        public void exceptionThrown(Level level, Object id, String context, Throwable t) {}
 
+        @Override
+        public void beforeCycle(String life, EventObject event) {}
+
+        @Override
+        public void afterCycle(String life, EventObject event, Exception failure) {}
+
+        
+        
     }
 
     ApplicationListener console = new Adapter() {
 
         @Override
         public void exceptionThrown(Level level, Object id, String context, Throwable t) {
-            PrintStream stream = System.out;
-            if (Level.WARNING.intValue() <= level.intValue()) {
-                stream = System.err;
-            }
+            PrintStream stream = (Level.WARNING.intValue() <= level.intValue()) 
+                    ? System.err : System.out;
 
             stream.println(id + ":" + context);
             if (t != null) {

@@ -108,18 +108,18 @@ public class View extends SwingBean {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            Component comp = getRootPane();
-            if (comp.getParent() != null) {
-                comp = comp.getParent();
+            Component root = getRootPane();
+            if (root.getParent() != null) { // get the window
+                root = root.getParent();
             }
             
             Locale old = (Locale) evt.getOldValue();
-            if (Locales.isSwing(comp)) {
-                if (!Locales.isForced(comp)) {
-                    comp.setLocale(getApplication().getLocale());
+            if (Locales.isSwing(root)) {
+                if (!Locales.isForced(root)) {
+                    root.setLocale(getApplication().getLocale());
                 }
-            } else if (old.equals(comp.getLocale())) {
-                comp.setLocale(getApplication().getLocale());
+            } else if (old.equals(root.getLocale())) {
+                root.setLocale(getApplication().getLocale());
             }
             
         }
@@ -178,6 +178,27 @@ public class View extends SwingBean {
         }
     }
 
+    /**
+     * Insert the window into the component manager
+     * <p>
+     * By default, inject the context of the application. This method can be 
+     * overriden to inject context.
+     * </p>
+     *
+     * @param window
+     */
+    protected void injectProperties(Window window) {
+        // Structural injection
+        getContext().getComponentManager().register(window);
+
+        // Contextual injection
+        String viewName = getViewProperty(window);
+        if (viewName != null) {
+            getContext().getResourceManager().inject(getApplication(), window.getLocale(),
+                    viewName, window);
+        }
+    }
+    
     protected void manage() {
         JComponent root = getRootPane();
         // These initializations are only done once
@@ -249,7 +270,7 @@ public class View extends SwingBean {
      * @param windowName
      * @return
      */
-    private String getViewProperty(Window window) {
+    protected String getViewProperty(Window window) {
         if (window == null) {
             return null;
         }

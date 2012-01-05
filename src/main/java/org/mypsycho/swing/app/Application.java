@@ -323,9 +323,24 @@ public abstract class Application extends SwingBean implements Injectable, Local
     }
     
     protected final void doLifecycle(String life, EventObject event) throws Exception {
-        for (LifecycleStep step : getLifecycleStep(life)) {
-            setState(step.getId());
-            step.run(Application.this, event);
+        for (ApplicationListener listener : listeners) {
+            listener.beforeCycle(life, event);
+        }
+        
+        Exception failure = null;
+        try {
+            for (LifecycleStep step : getLifecycleStep(life)) {
+                setState(step.getId());
+                step.run(Application.this, event);
+            }
+        } catch (Exception t) {
+            failure = t;
+            throw t;
+            
+        } finally {
+            for (ApplicationListener listener : listeners) {
+                listener.afterCycle(life, event, failure);
+            }
         }
     }
 
@@ -448,7 +463,7 @@ public abstract class Application extends SwingBean implements Injectable, Local
         }
     }
 
-    public void initResouces(InjectionContext context) {
+    public void initResources(InjectionContext context) {
         properties.putAll(context.getRootContext());
     }
 
@@ -646,6 +661,7 @@ public abstract class Application extends SwingBean implements Injectable, Local
             return; // Already exiting, further request are ignored
         }
         
+        // 
         for (ApplicationListener listener : listeners) {
             if (!listener.canExit(event)) {
                 return;
@@ -877,7 +893,7 @@ public abstract class Application extends SwingBean implements Injectable, Local
         }
         
         option.selectInitialValue(); // ?? Values may not be defined 
-        show(new View(this, dialog.getRootPane()));
+        show(new OptionView(this, dialog, parent));
         dialog.dispose();
 
         return option.getValue();

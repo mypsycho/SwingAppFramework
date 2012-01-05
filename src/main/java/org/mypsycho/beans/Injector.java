@@ -48,6 +48,8 @@ public class Injector extends PropertyUtilsBean {
 
     Locale locale = Locale.getDefault();
     ConverterContainer converter = new ConverterContainer();
+    
+    InjectionTemplate template = new InjectionTemplate();
 
 
     ExceptionListener exceptionHandler = null;
@@ -304,4 +306,30 @@ public class Injector extends PropertyUtilsBean {
         this.nullTag = nullTag;
         clearDescriptors();
     }
+
+    
+    /**
+     * Returns the template.
+     *
+     * @return the template
+     */
+    public InjectionTemplate getTemplate() {
+        return template;
+    }
+
+    
+    /**
+     * Sets the template.
+     *
+     * @param template the template to set
+     */
+    public void setTemplate(InjectionTemplate template) {
+        if (template == null) {
+            throw new NullPointerException();
+        }
+        this.template = template;
+        clearDescriptors();
+    }
+    
+    
 }

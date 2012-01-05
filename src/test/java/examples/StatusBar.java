@@ -1,8 +1,8 @@
 /*
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (C) 2011 Peransin Nicolas.
  * Use is subject to license terms.
- */ 
-
+ */
 package examples;
 
 import java.awt.GridBagConstraints;
@@ -19,31 +19,26 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.beans.TaskMonitor;
 import org.mypsycho.swing.app.task.Task;
 
-
-
 /**
- * A StatusBar panel that tracks a TaskMonitor.  Although one could certainly
- * create a more elaborate StatusBar class, this one is sufficient for the 
- * examples that need one.
- * <p>
- * This class loads resources from the ResourceBundle called
- * {@code resources.StatusBar}.
- * 
+ * A StatusBar panel that tracks a TaskMonitor.
+ * </p>
+ * Although one could certainly create a more elaborate StatusBar class, 
+ * this one is sufficient for the examples that need one.
+ * </p>
  */
 public class StatusBar extends JPanel implements PropertyChangeListener {
-    private final Insets zeroInsets = new Insets(0,0,0,0);
-    private final JLabel messageLabel;
-    private final JProgressBar progressBar;
-    private final JLabel statusAnimationLabel;
+    private static final Insets ZERO_INSET = new Insets(0,0,0,0);
+    private final JLabel messageLabel = new JLabel() ;
+    private final JProgressBar progressBar = new JProgressBar(0, 100);
+    private final JLabel statusAnimationLabel = new JLabel();
 
-    private final Timer messageTimer;
-    private final Timer busyIconTimer;
+    private final Timer messageTimer = new Timer(5000, new ClearOldMessage());
+    private final Timer busyIconTimer = new Timer(50, new UpdateBusyIcon());
     private Icon idleIcon;
     private final Icon[] busyIcons = new Icon[15];
     // private int busyAnimationRate;
@@ -58,16 +53,8 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
      */
     public StatusBar(Application app, TaskMonitor taskMonitor) {
         super(new GridBagLayout());
-        setBorder(new EmptyBorder(2, 0, 6, 0)); // top, left, bottom, right
-        messageLabel = new JLabel();
-        progressBar = new JProgressBar(0, 100);
-        statusAnimationLabel = new JLabel();
 
-        messageTimer = 	new Timer(5000, new ClearOldMessage()); 
         messageTimer.setRepeats(false);
-
-
-        busyIconTimer = new Timer(50, new UpdateBusyIcon());
         progressBar.setEnabled(false);
         statusAnimationLabel.setIcon(idleIcon);
 
@@ -113,6 +100,9 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
      */
     public void setIdleIcon(Icon idleIcon) {
         this.idleIcon = idleIcon;
+        if (statusAnimationLabel.getIcon() == null) {
+            statusAnimationLabel.setIcon(idleIcon);
+        }
     }
 
     public void setMessage(String s) {
@@ -127,7 +117,7 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridx = GridBagConstraints.RELATIVE;
         c.gridy = GridBagConstraints.RELATIVE;
-        c.insets = zeroInsets;
+        c.insets = ZERO_INSET;
         c.ipadx = 0;
         c.ipady = 0;
         c.weightx = 0.0;

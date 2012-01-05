@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -29,7 +27,6 @@ import org.mypsycho.swing.app.SwingBean;
 import org.mypsycho.swing.app.beans.ApplicationAction;
 import org.mypsycho.swing.app.utils.SwingHelper;
 import org.mypsycho.text.Localized;
-import org.mypsycho.text.StringMap;
 import org.mypsycho.text.TextMap;
 
 
@@ -145,8 +142,6 @@ import org.mypsycho.text.TextMap;
  */
 public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized {
 
-    private static final Logger logger = Logger.getLogger(Task.class.getName());
-
     public static final String STATE_PROP = "state"; // As defined in SwingWorker
     public static final String PROGRESS_PROP = "progress"; // As defined in SwingWork
     public static final String PROP_DESCRIPTION = "description";
@@ -154,7 +149,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
     public static final String MESSAGE_PROP = "message";
     public static final String PROP_TASKSERVICE = "taskService";
     public static final String PROP_TITLE = "title";
-    public static final String PROP_USERCANCANCEL = "userCanCancel";
+    public static final String USERCANCELLABLE_PROP = "userCancellable";
     public static final String PROP_COMPLETED = "completed";
     public static final String PROP_DONE = "done";
     public static final String PROP_STARTED = "started";
@@ -169,7 +164,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
     private String message = null;
     private long startTime = -1L;
     private long doneTime = -1L;
-    private boolean userCanCancel = true;
+    private boolean userCancellable = true;
     private boolean progressPropertyIsValid = false;
     private TaskService taskService = null;
     private volatile TextMap messages = null; // double-check lock
@@ -259,7 +254,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
      */
     protected TextMap createTextMap() { 
         // Change for 'new TextMap() if your
-        return new StringMap(this);
+        return new TextMap(this);
     }
 
     
@@ -497,11 +492,11 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
      * @see ResourceMap#getString(String, Object...)
      * @see java.text.MessageFormat
      */
-    protected void message(String messageKey, Object... args) {
+    protected void message(Object messageKey, Object... args) {
         if (messages != null) {
             setMessage(messages.get(messageKey, args));
         } else {
-            setMessage(messageKey);
+            setMessage(String.valueOf(messageKey));
         }
     }
 
@@ -533,8 +528,8 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
      * @return true if the user can cancel this Task.
      * @see #setUserCanCancel
      */
-    public synchronized boolean getUserCanCancel() {
-        return userCanCancel;
+    public synchronized boolean getUserCancellable() {
+        return userCancellable;
     }
 
     /**
@@ -554,14 +549,14 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
      * @param userCanCancel true if the user should be allowed to cancel this Task.
      * @see #getUserCanCancel
      */
-    protected void setUserCanCancel(boolean userCanCancel) {
+    protected void setUserCancellable(boolean userCanCancel) {
         boolean oldValue, newValue;
         synchronized (this) {
-            oldValue = this.userCanCancel;
-            this.userCanCancel = userCanCancel;
-            newValue = this.userCanCancel;
+            oldValue = this.userCancellable;
+            this.userCancellable = userCanCancel;
+            newValue = this.userCancellable;
         }
-        firePropertyChange(PROP_USERCANCANCEL, oldValue, newValue);
+        firePropertyChange(USERCANCELLABLE_PROP, oldValue, newValue);
     }
 
     /**
@@ -740,8 +735,15 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
      * @see #failed
      */
     protected void failed(Throwable cause) {
-        String msg = String.format("%s failed: %s", this, cause);
-        logger.log(Level.SEVERE, msg, cause);
+        TaskService service = getTaskService();
+        if (service != null) {
+            service.failed(this, cause);
+        } else {
+            System.err.println("Failure during " + this + " execution");
+            if (cause != null) {
+                cause.printStackTrace(System.err);
+            }
+        }
     }
 
     /**
@@ -1100,6 +1102,15 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
          */
         public Application getApplication() {
             return application;
+        }
+        
+        /**
+         * Returns the application.
+         *
+         * @return the application
+         */
+        public ApplicationContext getApplicationContext() {
+            return application.getContext();
         }
 
         /**

@@ -18,10 +18,12 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -33,35 +35,40 @@ import javax.swing.KeyStroke;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * Pane for blocking dialog.
+ * <p>
+ * FIXME: locale propagation is ignored
+ * </p>
  *
  * @author Peransin Nicolas
- *
  */
 public class InputBlockerPane extends JOptionPane {
 
-    Task<?, ?> task;
-    String progessMessage = "";
-
-    JButton cancelButton = null; // injected
-    JTextArea label = new JTextArea("Wait"); // injected
-    final JProgressBar progressBar = new JProgressBar();
-
     public static final String ON_ESCAPE_ACTION_KEY = "onEscape";
 
+    Task<?, ?> task;
+    String progessText = "";
+    String defaultMessage = ""; // overridden by task.message
+    String title = ""; // overridden by task.title
+    JButton cancelButton = null; // injected
+    JTextArea label = new JTextArea(); // Updated by task.message
+    final JProgressBar progressBar = new JProgressBar();
 
+    private static final Object[] NO_CANCEL_OPTION = new Object[0];
+    private static final KeyStroke ESCAPE_KEY = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    
     public InputBlockerPane(Task<?, ?> followed) {
-        setName("BlockingDialog.optionPane");
+        setName("blockingPane");
+
         task = followed;
 
         /*
          * If the task can be canceled, then add the cancel
          * button. Otherwise clear the default OK button.
          */
-        if (task.getUserCanCancel()) {
-            cancelButton = new JButton("Cancel");
-            cancelButton.setName("BlockingDialog.cancelButton");
+        if (task.getUserCancellable()) {
+            cancelButton = new JButton("Cancel"); // injected
+            cancelButton.setName("cancel");
             ActionListener doCancelTask = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ignore) {
@@ -71,12 +78,12 @@ public class InputBlockerPane extends JOptionPane {
             cancelButton.addActionListener(doCancelTask);
             setOptions(new Object[] { cancelButton });
         } else {
-            setOptions(new Object[] {}); // no OK button
+            setOptions(NO_CANCEL_OPTION); // no OK button
         }
 
 
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), ON_ESCAPE_ACTION_KEY);
+        InputMap inputs = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW); 
+        inputs.put(ESCAPE_KEY, ON_ESCAPE_ACTION_KEY);
 
         final List<String> boundProps = Arrays.asList("background", "font");
         addPropertyChangeListener(new PropertyChangeListener() {
@@ -93,7 +100,6 @@ public class InputBlockerPane extends JOptionPane {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.CENTER);
 
-        progressBar.setName("BlockingDialog.progressBar");
         progressBar.setIndeterminate(true);
         PropertyChangeListener taskPCL = new PropertyChangeListener() {
 
@@ -101,14 +107,15 @@ public class InputBlockerPane extends JOptionPane {
             public void propertyChange(PropertyChangeEvent e) {
                 if (Task.PROGRESS_PROP.equals(e.getPropertyName())) {
                     progressBar.setIndeterminate(false);
-                    progressBar.setValue((Integer) e.getNewValue());
-                    updateStatusBarString(progressBar);
+                    updateProgress();
                 } else if (Task.MESSAGE_PROP.equals(e.getPropertyName())) {
                     label.setText((String) e.getNewValue());
                 }
             }
         };
         task.addPropertyChangeListener(taskPCL);
+        label.setText(task.getMessage());
+
         panel.add(progressBar, BorderLayout.PAGE_END);
 
         /*
@@ -138,27 +145,25 @@ public class InputBlockerPane extends JOptionPane {
 
     /* Creates a dialog whose visuals are initialized from the
      * following Task resources:
-     * BlockingDialog.title
-     * BlockingDialog.optionPane.icon
-     * BlockingDialog.optionPane.message
-     * BlockingDialog.cancelButton.text
-     * BlockingDialog.cancelButton.icon
-     * BlockingDialog.progressBar.stringPainted
+     * inputBlocker.dialog.title
+     * inputBlocker.dialog.icon
+     * inputBlocker.dialog.defaultMessage
+     * inputBlocker.dialog.cancel.text
+     * inputBlocker.dialog.cancel.icon
+     * inputBlocker.dialog.progressBar.stringPainted
      *
      * If the Task has an Action then use the actionName as a prefix
      * and look up the resources again, in the action's ResourceMap
      * (that's the @Action's ApplicationActionMap ResourceMap really):
-     * actionName.BlockingDialog.title
-     * actionName.BlockingDialog.optionPane.icon
-     * actionName.BlockingDialog.optionPane.message
-     * actionName.BlockingDialog.cancelButton.text
-     * actionName.BlockingDialog.cancelButton.icon
-     * actionName.BlockingDialog.progressBar.stringPainted
+     * <action path>.task.inputBlocker.dialog.title
+     * <action path>.task.inputBlocker.dialog.icon
+     * <action path>.task.inputBlocker.dialog.defaultMessage
+     * <action path>.task.inputBlocker.dialog.cancel.text
+     * <action path>.task.inputBlocker.dialog.cancel.icon
+     * <action path>.task.inputBlocker.dialog.progressBar.stringPainted
      */
     public JDialog createDialog(Component dialogOwner) {
-
-        String taskTitle = task.getTitle();
-        String dialogTitle = (taskTitle == null) ? "BlockingDialog" : taskTitle;
+        String dialogTitle = (getTitle() != null) ? getTitle() : task.getTitle();
         final JDialog dialog =
                 createDialog((Component) findRootPaneContainer(dialogOwner), dialogTitle);
         dialog.setModal(true);
@@ -168,7 +173,7 @@ public class InputBlockerPane extends JOptionPane {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (task.getUserCanCancel()) {
+                if (task.getUserCancellable()) {
                     task.cancel(true);
                     dialog.setVisible(false);
                 }
@@ -183,33 +188,40 @@ public class InputBlockerPane extends JOptionPane {
 
 
     private Object[] messageArgs = null; // cache : update is in EDT, no synchro issue
-    private void updateStatusBarString(JProgressBar progressBar) {
+    private void updateProgress() {
+        if (progressBar.isIndeterminate()) {
+            return;
+        }
+        
+        progressBar.setValue(task.getProgress());
+        
         if (!progressBar.isStringPainted()) {
             return;
         }
 
-        if (progressBar.getValue() <= 0) {
+        if ((progressBar.getValue() <= 0) || (progessText == null)) {
             progressBar.setString("");
-        } else if (progessMessage == null) {
-            progressBar.setString(null);
         } else {
-            messageArgs = getMessageArgs(progressBar, messageArgs);
-            String s = String.format(progessMessage, messageArgs);
-            progressBar.setString(s);
+            messageArgs = getMessageArgs(messageArgs);
+            progressBar.setString(MessageFormat.format(progessText, messageArgs));
         }
     }
 
-    protected Object[] getMessageArgs(JProgressBar progressBar, Object[] previous) {
-        if (previous == null) {
-            previous = new Object[5];
+    protected Object[] getMessageArgs(Object[] cache) {
+        if (cache == null) {
+            cache = new Object[5];
         }
-        long pctComplete = progressBar.getValue();
+        long pctComplete = task.getProgress();
         long durSeconds = task.getExecutionDuration(TimeUnit.SECONDS);
-        double complete = pctComplete / 100.0;
-        long remSeconds = Math.round(durSeconds / complete) - durSeconds;
-        return new Object[] { durSeconds / 60, durSeconds % 60, // duration
-                remSeconds / 60, remSeconds % 60, // remaining
-                pctComplete }; // %
+
+        long remSeconds = Math.round(durSeconds * 100. / pctComplete) - durSeconds;
+        // Dirty approach for printable duration
+        cache[0] = durSeconds / 60; // elapsed duration 
+        cache[1] = durSeconds % 60;
+        cache[2] = remSeconds / 60; // Remaining duration
+        cache[3] = remSeconds % 60;
+        cache[4] = pctComplete;  // % complete
+        return cache;
     }
 
     /**
@@ -217,7 +229,7 @@ public class InputBlockerPane extends JOptionPane {
      *
      * @return the cancelButton
      */
-    public JButton getCancelButton() {
+    public JButton getCancel() {
         return cancelButton;
     }
 
@@ -228,6 +240,71 @@ public class InputBlockerPane extends JOptionPane {
      */
     public JProgressBar getProgressBar() {
         return progressBar;
+    }
+
+    
+    /**
+     * Returns the progessText.
+     *
+     * @return the progessText
+     */
+    public String getProgessText() {
+        return progessText;
+    }
+
+    
+    /**
+     * Sets the progessText.
+     *
+     * @param progessText the progessText to set
+     */
+    public void setProgessText(String progessText) {
+        this.progessText = progessText;
+        updateProgress();
+    }
+
+    
+    /**
+     * Returns the defaultLabel.
+     *
+     * @return the defaultLabel
+     */
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
+    
+    /**
+     * Sets the defaultLabel.
+     *
+     * @param defaultLabel the defaultLabel to set
+     */
+    public void setDefaultMessage(String defaultLabel) {
+        this.defaultMessage = defaultLabel;
+        if (label.getDocument().getLength() == 0) {
+            label.setText(defaultMessage);
+        }
+    }
+
+    
+    /**
+     * Returns the title.
+     *
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    
+    /**
+     * Sets the title.
+     *
+     * @param title the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title;
+        // No update, injection is performed before dialog creation
     }
 
 

@@ -42,18 +42,15 @@ public class Injection {
     Nature childrenNature = null;
 
 
-    // Key and definition are null at the root level
-    Nature nature = null;
 
-    Object id = null;
+    // Key and definition are null at the root level
+    final Injection parent;
+    final Nature nature;
+    final Object id;
 
     String definition = null; // How to create the value !
-
     int size = -1;
-
     Reference<?> cache = null;
-
-    Injection parent;
 
     public Injection(Injection descriptor, Nature kind, Object key) {
         parent = descriptor;
@@ -106,7 +103,19 @@ public class Injection {
         return child.getPath(tail, init);
     }
 
+    
+    
+    
+    /**
+     * Returns the parent.
+     *
+     * @return the parent
+     */
+    public Injection getParent() {
+        return parent;
+    }
 
+    
     /**
      * Returns the nature.
      *
@@ -114,6 +123,16 @@ public class Injection {
      */
     public Nature getNature() {
         return nature;
+    }
+
+    
+    /**
+     * Returns the id.
+     *
+     * @return the id
+     */
+    public Object getId() {
+        return id;
     }
 
     protected Injector getInjector() {
@@ -126,6 +145,10 @@ public class Injection {
 
     protected Invoker getInvoker() {
         return getInjector().getInvoker();
+    }
+
+    protected InjectDescriptor getDescriptor() {
+        return parent.getDescriptor();
     }
 
 
@@ -166,7 +189,11 @@ public class Injection {
      * @return
      */
     protected String compile() {
-
+        if (definition != null) {
+            expandTemplate();
+        }
+        
+        
         for (Iterator<Injection> iChild = children.iterator(); iChild.hasNext();) {
             Injection child = iChild.next();
             if (getInjector().getDeprecated().equals(child.definition)) {
@@ -217,6 +244,58 @@ public class Injection {
 
 
         return null;
+    }
+
+    /**
+     * Do something TODO.
+     * <p>Details of the function.</p>
+     *
+     */
+    private void expandTemplate() {
+        InjectionTemplate call = getInjector().getTemplate().parse(definition);
+        if (call == null) {
+            return;
+        }
+        Injection template = getDescriptor().getPath(call.getName(), false);
+        if (template != null) {
+            definition = call.getValue();
+            mergeTemplate(this, template, call);
+        }
+    }
+
+    /**
+     * Do something TODO.
+     * <p>Details of the function.</p>
+     *
+     * @param injection
+     * @param template
+     * @param call
+     */
+    private void mergeTemplate(Injection injection, Injection template, InjectionTemplate call) {
+        if (injection.definition == null) {
+            injection.definition = call.substitut(template.definition);
+        }
+        
+        if (template.children == null) {
+            return;
+        }
+        for (Injection child : template.children) {
+            String childPath = null;
+            switch (child.nature) {
+                case SIMPLE:
+                    childPath = (String) child.getId();
+                    break;
+                case INDEXED:
+                    childPath = "[" + child.getId() + "]";
+                    break;
+                case MAPPED:
+                    childPath = "(" + child.getId() + ")";
+                    break;
+                default:
+                    break;
+            }
+            mergeTemplate(injection.getPath(childPath, true), child, call);
+        }
     }
 
     public boolean isCollection() {
@@ -518,7 +597,7 @@ public class Injection {
         if (value instanceof Injectable) {
             // Nothing inject when no child
             // Useless to create a context for something null
-            ((Injectable) value).initResouces(context.clone());
+            ((Injectable) value).initResources(context.clone());
         }
         for (Injection child : injections) {
             child.inject(type, value, context);
@@ -565,5 +644,7 @@ public class Injection {
     public String toString() {
         return getCanonicalName() + ((definition != null) ? "=" + definition : "");
     }
+
+
 
 }

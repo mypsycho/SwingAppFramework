@@ -114,7 +114,7 @@ public class TaskService extends SwingBean {
 
     private void maybeBlockTask(Task<?, ?> task) {
         final Task.InputBlocker inputBlocker = task.getInputBlocker();
-        if ((inputBlocker == null) || (inputBlocker.getScope() != Task.BlockingScope.NONE)) {
+        if ((inputBlocker == null) || (inputBlocker.getScope() == Task.BlockingScope.NONE)) {
             return;
         }
 
@@ -130,6 +130,17 @@ public class TaskService extends SwingBean {
             SwingUtilities.invokeLater(doBlockTask);
         }
 
+    }
+    
+
+    /* Log enough output for a developer to figure out
+     * what went wrong.
+     */
+    public void failed(Object source, Throwable cause) {
+        System.err.println("Failure in " + name + " service during " + source);
+        if (cause != null) {
+            cause.printStackTrace(System.err);
+        }
     }
 
     /**

@@ -97,7 +97,13 @@ public class ApplicationContext extends SwingBean {
         localStorage = new LocalStorage(this);
         sessionStorage = new SessionStorage(this);
         taskServices = new CopyOnWriteArrayList<TaskService>();
-        taskServices.add(new TaskService("default"));
+        taskServices.add(new TaskService("default") {
+            @Override
+            public void failed(Object source, Throwable cause) {
+                getApplication().exceptionThrown(Level.SEVERE, source, 
+                        "Failure in task " + this, cause);
+            }
+        });
         taskServicesReadOnly = Collections.unmodifiableList(taskServices);
         componentManager = new ComponentManager(this);
     }
@@ -105,8 +111,8 @@ public class ApplicationContext extends SwingBean {
 
     void assertCompatible(String name, ApplicationContext context) throws IllegalArgumentException {
         if (context != this) {
-            throw new IllegalArgumentException("Property " + name 
-                    + " must be bound to this context");
+            String msg = "Property " + name + " must be bound to this context";
+            throw new IllegalArgumentException(msg);
         }
     }
     
@@ -123,14 +129,13 @@ public class ApplicationContext extends SwingBean {
     }
 
     protected void initPlateform() {
-        /*
-         * Initialize the ApplicationContext application properties
-         */
+        /* Initialize the ApplicationContext application properties */
         plateform = Plateform.identification.getInstance(plateformStrategy).getPlateform();
         try {
             plateform.getHook().init(getApplication());
         } catch (IllegalStateException e) {
-            application.exceptionThrown(Level.SEVERE, plateform, "Plateform initialization failed", e);
+            application.exceptionThrown(Level.SEVERE, plateform, 
+                    "Plateform initialization failed", e);
         }
     }
 
@@ -147,6 +152,7 @@ public class ApplicationContext extends SwingBean {
         if (appClass.getPackage() != null) {
             packageName = appClass.getPackage().getName();
         } // else no package : naughty boy !!
+        
         resourceManager.addGlobal(ENV_PREFIX + "AppClassName", simpleName);
         if (TRIM_SUFFIX.equals(simpleName)) {
             int lastPart = packageName.lastIndexOf('.');
@@ -319,8 +325,8 @@ public class ApplicationContext extends SwingBean {
      * <p>
      * The <code>get/putClientProperty</code> methods provide access to a small per-instance
      * hashtable. Callers can use get/putClientProperty to annotate components that were created by
-     * another module. For example, a layout manager might store per child constraints this way. For
-     * example:
+     * another module. For example, a layout manager might store per child constraints this way. 
+     * For example:
      *
      * <pre>
      * componentA.putClientProperty(&quot;to the left of&quot;, componentB);

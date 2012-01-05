@@ -39,7 +39,6 @@ public class ProxyAction extends AbstractTypedAction {
     
     public ProxyAction(javax.swing.Action toProxy) {
         delegate = toProxy;
-        delegate.addPropertyChangeListener(pcl);
         setEnabled(delegate.isEnabled());
         for (String prop : new String[] {
                 ACCELERATOR_KEY, ACTION_COMMAND_KEY, DISPLAYED_MNEMONIC_INDEX_KEY,
@@ -51,6 +50,7 @@ public class ProxyAction extends AbstractTypedAction {
                 putValue(prop, value);
             }
         }
+        delegate.addPropertyChangeListener(pcl);
         addPropertyChangeListener(pcl);
     }
     

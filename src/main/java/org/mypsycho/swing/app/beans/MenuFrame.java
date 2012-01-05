@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractButton;
@@ -40,12 +38,13 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  *
  *
  * @author PERANSIN Nicolas
- * @version 1.0
  */
 //as actions are referenced by toolbar or menu, they must be injected first
 @Inject(order={ "actionMap" }) 
 public class MenuFrame extends JFrame {
 
+    protected static final String EMPTY_STATUS_BAR = " "; // In a JLabel, empty text 
+    
     public static final String MAIN_PROP = "main";
     public static final String CONSOLE_VISIBLE_PROP = "consoleVisible";
     public static final String STATUS_VISIBLE_PROP = "statusVisible";
@@ -56,25 +55,25 @@ public class MenuFrame extends JFrame {
     public static final String TOOL_BARS_PROP = "toolbars";
 
 
-    ActionMap actionMap = new ActionMap();
+    // Note: The number of frame is limited in a application.
+    // Lazy initialisation is useless here.
+    ActionMap actionMap = new ActionMap(); 
     
     
     // private JComponent mainPane = null; // navSplit or consoleSplit or viewer.comp
-    private JComponent main = null;
-    private JComponent statusBar = null;
-    private List<JToolBar> toolBars = Collections.emptyList();
+    JComponent main = null;
+    JComponent statusBar = null;
+    JToolBar[] toolBars = null; // An array is compatible for typed injection 
     final JSplitPane consoleSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
     final JSplitPane navSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
     /** Divider location for console split pane */
-    protected int consoleDivLoc = -1;
-    protected int navDivLoc = -1;
+    int consoleDivLoc = -1;
+    int navDivLoc = -1;
     
     protected JComponent console = null;
     protected JComponent navigation = null;
 
-
-    protected static final String EMPTY_STATUS_BAR = " "; // In a JLabel, empty text 
 
 
     Application app;
@@ -344,6 +343,7 @@ public class MenuFrame extends JFrame {
     }
     
     public void setStatus(String label) {
+        // Label with empty text can be an issue in some LnF + Container
         if ((label == null) || label.isEmpty()) {
             label = EMPTY_STATUS_BAR;
         }
@@ -383,7 +383,7 @@ public class MenuFrame extends JFrame {
     }
 
     /**
-     * Gets the first tool bar for this View
+     * Gets the first tool bar for this View.
      *
      * @return The first {@link JToolBar} for this View
      * @see #setToolBars
@@ -391,64 +391,70 @@ public class MenuFrame extends JFrame {
      * @see #setToolBar
      */
     public final JToolBar getToolBar() {
-        List<JToolBar> toolBars = getToolBars();
-        return (toolBars.size() == 0) ? null : toolBars.get(0);
+        JToolBar[] toolBars = getToolBars();
+        return toolBars == null ? null : toolBars[0];
     }
 
     /**
      * Sets the only tool bar for this View.
      * <p>
-     * This is a bound property.
-     *
+     * This is a bound property to <code>toolbars</code>.
+     * </p>
+     * 
      * @param toolBar The {@link JToolBar} for this view. If {@code null} resets the tool bar.
      * @see #getToolBar()
      * @see #setToolBars(List)
      * @see #getToolBars()
      */
     public final void setToolBar(JToolBar toolBar) {
-        setToolBars((toolBar != null) ? Collections.singletonList(toolBar) : Collections.EMPTY_LIST);
+        setToolBars((toolBar != null) ? new JToolBar[] { toolBar } : null);
     }
     
 
     /**
      * Returns the list of tool bars for this View
+     * <p>
+     * 
      *
      * @return The list of tool bars
      */
-    public List<JToolBar> getToolBars() {
+    public JToolBar[] getToolBars() {
         return toolBars;
     }
 
     /**
-     * Sets the tool bars for this View
+     * Sets the tool bars for this View.
      * <p>
-     * This is a bound property.  The default value is an empty list.
+     * This is a bound property. The default value is null : no toolbar.
+     * </p>
      *
      * @param toolBars
      * @see #setToolBar(JToolBar)
      * @see #getToolBars()
      */
-    public void setToolBars(List<? extends JToolBar> toolBars) {
-        SwingHelper.assertNotNull(TOOL_BARS_PROP, toolBars);
-        List<JToolBar> oldValue = getToolBars();
-        this.toolBars = Collections.unmodifiableList(new ArrayList<JToolBar>(toolBars));
+    public void setToolBars(JToolBar... newToolBars) {
+        JToolBar[] oldValue = getToolBars();
+        toolBars = ((newToolBars != null) && (newToolBars.length > 0)) 
+                ? newToolBars.clone() : null;
         
         // Create/identify comp to add
         JComponent newChild = null;
-        if (this.toolBars.size() == 1) {
-            newChild = toolBars.get(0);
-            // Floatable are not compatible with status 
-            toolBars.get(0).setFloatable(false);
-        } else if (this.toolBars.size() > 1) {
-            newChild = new JPanel(); // FlowLayout
-            for (JToolBar toolBar : this.toolBars) {
-                newChild.add(toolBar);
-                toolBar.setFloatable(false);
+        if (toolBars != null) {
+            if (toolBars.length == 1) {
+                newChild = toolBars[0];
+                // Floatable are not compatible with status 
+                toolBars[0].setFloatable(false);
+            } else if (toolBars.length > 1) {
+                newChild = new JPanel(); // FlowLayout
+                for (JToolBar toolBar : toolBars) {
+                    newChild.add(toolBar);
+                    toolBar.setFloatable(false);
+                }
             }
         }
         
         replaceContentPaneChild(newChild, BorderLayout.PAGE_START);
-        firePropertyChange(TOOL_BARS_PROP, oldValue, this.toolBars);
+        firePropertyChange(TOOL_BARS_PROP, oldValue, toolBars);
     }
 
 

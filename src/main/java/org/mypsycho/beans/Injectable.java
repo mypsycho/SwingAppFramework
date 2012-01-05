@@ -9,10 +9,9 @@ package org.mypsycho.beans;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
- *
+ * @author Peransin Nicolas
  */
 public interface Injectable {
 
-    void initResouces(InjectionContext context);
+    void initResources(InjectionContext context);
 }

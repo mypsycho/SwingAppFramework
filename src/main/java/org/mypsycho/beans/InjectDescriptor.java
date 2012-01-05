@@ -55,6 +55,11 @@ public class InjectDescriptor extends Injection {
         compile();
     }
 
+    protected InjectDescriptor getDescriptor() {
+        return this;
+    }
+
+    
     @Override
     protected Injector getInjector() {
         return context;

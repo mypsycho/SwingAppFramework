@@ -227,7 +227,7 @@ public class TaskMonitor extends SwingBean {
         // Maybe fire the "tasks" PCLs
         if (tasksChanged) {
             List<Task<?, ?>> newTaskQueue = copyTaskQueue();
-            firePropertyChange("tasks", oldTaskQueue, newTaskQueue);
+            firePropertyChange(TaskService.TASKS_PROPERTY, oldTaskQueue, newTaskQueue);
         }
 
         if (autoUpdateForegroundTask && (getForegroundTask() == null)) {
@@ -270,7 +270,7 @@ public class TaskMonitor extends SwingBean {
         @Override
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
-            if ("tasks".equals(propertyName)) {
+            if (TaskService.TASKS_PROPERTY.equals(propertyName)) {
                 List<Task<?, ?>> oldList = (List<Task<?, ?>>) e.getOldValue();
                 List<Task<?, ?>> newList = (List<Task<?, ?>>) e.getNewValue();
                 updateTasks(oldList, newList);

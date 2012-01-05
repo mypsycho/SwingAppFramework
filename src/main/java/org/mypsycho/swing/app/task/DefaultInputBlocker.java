@@ -5,13 +5,11 @@
  */
 package org.mypsycho.swing.app.task;
 
-import static org.mypsycho.swing.app.utils.SwingHelper.findRootPaneContainer;
 
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Locale;
 import java.util.logging.Level;
 
 import javax.swing.InputVerifier;
@@ -26,8 +24,9 @@ import javax.swing.event.MouseInputListener;
 
 import org.mypsycho.beans.Injectable;
 import org.mypsycho.beans.InjectionContext;
+import org.mypsycho.beans.InjectionStack;
 import org.mypsycho.swing.app.Application;
-
+import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 public class DefaultInputBlocker extends Task.InputBlocker implements Injectable {
@@ -35,9 +34,9 @@ public class DefaultInputBlocker extends Task.InputBlocker implements Injectable
 
     private JDialog modalDialog = null;
 
-    protected long dialogDelay = 250; // in ms
+    protected long displayDelay = 250; // in ms
 
-    InjectionContext context;
+    InjectionStack context = new InjectionStack(this);
 
     public DefaultInputBlocker(Task<?, ?> task, Task.BlockingScope scope, Object target,
             Application app) {
@@ -61,16 +60,16 @@ public class DefaultInputBlocker extends Task.InputBlocker implements Injectable
      * @see com.psycho.beans.Injectable#initContext(com.psycho.beans.InjectionContext)
      */
     @Override
-    public void initResouces(InjectionContext context) {
-        this.context = context;
+    public void initResources(InjectionContext context) {
+        this.context.addContext(context);
     }
 
-    public long getDialogDelay() {
-        return dialogDelay;
+    public long getDisplayDelay() {
+        return displayDelay;
     }
 
-    public void setDialogDelay(long dialogDelay) {
-        this.dialogDelay = dialogDelay;
+    public void setDisplayDelay(long dialogDelay) {
+        this.displayDelay = dialogDelay;
     }
 
 
@@ -95,19 +94,22 @@ public class DefaultInputBlocker extends Task.InputBlocker implements Injectable
      * actionName.BlockingDialog.progressBar.stringPainted
      */
     private JDialog createBlockingDialog() {
+        
+/*
+BlockingDialog.title = Busy
+BlockingDialog.cancelButton.text = &Cancel
+BlockingDialog.progressBar.stringPainted = true
+BlockingDialog.progressBar.string = %02d:%02d, %02d:%02d remaining
+BlockingDialogTimer.delay = 250
+*/
         InputBlockerPane optionPane = new InputBlockerPane(getTask());
-        Component dialogOwner = (Component) getTarget();
+        // Structural injection
+        getApplicationContext().getResourceManager().inject(optionPane, getTask().getLocale());
+        // Contextual injection
+        context.inject("dialog", optionPane);
+
+        Component dialogOwner = (Component) getTarget();        
         JDialog dialog = optionPane.createDialog(dialogOwner);
-
-        if (context != null) {
-            Locale locale = context.getInjection().getLocale();
-            // getApplication().
-            context.getInjector().inject(dialog, locale);
-
-            // Inject
-            context.inject("dialog", optionPane);
-        }
-
         dialog.pack();
         return dialog;
     }
@@ -119,7 +121,7 @@ public class DefaultInputBlocker extends Task.InputBlocker implements Injectable
         * RootPaneContainer ancestor.
         * FIXED: BSAF-77
         */
-        RootPaneContainer rpc = findRootPaneContainer((Component) getTarget());
+        RootPaneContainer rpc = SwingHelper.findRootPaneContainer((Component) getTarget());
 
         if (rpc == null) {
             return;
@@ -179,41 +181,37 @@ public class DefaultInputBlocker extends Task.InputBlocker implements Injectable
     }
 
 
-    private void showBlockingDialog(boolean f) {
-        if (f) {
-            if (modalDialog != null) {
-
-                String msg = String.format("unexpected InputBlocker state [%s] %s", f, this);
-                getApplication().exceptionThrown(Level.INFO, this, msg, null);
-                modalDialog.dispose();
-            }
-
+    private void showBlockingDialog(boolean visible) {
+        boolean old = (modalDialog != null);
+        if (old == visible) {
+            String msg = "Unexpected InputBlocker state [" + visible + "] " + this;
+            getApplication().exceptionThrown(Level.INFO, this, msg, null);
+        }
+        
+        if (old) {
+            modalDialog.dispose();
+            modalDialog = null;
+        }
+        
+        if (visible) {
             modalDialog = createBlockingDialog();
-            ActionListener showModalDialog = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (modalDialog != null) { // already dismissed
-                        modalDialog.setVisible(true);
-                    }
-                }
-            };
-
-            int delay = (int) getDialogDelay();
-            if (delay < 0) {
-                delay = 0;
-                // log error ?
-            }
-            Timer showModalDialogTimer = new Timer(delay, showModalDialog);
-            showModalDialogTimer.setRepeats(false);
-            showModalDialogTimer.start();
-        } else {
-            if (modalDialog != null) {
-                modalDialog.dispose();
-                modalDialog = null;
+            int delay = (int) getDisplayDelay();
+            if (delay <= 0) {
+                modalDialog.setVisible(true);
             } else {
-                String msg = String.format("unexpected InputBlocker state [%s] %s", f, this);
-                getApplication().exceptionThrown(Level.INFO, this, msg, null);
+                ActionListener showModalDialog = new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (modalDialog != null) { // already dismissed
+                            modalDialog.setVisible(true);
+                        }
+                    }
+                };
+                
+                Timer showModalDialogTimer = new Timer(delay, showModalDialog);
+                showModalDialogTimer.setRepeats(false);
+                showModalDialogTimer.start();
             }
         }
     }

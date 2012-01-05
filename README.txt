@@ -54,6 +54,7 @@ The main ideas are:
 To be improved:
 - Comments are all obsolete.
 - Error management in TaskService (and application in general)
+- TODO Tests : Input blocker, MenuFrame
 - Migrate all examples
 - Improve property syntax to have a better reference mechanism (maybe a reflection call) 
 - No JUnit

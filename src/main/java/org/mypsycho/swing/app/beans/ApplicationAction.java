@@ -13,18 +13,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
 
+import org.mypsycho.beans.Inject;
 import org.mypsycho.beans.Injectable;
 import org.mypsycho.beans.InjectionContext;
+import org.mypsycho.beans.InjectionStack;
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationContext;
 import org.mypsycho.swing.app.ResourceManager;
 import org.mypsycho.swing.app.task.DefaultInputBlocker;
 import org.mypsycho.swing.app.task.Task;
+import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 
@@ -113,9 +116,12 @@ import org.mypsycho.swing.app.task.Task;
  * @see ApplicationContext#getActionMap(Object)
  * @see ResourceMap
  */
+// Mnemonic and displayedMnemonicIndex are overriden if "text" property is set afterward.
+@Inject(order={ "text" }) 
 public class ApplicationAction extends AbstractTypedAction implements Injectable {
 
     public static final String METHOD_SEPARATOR = "#";
+    public static final String TASK_PROP = "task";
     private final Application app;
     private final Object actionBean;
     private final Method actionMethod;      // The @Action method
@@ -124,7 +130,7 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
     private String selectedProperty = null;  // maybe an expression
     private boolean selectedWrittable = true;
     private Task.BlockingScope block = Task.BlockingScope.ACTION;
-    private InjectionContext context = null;
+    private InjectionStack context = new InjectionStack(this);
     
     private final Locale locale;
 
@@ -151,22 +157,23 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
      * <p>
      * The complete set of &#064;Action resources is:
      * <pre>
-     * Action.icon
-     * Action.text
-     * Action.shortDescription
-     * Action.longDescription
-     * Action.smallIcon
-     * Action.largeIcon
-     * Action.command
-     * Action.accelerator
-     * Action.mnemonic
-     * Action.displayedMnemonicIndex
+     * name
+     * icon
+     * text
+     * shortDescription
+     * longDescription
+     * smallIcon
+     * largeIcon
+     * command
+     * accelerator
+     * mnemonic
+     * displayedMnemonicIndex
      * </pre>
      *
      * <p>
      * A few the resources are handled specially:
      * <ul>
-     * <li><tt>Action.text</tt><br>
+     * <li><tt>text</tt><br>
      * Used to initialize the Action properties with keys
      * <tt>Action.NAME</tt>, <tt>Action.MNEMONIC_KEY</tt> and
      * <tt>Action.DISPLAYED_MNEMONIC_INDEX</tt>.
@@ -205,9 +212,9 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
 
     public ApplicationAction(Application pApp, String def, Object src,
             Locale locale) throws NoSuchMethodException, IllegalAccessException {
-        asserNotNull("application", pApp);
-        asserNotNull("definition", def);
-        asserNotNull("source", src);
+        SwingHelper.assertNotNull("application", pApp);
+        SwingHelper.assertNotNull("definition", def);
+        SwingHelper.assertNotNull("source", src);
 
         app = pApp;
         this.locale = (locale != null) ? locale : app.getLocale();
@@ -235,7 +242,7 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
                     reThrown.initCause(e.getTargetException());
                     throw reThrown;
                 }
-                asserNotNull("bean", actionBean);
+                SwingHelper.assertNotNull("bean", actionBean);
             }
 
             // Find action method
@@ -258,13 +265,17 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
     }
 
     /**
-     * Do something TODO.
+     * Find the action method of the provided class.
      * <p>
-     * Details of the function.
-     * </p>
+     * Returned method must have the required name and supported arguments
+     * type. 
+     * If several methods are found, the one with <code>@Action<code> 
+     * annotation is choosen.
+     * </p> 
      *
      * @param methodName
-     * @return
+     * @return the foud method
+     * @throws IllegalArgumentException if no method or too many methods are found 
      */
     private Method findActionMethod(Class<?> type, String methodName) {
         List<Method> methods = new ArrayList<Method>();
@@ -298,12 +309,7 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
         return methods.get(0);
     }
 
-    /**
-     * Do something TODO.
-     * <p>
-     * Details of the function.
-     * </p>
-     */
+
     private void initMethodDetail(Action detail, Locale locale, boolean distant) {
 
         if (detail == null) {
@@ -355,20 +361,6 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
         return app.getContext().getResourceManager();
     }
 
-    /**
-     * Do something TODO.
-     * <p>
-     * Details of the function.
-     * </p>
-     *
-     * @param string
-     * @param application
-     */
-    private void asserNotNull(String name, Object value) {
-        if (value == null) {
-            throw new IllegalArgumentException("null " + name);
-        }
-    }
 
     protected boolean isMethodValid(Method method, String name) {
         if (!method.getName().equals(name) || !Modifier.isPublic(method.getModifiers())) {
@@ -383,26 +375,30 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
     }
 
     protected boolean isMethodArgumentValid(Class<?> pType) {
-        if (pType.isAssignableFrom(ActionEvent.class)) {
+        // Source Component ? accessible by the action event
+        if (pType.isAssignableFrom(ActionEvent.class) 
+                && EventObject.class.isAssignableFrom(pType)) {
             return true;
         }
         if (javax.swing.Action.class.isAssignableFrom(pType) && pType.isInstance(this)) {
             return true;
         }
-        if (InjectionContext.class.equals(pType)) {
+        if (InjectionStack.class.equals(pType)) {
             return true;
         }
-        if (ApplicationContext.class.isAssignableFrom(pType) && pType.isInstance(app.getContext())) {
+        if (ApplicationContext.class.isAssignableFrom(pType) 
+                && pType.isInstance(app.getContext())) {
             return true;
         }
-        if (Application.class.isAssignableFrom(pType) && pType.isInstance(app)) {
+        if (Application.class.isAssignableFrom(pType) 
+                && pType.isInstance(app)) {
             return true;
         }
         return false;
     }
 
-    public void initResouces(InjectionContext context) {
-        this.context = context; // last context or context stack ?
+    public void initResources(InjectionContext context) {
+        this.context.addContext(context); // last context or context stack ?
     }
 
 
@@ -484,7 +480,7 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
         if (javax.swing.Action.class.isAssignableFrom(pType) && pType.isInstance(this)) {
             return this;
         }
-        if (InjectionContext.class.equals(pType)) {
+        if (InjectionStack.class.equals(pType)) {
             return context;
         }
         if (ApplicationContext.class.isAssignableFrom(pType) && pType.isInstance(app.getContext())) {
@@ -542,21 +538,22 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
 
             taskObject = actionMethod.invoke(actionBean, arguments);
             if (taskObject instanceof Task) {
-                Task<?, ?> task = (Task<?, ?>) taskObject;
-                if (task.getInputBlocker() == null) {
-                    task.setInputBlocker(createInputBlocker(task, actionEvent));
-                }
                 Object source = actionEvent.getSource();
                 Locale taskLocale = locale;
                 if (source instanceof Component) {
                     taskLocale = ((Component) source).getLocale();
                 }
-                task.setLocale(taskLocale);
-                app.getContext().getResourceManager().inject(task, taskLocale);
-
-                if (context != null) {
-                    context.inject("task", task);
+                
+                Task<?, ?> task = (Task<?, ?>) taskObject;
+                if (task.getInputBlocker() == null) {
+                    task.setInputBlocker(createInputBlocker(task, actionEvent));
                 }
+
+                task.setLocale(taskLocale);
+                // Structural injection
+                app.getContext().getResourceManager().inject(task, taskLocale);
+                // Contextual injection from action
+                context.inject(TASK_PROP, task);
 
                 app.getContext().getTaskService().execute(task);
             }
@@ -687,11 +684,11 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
      */
     private RuntimeException newInvokeException(String m, Exception e, Object... args) {
         String argsString = (args.length == 0) ? "" : args[0].toString();
-        for(int i = 1; i < args.length; i++) {
+        for (int i = 1; i < args.length; i++) {
             argsString += ", " + args[i];
         }
         String actionsClassName = actionBean.getClass().getName();
-        String msg = String.format("%s.%s(%s) failed", actionsClassName, m, argsString);
+        String msg = actionsClassName + "." + m + "(" + argsString + ") failed";
         return new UnsupportedOperationException(msg, e);
     }
 
@@ -700,19 +697,13 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
      * what went wrong.
      */
     private void actionFailed(ActionEvent actionEvent, Throwable cause) {
-        while (cause instanceof InvocationTargetException) {
-            cause = cause.getCause();
-        }
-
-        String msg = "Fail to perform action " + getName();
-        Level lvl = (cause instanceof Error) ? Level.SEVERE : Level.WARNING;
-        app.exceptionThrown(lvl, "action", msg, cause);
+        app.getContext().getTaskService().failed(actionEvent, cause);
     }
 
     @Override
     public String toString() {
-        if (context != null) {
-            return context.getInjection().toString();
+        if (!context.isEmpty()) {
+            return context.toString();
         }
 
         StringBuilder sb = new StringBuilder(getClass().getName());
