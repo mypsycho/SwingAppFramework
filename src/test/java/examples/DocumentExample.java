@@ -207,6 +207,7 @@ public class DocumentExample extends SingleFrameApplication {
     private JFileChooser createFileChooser(String name) {
         fc.setName(name);
         String resName = "FileChooser(" + name + ")";
+        fc.setLocale(getLocale());
         getContext().getResourceManager().inject(this, getLocale(), resName, fc);
         return fc;
     }
@@ -253,10 +254,7 @@ public class DocumentExample extends SingleFrameApplication {
     protected void fileTaskfailed(File file, String taskName, Throwable e) {
         logger.log(Level.WARNING, "couldn't  " + taskName + " " + file, e);
         String id = taskName + "Failed";
-        String msg = texts.get(id, getFile());
-        show(getMainFrame(), id, 
-                new JOptionPane(msg, JOptionPane.ERROR_MESSAGE, 
-                        JOptionPane.DEFAULT_OPTION));
+        show(getMainFrame(), id, new JOptionPane(texts.get(id, getFile())));
     }
     
     /**
@@ -353,14 +351,7 @@ public class DocumentExample extends SingleFrameApplication {
     /* The GUI is created and made visible here.
      */
     @Override protected void startup() {
-    
-//        StatusBar statusBar = ;
         addApplicationListener(new ConfirmExit());
-//        View view = getMainView();
-//        view.setComponent(createMainPanel());
-//        view.setToolBar(createToolBar());
-//        view.setMenuBar(createMenuBar());
-//        view.setStatusBar(statusBar);
         show(new FrameView(this, new AppFrame()));
     }
 
@@ -530,15 +521,8 @@ public class DocumentExample extends SingleFrameApplication {
                 return true;
             }
             String msg = texts.get("confirmExit", getFile());
-            Object option = show(e, "confirmExit", 
-                    new JOptionPane(msg, JOptionPane.QUESTION_MESSAGE, 
-                            JOptionPane.YES_NO_OPTION));
-            return new Integer(JOptionPane.YES_OPTION).equals(option);
+            Object confirm = show(e, "confirmExit", new JOptionPane(msg));
+            return new Integer(JOptionPane.YES_OPTION).equals(confirm);
         }
     }
 }
-
-
-
-
-

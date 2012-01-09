@@ -19,11 +19,9 @@ import org.apache.commons.beanutils.expression.Resolver;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * This is the content of elements to inject into a bean.
  *
  * @author Peransin Nicolas
- *
  */
 public class Injection {
 
@@ -181,9 +179,12 @@ public class Injection {
 
 
     /**
-     * Do something TODO.
+     * Compile the property.
      * <p>
-     * Details of the function.
+     * Interpret templates.
+     * Remove deprecated child.
+     * Identify maximum index for indexed property.
+     * Compile and sort children (sort is required for indexed elements).
      * </p>
      *
      * @return
@@ -247,25 +248,39 @@ public class Injection {
     }
 
     /**
-     * Do something TODO.
-     * <p>Details of the function.</p>
-     *
+     * Expand a template if the definition is a template.
      */
     private void expandTemplate() {
         InjectionTemplate call = getInjector().getTemplate().parse(definition);
         if (call == null) {
             return;
         }
+        // To have shared templater
         Injection template = getDescriptor().getPath(call.getName(), false);
         if (template != null) {
+            // Check recursivity
             definition = call.getValue();
+            
+            // Definition must be update before check to break recursivity
+            for (Injection branch = this; branch != null; branch = branch.getParent()) {
+                if (template == branch) {
+                    getInjector().notify(getCanonicalName(), "Recursive template", null);
+                    return;
+                }
+            }
+        
             mergeTemplate(this, template, call);
+            expandTemplate(); // Template may be a template itself
+        } else {
+            getInjector().notify(getCanonicalName(), "Undefined template", null);
         }
     }
 
     /**
-     * Do something TODO.
-     * <p>Details of the function.</p>
+     * Merge a injection with a template.
+     * <p>
+     * Elements of the templates are added unless already defined.
+     * </p>
      *
      * @param injection
      * @param template
@@ -279,22 +294,22 @@ public class Injection {
         if (template.children == null) {
             return;
         }
-        for (Injection child : template.children) {
+        for (Injection templateChild : template.children) {
             String childPath = null;
-            switch (child.nature) {
+            switch (templateChild.nature) {
                 case SIMPLE:
-                    childPath = (String) child.getId();
+                    childPath = (String) templateChild.getId();
                     break;
                 case INDEXED:
-                    childPath = "[" + child.getId() + "]";
+                    childPath = "[" + templateChild.getId() + "]";
                     break;
                 case MAPPED:
-                    childPath = "(" + child.getId() + ")";
+                    childPath = "(" + templateChild.getId() + ")";
                     break;
                 default:
                     break;
             }
-            mergeTemplate(injection.getPath(childPath, true), child, call);
+            mergeTemplate(injection.getPath(childPath, true), templateChild, call);
         }
     }
 
@@ -307,12 +322,11 @@ public class Injection {
     }
 
     /**
-     * Do something TODO.
-     * <p>
-     * Details of the function.
-     * </p>
+     * Inject the content of this branch into the bean.
      *
-     * @param value
+     * @param type the type of collection if applicable
+     * @param bean the object of inject
+     * @param context injection context
      */
     public void inject(Class<?> type, Object bean, InjectionContext context) {
         try {
@@ -344,15 +358,6 @@ public class Injection {
         }
     }
 
-    /**
-     * Do something TODO.
-     * <p>
-     * Details of the function.
-     * </p>
-     *
-     * @param bean
-     * @param context
-     */
     private void injectCollection(Class<?> type, Object bean, InjectionContext context) {
         Object value = null;
         if (definition != null) {

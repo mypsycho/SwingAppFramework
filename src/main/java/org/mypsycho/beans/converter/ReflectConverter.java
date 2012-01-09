@@ -66,8 +66,7 @@ public class ReflectConverter extends AbstractTypeConverter {
 
         try {
             if (value == null) {
-                Constructor<?> constructor = expected.getConstructor();
-                return constructor.newInstance();
+                return expected.newInstance();
             }
 
             Constructor<?> constructor = expected.getConstructor(STRING_ARGS);

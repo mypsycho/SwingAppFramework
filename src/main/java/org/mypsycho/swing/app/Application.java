@@ -878,7 +878,7 @@ public abstract class Application extends SwingBean implements Injectable, Local
 
         JDialog dialog = option.createDialog(parent, name + "Option");
         dialog.setName(name + "Option");
-        
+
         if (option.getMessage() instanceof Component) {
             // Message with component can be big
             // If the dialog is not resizable, it can extend outside the sceen !! 

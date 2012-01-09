@@ -97,7 +97,6 @@ public class InjectDescriptor extends Injection {
         // Buildin injection tree
         for (String key : values.keySet()) {
             try {
-                
                 Injection injection = getPath(key, true);
                 injection.definition = values.get(key);
             } catch (IllegalArgumentException e) {
@@ -117,21 +116,6 @@ public class InjectDescriptor extends Injection {
             String rejection = null;
             Exception cause = null;
             
-//            if (child.nature == Nature.SIMPLE) {
-//                String propName = (String) child.id;
-//                PropertyDescriptor prop = descriptors.get(propName);
-//
-//                if (prop == null) { // hack for mapped property
-//                    try {
-//                        getInjector().getPropertyDescriptor(type, propName);
-//                    } catch (NoSuchMethodException e) {
-//                        rejection = "No property '" + propName + "' at " + type.getName();
-//                        cause = e;
-//                    }
-//                } else {
-//                    rejection = child.compile();
-//                }
-//            } else 
                 
             if ((child.nature != Nature.SIMPLE) && !getInvoker().isCollection(type)) {
                 rejection = "UnsupportedNature";

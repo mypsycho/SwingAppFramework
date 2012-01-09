@@ -103,9 +103,14 @@ public class PropertyUtilsBean {
 
         @Override
         public void handle(Object event, String detail, Throwable t) {
+            if ((detail == null) && (t != null)) {
+                detail = (t.getMessage() != null) ? t.getMessage() : t.getClass().getSimpleName();
+            }
             String message = (detail != null) ? event + ":" + detail : String.valueOf(event);
             System.err.println(message);
-            t.printStackTrace(System.err);
+            if (t != null) {
+                t.printStackTrace(System.err);
+            }
         }
     };
 

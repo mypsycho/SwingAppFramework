@@ -26,30 +26,33 @@ public class InjectionTemplate {
     protected static final String START = "^%\\{";
     protected static final String END = "\\}$";
     protected static final String LITERAL = "(\\w+)";
-    protected static final String PATH = '(' + LITERAL + TIME(OR("\\." + LITERAL, 
-            "\\(" + LITERAL + "\\)", "\\[\\d+\\]"), "*") + ')';
+    
+    protected static final String PATH = '(' 
+            + OR(LITERAL, "\\(" + LITERAL + "\\)", "\\[\\d+\\]") 
+            + N(OR("\\." + LITERAL, "\\(" + LITERAL + "\\)", "\\[\\d+\\]"), "*") + ')';
     
     protected static final String ARG = "\\{" + LITERAL + "=" + ANY + "\\}";
     protected static final String VALUE = "=" + ANY;
             
-    protected static final String REG = START + PATH + TIME(ARG, "*") + TIME(VALUE, "?") + END;
+    protected static final String REG = START + PATH + N(ARG, "*") + N(VALUE, "?") + END;
     protected Pattern pattern = Pattern.compile(REG);
     protected Pattern argsPattern = Pattern.compile("\\}\\{");
     protected Pattern argPattern = Pattern.compile("\\=");
     
+    
+    protected static String E(String expr) {
+        return (expr.charAt(0) != '(') ? "(" + expr + ")" : expr;
+    }
     protected static String OR(String... regs) {
         String or = null;
         for (String reg : regs) {
-            or = (or == null) ? ("(" + reg + ")") : (or + "|(" + reg + ")");
+            or = (or == null) ? E(reg) : (or + '|' + E(reg));
         }
         return "(" + or + ")";
     }
     
-    protected static String TIME(String reg, String time) {
-        if (time.charAt(0) != '(') {
-            reg = "(" + reg + ")";
-        }
-        return reg + time;
+    protected static String N(String reg, String time) {
+        return E(reg) + time;
     }
 
     
@@ -150,14 +153,13 @@ public class InjectionTemplate {
             return null;
         }
 
-        String value = matcher.group(13);
-
-        if (value != null) {
-            value = value.substring(1); // ignore '='
+        String value = matcher.group(16);
+        if (value != null) { // ignore '='
+            value = value.substring(1);
         }
         
         try {
-            String[][] args = args(matcher.group(10));
+            String[][] args = args(matcher.group(13));
             return createTemplate(fullName(matcher.group(1), args), value, args);
         } catch (IllegalArgumentException e) {
             return null;
@@ -165,7 +167,7 @@ public class InjectionTemplate {
     }
     
     protected InjectionTemplate createTemplate(String n, String v, String[][] args) {
-        return new InjectionTemplate(n, value, args);
+        return new InjectionTemplate(n, v, args);
     }
     
     

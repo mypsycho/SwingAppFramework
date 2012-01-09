@@ -49,17 +49,18 @@ public class InjectionTemplateTest extends InjectionTemplate {
 
         
         for (String s : new String[] {
-                "%{view}",
-                "%{view(mainFrame)(toolbar)}",
+//                "%{view}",
+//                "%{view(mainFrame)(toolbar)}",
                 "%{view=@rtds q M%}",
-                "%{view{op=4235fd}}",
-                "%{view{op=4235fd}{op=45fd}{op= rez f35fd | }}",
-                "%{view{op=4235fd}=@rtds q M%}",
-                "%{view(mainFrame)(toolbar){op=4235fd}=@rtds q M%}",
-                "%{view(mainFrame)(toolbar){o1=4235fd}{o2=45fd}{o3= rez f35fd | }=@rtds q M%}",
+//                "%{view{op=4235fd}}",
+//                "%{view{op=4235fd}{op=45fd}{op= rez f35fd | }}",
+//                "%{view{op=4235fd}=@rtds q M%}",
+//                "%{view(mainFrame)(toolbar){op=4235fd}=@rtds q M%}",
+//                "%{view(mainFrame)(toolbar){o1=4235fd}{o2=45fd}{o3= rez f35fd | }=@rtds q M%}",
                 
         }) {
 
+            System.out.println(s);
             reg("main", pattern, s);
             InjectionTemplate expr = parse(s);
             if (expr != null) {
