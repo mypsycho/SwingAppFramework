@@ -39,6 +39,7 @@ public class SingleFrameExample3 extends SingleFrameApplication {
 	    // If named, we can use the syntax view(mainFrame)(<The Button name>)
         show(new JButton());
     }
+    
     public static void main(String[] args) {
         Application app = new SingleFrameExample3();
         app.setLocale(Locale.ENGLISH);

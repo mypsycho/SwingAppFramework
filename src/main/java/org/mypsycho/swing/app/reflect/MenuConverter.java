@@ -8,6 +8,7 @@ import java.awt.CheckboxMenuItem;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.lang.reflect.Modifier;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -67,7 +68,14 @@ public class MenuConverter extends AbstractTypeConverter {
             return convertToolbar(readType(value));
         }
 
+        boolean empty = (value == null) || value.isEmpty();
+        if (Modifier.isAbstract(expected.getModifiers()) && empty) {
+            return null;
+        }
         try {
+            if (value == null) {
+                return expected.newInstance();
+            }
             return expected.getConstructor(STRING_ARGS).newInstance(value != null ? value : "");
         } catch (Exception e) {
             return reThrow("Impossible to create Menu Item " + expected.getName(), e);

@@ -88,7 +88,7 @@ public class ComponentCollection extends AbstractCollectionExtension {
         if (bean instanceof JTabbedPane) {
             JTabbedPane tabs = (JTabbedPane) bean;
 
-            return (index < tabs.getTabCount()) ? new TabPage(tabs, index) : null;
+            return (index < tabs.getTabCount()) ? new TabPage(tabs, index) : new TabPage();
         }
         
         Container cont = (Container) bean;

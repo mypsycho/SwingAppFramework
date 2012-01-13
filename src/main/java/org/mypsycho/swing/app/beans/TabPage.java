@@ -18,10 +18,17 @@ import javax.swing.JTabbedPane;
  *
  */
 public class TabPage {
-
+ 
+    
     final JTabbedPane pane;
     final int index;
 
+    
+    public TabPage() { // a convenient stub for optional tabs
+        this(null, -1);
+    }
+    
+    
     /**
      * @param bean
      * @param index
@@ -29,7 +36,6 @@ public class TabPage {
     public TabPage(JTabbedPane value, int pos) {
         pane = value;
         index = pos;
-
     }
 
     /**
@@ -38,7 +44,7 @@ public class TabPage {
      * @return the title
      */
     public String getTitle() {
-        return pane.getTitleAt(index);
+        return pane != null ? pane.getTitleAt(index) : null;
     }
 
     /**
@@ -47,6 +53,7 @@ public class TabPage {
      * @param title the title to set
      */
     public void setTitle(String title) {
+        if (pane != null)
         pane.setTitleAt(index, title);
     }
 
@@ -56,7 +63,7 @@ public class TabPage {
      * @return the icon
      */
     public Icon getIcon() {
-        return pane.getIconAt(index);
+        return pane != null ? pane.getIconAt(index) : null;
     }
 
     /**
@@ -65,6 +72,7 @@ public class TabPage {
      * @param icon the icon to set
      */
     public void setIcon(Icon icon) {
+        if (pane != null)
         pane.setIconAt(index, icon);
     }
 
@@ -74,16 +82,7 @@ public class TabPage {
      * @return the component
      */
     public Component getComponent() {
-        return pane.getComponentAt(index);
-    }
-
-    /**
-     * Sets the component.
-     *
-     * @param component the component to set
-     */
-    public void setComponent(Component component) {
-        pane.setComponentAt(index, component);
+        return pane != null ? pane.getComponentAt(index) : null;
     }
 
     /**
@@ -92,7 +91,7 @@ public class TabPage {
      * @return the tab
      */
     public Component getTab() {
-        return pane.getTabComponentAt(index);
+        return pane != null ? pane.getTabComponentAt(index) : null;
     }
 
     /**
@@ -101,6 +100,7 @@ public class TabPage {
      * @param tab the tab to set
      */
     public void setTab(Component tab) {
+        if (pane != null)
         pane.setTabComponentAt(index, tab);
     }
 

@@ -472,7 +472,7 @@ public class Injection {
                     toSet = true;
 
                 } else {
-                    getInjector().notify("null", getCanonicalName(), null);
+                    // getInjector().notify("Null ", getCanonicalName(), null); //
                     return;
                 }
             }
@@ -547,7 +547,7 @@ public class Injection {
                     childValue = getInvoker().get(bean, descr, (Integer) child.id);
                 }
                 if (childValue == null) {
-                    getInjector().notify("null", getCanonicalName(), null);
+                    getInjector().notify("Null element", getCanonicalName(), null);
                     continue;
                 }
             }

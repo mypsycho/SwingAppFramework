@@ -234,8 +234,8 @@ public class SwingHelper {
         throw new IllegalArgumentException("No component named " + name);
     }
 
-    public Component get() {
-        return with;
+    public <C extends Component> C get() {
+        return (C) with;
     }
 
     public static final ComponentListener FRAME_BOUND_LISTENER = new ComponentAdapter() {
