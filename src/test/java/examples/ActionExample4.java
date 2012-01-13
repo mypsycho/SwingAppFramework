@@ -192,7 +192,9 @@ public class ActionExample4 extends SingleFrameApplication {
 
         SwingHelper helper = new SwingHelper(getMainFrame());
         helper.with("buttons", new FlowLayout(), BorderLayout.PAGE_START)
-                .add("root", rootTextField).add("go", new JButton()).add("stop", new JButton())
+                .add("root", rootTextField)
+                .add("go", new JButton())
+                .add("stop", new JButton())
                 .back();
         listModel = new FileListModel();
         JList filesList = new JList(listModel);

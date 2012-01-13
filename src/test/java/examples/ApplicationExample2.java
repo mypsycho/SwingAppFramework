@@ -30,7 +30,7 @@ public class ApplicationExample2 extends Application {
         JLabel label = new JLabel("", JLabel.CENTER);
         label.setName("label");
         f = new JFrame();
-        f.setName("mainFrame");
+        f.setName("appFrame");
         // Label path properties int pis : 
         //    view(mainFrame)(label) 
         f.add(label, BorderLayout.CENTER);
@@ -44,10 +44,12 @@ public class ApplicationExample2 extends Application {
         show(f);
     }
     
+    /* not need to hide the frame, 
     @Override 
     protected void shutdown() {
         f.setVisible(false);
     }
+    */
 
     public static void main(String[] args) {
         new ApplicationExample2().launch(args);

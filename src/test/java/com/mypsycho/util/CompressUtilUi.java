@@ -1,4 +1,4 @@
-package com.psycho.util;
+package com.mypsycho.util;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

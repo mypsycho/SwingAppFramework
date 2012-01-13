@@ -19,8 +19,36 @@ import org.apache.commons.beanutils.ContextClassLoaderLocal;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * Formats a message using the resource bundle of associated enum.
+ * <p>
+ * A contract can be defined with named argument between code and constants if 
+ * the enum implements <code>EnumMessage.Message</code> interface.<br/>
+ * If the enum does not provided named argument, the ordinal notation of 
+ * MessageFormat must be used (ie. {0}, {1}, ...).
+ * </p>
+ * Simple example : <br/>
+ * Define the following properties file <code>/some/pack/PointMessage.properties</code> with
+ * <pre>
+ * location(name,point) = Point {name} is at ({point.x), {point.y))
+ * </pre>
+ * And define the associated enum:
+ * <pre>
+ * package some.pack;
+ * ...
+ * public enum PointMessage implements BeanMessageFormat.Message {
+ *   location("name", "point"), ...;
+ *   
+ *   final String[] args;
+ *   PointMessage(String... pArgs) { args = pArgs; }
+ *   public String[] args() { args }
+ * }
+ * </pre>
+ * Then you can call the message with some args:
+ * <pre>
+ * java.awt.Point p = new java.awt.Point(10, 20)
+ * System.out.println(EnumMessage.format(PointMessage.location, "A", p);
+ * </pre>
+ * will display <code>Point A is at (10, 20)</code>
  *
  * @author Peransin Nicolas
  */
@@ -66,16 +94,18 @@ public class EnumMessage extends BeanMessageFormat {
             // Build name
             String name = key.name();
             String fallback = name;
-            String[] args = ((Message) key).args();
-            if ((args != null) && (args.length > 0)) { // anonym index
-                boolean first = true;
-                for (String arg : args) {
-                    fallback += (first ? "({" : "},{") + arg;
-                    name += (first ? '(' : ',') + arg;
-                    first = false;
+            if (key instanceof Message) {
+                String[] args = ((Message) key).args();
+                if ((args != null) && (args.length > 0)) { // anonym index
+                    boolean first = true;
+                    for (String arg : args) {
+                        fallback += (first ? "({" : "},{") + arg;
+                        name += (first ? '(' : ',') + arg;
+                        first = false;
+                    }
+                    name += ')';
+                    fallback += "})";
                 }
-                name += ')';
-                fallback += "})";
             }
 
             if (bundle == null) {
@@ -130,8 +160,7 @@ public class EnumMessage extends BeanMessageFormat {
 
     }
 
-    static <K extends Enum<K>> Cache<?> getPatterns(Class<K> clazz,
-            Locale locale) {
+    static <K extends Enum<K>> Cache<?> getPatterns(Class<K> clazz, Locale locale) {
         Map<CacheKey, Cache<?>> caches = (Map<CacheKey, Cache<?>>) CACHE_BY_CLASSLOADER.get();
         CacheKey key = new CacheKey(clazz, locale);
         synchronized (caches) {
@@ -146,13 +175,23 @@ public class EnumMessage extends BeanMessageFormat {
 
     }
 
-    static <K extends Enum<? extends Message>> String getPattern(K messageId, Locale locale) {
+    /**
+     * Return the text associated to this enum
+     * <p>
+     * This method is public so user can avoid complex syntax if the message has no argument.
+     * </p>
+     *
+     * @param messageId
+     * @param locale
+     * @return
+     */
+    public static <K extends Enum<?>> String getPattern(K messageId, Locale locale) {
         return (String) getPatterns(messageId.getClass(), locale).get(messageId);
     }
 
     static final Pattern indexPattern = Pattern.compile("(\\w+)(\\.(.*))?");
 
-    Enum<? extends Message> id;
+    Enum<?> id;
 
     /**
      * Constructs a MessageFormat for the default locale and the
@@ -165,7 +204,7 @@ public class EnumMessage extends BeanMessageFormat {
      * @param messageId the pattern for this message format
      * @exception IllegalArgumentException if the pattern is invalid
      */
-    public EnumMessage(Enum<? extends Message> messageId) {
+    public EnumMessage(Enum<?> messageId) {
         this(messageId, Locale.getDefault());
     }
 
@@ -181,7 +220,7 @@ public class EnumMessage extends BeanMessageFormat {
      * @param locale the locale for this message format
      * @exception IllegalArgumentException if the pattern is invalid
      */
-    public EnumMessage(Enum<? extends Message> messageId, Locale locale) {
+    public EnumMessage(Enum<?> messageId, Locale locale) {
         super(getPattern(messageId, locale), locale);
         id = messageId;
         mapArgs();

@@ -476,6 +476,17 @@ public class Injection {
                     return;
                 }
             }
+        } else if (getInvoker().isWriteable(bean, descr, false)) {
+            targetType = getInvoker().getPropertyType(descr, false);
+
+            String dimension = null;
+            if (isCollection(Nature.INDEXED)) {
+                dimension = String.valueOf(size);
+            }
+            
+            // instantiate
+            value = convert(targetType, dimension, bean, context);
+            toSet = true;
         }
 
 
@@ -518,7 +529,7 @@ public class Injection {
                     if (targetType == null) {
                         getInjector().notify("Untyped", getCanonicalName(), null);
                         childWritable = false;
-                    } else if (!getInvoker().isWriteable(value, descr, true)) {
+                    } else if (!getInvoker().isWriteable(bean, descr, true)) {
                         getInjector().notify("Unwrittable", getCanonicalName(), null);
                         childWritable = false;
                     }

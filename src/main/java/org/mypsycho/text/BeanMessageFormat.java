@@ -21,8 +21,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * A message format which handles property navigation.
  *
  * @author Peransin Nicolas
  */
@@ -36,6 +35,9 @@ public class BeanMessageFormat extends java.text.Format {
 
     static final Pattern indexPattern = Pattern.compile("(\\d+)(\\.(.*))?");
 
+    /**
+     * The root is used as foctory for inner format.
+     */
     BeanMessageFormat root = this;
     
     private BeanMessageFormat(String pattern, BeanMessageFormat ancestor) {
@@ -108,9 +110,9 @@ public class BeanMessageFormat extends java.text.Format {
             ChoiceFormat choice = (ChoiceFormat) format;
             String[] choiceFormats = (String[]) choice.getFormats();
             for (int i = 0; i < choiceFormats.length; i++) {
-                String choiceFormat = choiceFormats[i];
-                if (choiceFormat.contains("{")) {
-                    BeanMessageFormat recursive = new BeanMessageFormat(choiceFormat, root);
+                String innerFormat = choiceFormats[i];
+                if (innerFormat.contains("{")) {
+                    BeanMessageFormat recursive = new BeanMessageFormat(innerFormat, root);
                     choiceFormats[i] = recursive.inner.toPattern();
                 }
             }
@@ -316,15 +318,6 @@ public class BeanMessageFormat extends java.text.Format {
             path = expr;
         }
 
-        /**
-         * Do something TODO.
-         * <p>
-         * Details of the function.
-         * </p>
-         *
-         * @param object
-         * @return
-         */
         public Object map(Object object) {
             if (path == null) {
                 return object;
@@ -334,18 +327,35 @@ public class BeanMessageFormat extends java.text.Format {
                 return null;
             }
 
-            try {
-                return PropertyUtils.getProperty(object, path);
-            } catch (NestedNullException e) {
-                return null;
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(e);
-            } catch (InvocationTargetException e) {
-                throw new IllegalArgumentException(e);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalArgumentException(e);
-            }
+            return BeanMessageFormat.this.root.map(object, path);
         }
 
     }
+    
+    /**
+     * Interpret the property path of the object.
+     * <p>
+     * The default implementation use 
+     * {@link org.apache.commons.beanutils.PropertyUtils}
+     * </p>.
+     *
+     * @param bean 
+     * @param path
+     * @return property value
+     * @throws IllegalArgumentException if the value cannot be interpreted
+     */
+    protected Object map(Object bean, String path) throws IllegalArgumentException {
+        try {
+            return PropertyUtils.getProperty(bean, path);
+        } catch (NestedNullException e) {
+            return null;
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException(e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+    
 }

@@ -61,7 +61,7 @@ public class ActionExample2 extends Application {
     }
 
     @Override protected void startup() {
-        SwingHelper helper = new SwingHelper("frame", new JFrame());
+        SwingHelper helper = new SwingHelper("appFrame", new JFrame());
         helper.add("field", new JTextField(), BorderLayout.CENTER);
         helper.with("buttons", new FlowLayout(), BorderLayout.PAGE_END) //
                 .add("clear", new JButton())

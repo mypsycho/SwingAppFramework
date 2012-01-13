@@ -10,21 +10,18 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
+import org.mypsycho.swing.app.Application;
+import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.SingleFrameApplication;
+import org.mypsycho.swing.app.utils.SwingHelper;
 
 /**
  * A demo that shows the use of SingleFrameApplication secondary windows.
@@ -32,107 +29,69 @@ import org.mypsycho.swing.app.SingleFrameApplication;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 public class SingleFrameExample6 extends SingleFrameApplication {
-    private final List<Window> windows = 
-	new ArrayList<Window>(Collections.nCopies(3, (Window)null));
+    
+    private final Window[] windows = new Window[3]; 
+
     
     // Lazily create an element of the windows List and return it
     private Window getWindow(int n, Class<? extends Window> windowClass) {
-	Window window = windows.get(n);
-	if (window == null) {
-	    try {
-		window = windowClass.newInstance();
-	    }
-	    catch (Exception e) {
-		throw new Error("HCTB", e);
-	    }
-	    JLabel label = new JLabel();
-	    JButton button = new JButton();
-	    button.setAction(getAction("hideWindow"));
-	    window.setName("window" + n);
-	    label.setName("label" + n);
-	    button.setName("button" + n);
-	    window.add(label, BorderLayout.CENTER);
-	    window.add(button, BorderLayout.SOUTH);
-	    windows.set(n, window);
-	}
-	return window;
+        Window window = windows[n];
+        if (window == null) {
+            try {
+                window = windowClass.newInstance();
+            }
+            catch (Exception e) {
+                throw new Error("HCTB", e);
+            }
+            SwingHelper h = new SwingHelper("window" + n, window);
+            h.add("label", new JLabel(), BorderLayout.CENTER);
+            h.add("button", new JButton(), BorderLayout.PAGE_END);
+            windows[n] = window;
+        }
+        return window;
     }
 
-    @Action public void hideWindow(ActionEvent e) {
-	if (e.getSource() instanceof Component) {
-	    Component source = (Component)e.getSource();
-	    Window window = SwingUtilities.getWindowAncestor(source);
-	    if (window != null) {
-		window.setVisible(false);
-	    }
-	}
-    }
-
-    @Action public void showWindow0() {
-	show((JFrame)getWindow(0, JFrame.class));
-    }
-
-    @Action public void showWindow1() {
-	show((JDialog)getWindow(1, JDialog.class));
-    }
-
-    @Action public void showWindow2() {
-	show((JDialog)getWindow(2, JDialog.class));
-    }
-    
-    @Action public void disposeSecondaryWindows() {
-        for(int i = 0; i < windows.size(); i++) {
-            Window window = windows.get(i);
+    public void hideWindow(ActionEvent e) {
+        if (e.getSource() instanceof Component) {
+            Component source = (Component)e.getSource();
+            Window window = SwingUtilities.getWindowAncestor(source);
             if (window != null) {
-                windows.set(i, null);
+                window.setVisible(false);
+            }
+        }
+    }
+
+    public void showWindow0() {
+        show((JFrame) getWindow(0, JFrame.class));
+    }
+
+    public void showWindow1() {
+        show((JDialog) getWindow(1, JDialog.class));
+    }
+
+    public void showWindow2() {
+        show((JDialog) getWindow(2, JDialog.class));
+    }
+
+    public void disposeSecondaryWindows() {
+        for (Window window : windows) {
+            if (window != null) {
                 window.dispose();
             }
         }
     }
 
-    private javax.swing.Action getAction(String actionName) {
-	return getContext().getActionMap().get(actionName);
-    }
 
-    private JMenu createMenu(String menuName, String[] actionNames) {
-	JMenu menu = new JMenu();
-	menu.setName(menuName);
-	for (String actionName : actionNames) {
-	    if (actionName.equals("---")) {
-		menu.add(new JSeparator());
-	    }
-	    else {
-		JMenuItem menuItem = new JMenuItem();
-		menuItem.setAction(getAction(actionName));
-		menuItem.setIcon(null);
-		menu.add(menuItem);
-	    }
-	}
-	return menu;
-    }
 
-    private JMenuBar createMenuBar() {
-	JMenuBar menuBar = new JMenuBar();
-	String[] viewMenuActionNames = {
-	    "showWindow0",
-	    "showWindow1",
-	    "showWindow2",
-	    "disposeSecondaryWindows",
-	    "---",
-	    "quit"
-	};
-	menuBar.add(createMenu("viewMenu", viewMenuActionNames));
-	return menuBar;
-    }
 
-    @Override protected void startup() {
-	getMainFrame().setJMenuBar(createMenuBar());
-	JLabel label = new JLabel();
-	label.setName("mainLabel");
-        show(label);
+    @Override
+    protected void startup() {
+        show((JComponent) new SwingHelper("mainLabel", new JLabel()).get());
     }
 
     public static void main(String[] args) {
-        launch(SingleFrameExample6.class, args);
+        Application app = new SingleFrameExample6();
+        app.addApplicationListener(ApplicationListener.console);
+        app.launch(args);
     }
 }

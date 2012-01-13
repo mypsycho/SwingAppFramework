@@ -2,7 +2,7 @@
  * Copyright (C) 2012 Nicolas Peransin. All rights reserved.
  * Use is subject to license terms.
  */
-package com.psycho.test.app;
+package com.mypsycho.test.app;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,5 +1,5 @@
 
-package examples;
+package com.mypsycho.draft;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -15,7 +15,9 @@ import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.SingleFrameApplication;
 import org.mypsycho.swing.app.utils.SwingHelper;
 
-
+/**
+ * For rendering test.
+ */
 public class TreeCellApplication extends SingleFrameApplication {
     
     

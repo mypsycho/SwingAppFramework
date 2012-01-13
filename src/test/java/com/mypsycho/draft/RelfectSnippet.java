@@ -1,4 +1,4 @@
-package com.psycho.swing.app.reflect;
+package com.mypsycho.draft;
 
 import java.net.URL;
 
@@ -15,7 +15,7 @@ import org.mypsycho.swing.app.reflect.ResourceConverter;
  * @author nperansi
  *
  */
-public class Snippet {
+public class RelfectSnippet {
 
     /**
      * Do something TODO.

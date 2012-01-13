@@ -5,6 +5,7 @@
 package org.mypsycho.text;
 
 import java.awt.Component;
+import java.text.Format;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,8 +14,13 @@ import java.util.Locale;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * A map to handle text and messages.
+ * <p>
+ * The default implementation use MessageFormat expect when no argment is provided.
+ * </p>
+ * <p>
+ * The object can delegate the choice of localisation to initial context.
+ * </p>
  *
  * @author Peransin Nicolas
  */
@@ -110,7 +116,19 @@ public class TextMap extends HashMap<String, String> {
 
     
     protected String format(String format, Object[] args) {
-        return new MessageFormat(format, getLocale()).format(args);
+        return createFormat(format).format(args);
+    }
+    
+    /**
+     * Call by the <code>format</code> to create a formatter
+     * <p>By default, return a java.text.MessageFormat.MessageFormat(String, Locale);
+     * can be overriden.</p>
+     *
+     * @param format the string to format
+     * @return the format
+     */
+    protected Format createFormat(String format) {
+        return new MessageFormat(format, getLocale());
     }
     
     /**

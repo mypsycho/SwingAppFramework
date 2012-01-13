@@ -6,8 +6,8 @@
 
 package examples;
 
-import java.awt.Component;
 import java.util.EventObject;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -26,10 +26,7 @@ public class SingleFrameExample3 extends SingleFrameApplication {
     
     ApplicationListener mayExit = new ApplicationListener.Adapter() {
         public boolean canExit(EventObject e) {
-            Object source = (e != null) ? e.getSource() : null;
-            Component owner = (source instanceof Component) ? (Component) source : null;
-            int option = JOptionPane.showConfirmDialog(owner, "Really Exit?");
-            return option == JOptionPane.YES_OPTION;
+            return new Integer(JOptionPane.YES_OPTION).equals(showOption(e, "exit"));
         }
     };
     
@@ -44,7 +41,7 @@ public class SingleFrameExample3 extends SingleFrameApplication {
     }
     public static void main(String[] args) {
         Application app = new SingleFrameExample3();
-        
+        app.setLocale(Locale.ENGLISH);
         app.launch();
     }
 }

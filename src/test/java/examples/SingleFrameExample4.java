@@ -5,29 +5,23 @@
 
 package examples;
 
-import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
-import javax.swing.border.EmptyBorder;
 
+import org.mypsycho.swing.app.Application;
+import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.SingleFrameApplication;
+import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
@@ -46,13 +40,34 @@ public class SingleFrameExample4 extends SingleFrameApplication {
     private static Logger logger = Logger.getLogger(SingleFrameExample4.class.getName());
     private JEditorPane textPane;
 
+    private String defaultText = "";
+    
+    
+    /**
+     * Returns the defaultText.
+     *
+     * @return the defaultText
+     */
+    public String getDefaultText() {
+        return defaultText;
+    }
+
+    
+    /**
+     * Sets the defaultText.
+     *
+     * @param defaultText the defaultText to set
+     */
+    public void setDefaultText(String defaultText) {
+        this.defaultText = defaultText;
+    }
+
     /**
      * Load the specified file into the textPane or popup an error
      * dialog if something goes wrong. The file that's loaded
      * can't be saved, so there's no harm in experimenting with
      * the cut/copy/paste/delete editing actions.
      */
-    @Action
     public void open() {
         JFileChooser chooser = new JFileChooser();
         int option = chooser.showOpenDialog(getMainFrame());
@@ -73,80 +88,30 @@ public class SingleFrameExample4 extends SingleFrameApplication {
      * Replace the contents of the textPane with the value of the
      * "defaultText" resource.
      */
-    @Action
+
     public void close() {
-        String defaultText = getContext().getResourceMap().getString("defaultText");
-        textPane.setText(defaultText);
+        textPane.setText(getDefaultText());
     }
 
     private void showErrorDialog(String message, Exception e) {
-        String title = "Error";
-        int type = JOptionPane.ERROR_MESSAGE;
-        message = "Error: " + message;
-        JOptionPane.showMessageDialog(getMainFrame(), message, title, type);
-    }
-
-    private javax.swing.Action getAction(String actionName) {
-        return getContext().getActionMap().get(actionName);
-    }
-
-    private JMenu createMenu(String menuName, String[] actionNames) {
-        JMenu menu = new JMenu();
-        menu.setName(menuName);
-        for (String actionName : actionNames) {
-            if (actionName.equals("---")) {
-                menu.add(new JSeparator());
-            } else {
-                JMenuItem menuItem = new JMenuItem();
-                menuItem.setAction(getAction(actionName));
-                menuItem.setIcon(null);
-                menu.add(menuItem);
-            }
-        }
-        return menu;
-    }
-
-    private JMenuBar createMenuBar() {
-        String[] fileMenuActionNames = { "open", "close", "---", "quit" };
-        String[] editMenuActionNames = { "cut", "copy", "paste", "delete" };
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(createMenu("fileMenu", fileMenuActionNames));
-        menuBar.add(createMenu("editMenu", editMenuActionNames));
-        return menuBar;
-    }
-
-    private JComponent createToolBar() {
-        String[] toolbarActionNames = { "cut", "copy", "paste" };
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        for (String actionName : toolbarActionNames) {
-            JButton button = new JButton();
-            button.setAction(getAction(actionName));
-            button.setFocusable(false);
-            toolBar.add(button);
-        }
-        return toolBar;
-    }
-
-    private JComponent createMainPanel() {
-        textPane = new JTextPane();
-        textPane.setName("textPane");
-        JPanel panel = new JPanel(new BorderLayout());
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(createToolBar(), BorderLayout.NORTH);
-        panel.setBorder(new EmptyBorder(0, 2, 2, 2)); // top, left, bottom, right
-        return panel;
+        showOption(getMainFrame(), "error", "Error: " + message);
     }
 
     @Override
     protected void startup() {
-        getMainFrame().setJMenuBar(createMenuBar());
-        show(createMainPanel());
+        getMainView().setToolBar(new JToolBar("toolbar"));
+        
+        textPane = new JTextPane();
+        SwingHelper h = new SwingHelper("textPane", new JScrollPane(textPane,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                ));
+        show((JComponent) h.get());
     }
 
     public static void main(String[] args) {
-        launch(SingleFrameExample4.class, args);
+        Application app = new SingleFrameExample4();
+        app.addApplicationListener(ApplicationListener.console);
+        app.launch(args);
     }
 }

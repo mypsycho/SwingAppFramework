@@ -80,6 +80,7 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  */
 public abstract class SingleFrameApplication extends Application {
 
+    public static final String MAIN_FRAME_NAME = FrameView.MAIN_FRAME_NAME;
 
     ViewBehaviour secondaryBehaviour = new SessionBehaviour();
 

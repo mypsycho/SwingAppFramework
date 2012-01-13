@@ -31,6 +31,7 @@ import org.mypsycho.swing.app.ApplicationContext;
 import org.mypsycho.swing.app.SingleFrameApplication;
 import org.mypsycho.swing.app.SwingBean;
 import org.mypsycho.swing.app.View;
+import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
@@ -45,59 +46,54 @@ import org.mypsycho.swing.app.View;
  */
 public class ActionMapExample extends SingleFrameApplication {
 
-    private static final Insets zeroInsets = new Insets(0,0,0,0);
+    private static final Insets ZERO_INSETS = new Insets(0,0,0,0);
 
     @Override protected void startup() {
         View view = getMainView();
-        view.setComponent(createMainPanel());
-        show(view);
-    }
-
-    public static void main(String[] args) {
-        new ActionMapExample().launch(args);
-    }
-
-    private JComponent createMainPanel() {
+        SwingHelper h = new SwingHelper(new GridBagLayout());
         
-        JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-
         initGridBagConstraints(c);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
-        mainPanel.add(new BaseScenePanel(this), c);
+        h.add("baseScene", new BaseScenePanel(this), c);
 
         initGridBagConstraints(c);
         c.weightx = 0.5;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
-        mainPanel.add(new DerivedScenePanelA(this), c);
+        h.add("sceneA", new DerivedScenePanelA(this), c);
 
         initGridBagConstraints(c);
         c.weightx = 0.5;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        mainPanel.add(new DerivedScenePanelB(this), c);
-        return mainPanel;
+        h.add("sceneA", new DerivedScenePanelB(this), c);
+
+        view.setComponent((JComponent) h.get());
+        show(view);
     }
 
-    private void initGridBagConstraints(GridBagConstraints c) {
+    private static void initGridBagConstraints(GridBagConstraints c) {
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.NONE;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = GridBagConstraints.RELATIVE;
         c.gridy = GridBagConstraints.RELATIVE;
-        c.insets = zeroInsets;
+        c.insets = ZERO_INSETS;
         c.ipadx = 0; 
         c.ipady = 0; 
         c.weightx = 0.0;
         c.weighty = 0.0;
     }
 
-
+    public static void main(String[] args) {
+        new ActionMapExample().launch(args);
+    }
+    
     /**
      * A JComponent that renders a Scene and defines two {@code @Actions}: 
      * <ul>
@@ -161,7 +157,7 @@ public class ActionMapExample extends SingleFrameApplication {
         public BaseScenePanel(Application application) {
 
             if (application == null) {
-                throw new IllegalArgumentException("null applicaiton");
+                throw new IllegalArgumentException("null application");
             }
             this.application = application;
             setLayout(new GridBagLayout());
@@ -190,9 +186,13 @@ public class ActionMapExample extends SingleFrameApplication {
          */
         private class PopupMenuListener extends MouseAdapter {
 
-            public void mousePressed(MouseEvent e) { maybeShowPopup(e); }
+            public void mousePressed(MouseEvent e) {
+                maybeShowPopup(e);
+            }
 
-            public void mouseReleased(MouseEvent e) { maybeShowPopup(e); }
+            public void mouseReleased(MouseEvent e) {
+                maybeShowPopup(e);
+            }
 
             private void maybeShowPopup(MouseEvent e) {
                 if (e.isPopupTrigger()) {
@@ -202,7 +202,7 @@ public class ActionMapExample extends SingleFrameApplication {
         }
 
 
-        protected final Scene getScene() {
+        public final Scene getScene() { // Public for testability
             return scene;
         }
 
@@ -278,7 +278,7 @@ public class ActionMapExample extends SingleFrameApplication {
      * [the source object's] properties have changed".
      * See http://java.sun.com/javase/6/docs/api/java/beans/PropertyChangeEvent.html
      */
-    private static class Scene extends SwingBean {
+    public static class Scene extends SwingBean {
         private final List<Node> nodes = new ArrayList<Node>();
         private Node selectedNode = null;
 
@@ -296,7 +296,7 @@ public class ActionMapExample extends SingleFrameApplication {
             }
         }
 
-        public final List<Node> getNodes() {
+        public final List<Node> getNodes() { // Public for testability
             return Collections.unmodifiableList(nodes);
         }
 

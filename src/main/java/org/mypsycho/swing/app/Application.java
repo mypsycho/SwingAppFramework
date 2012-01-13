@@ -345,7 +345,7 @@ public abstract class Application extends SwingBean implements Injectable, Local
     }
 
     public void launch(final String... args) {
-        launch(false, args);
+        launch(true, args);
     }
 
     /**
@@ -830,6 +830,10 @@ public abstract class Application extends SwingBean implements Injectable, Local
         return showOption(getParentComponent(evt), name);
     }
     
+    public Object showOption(EventObject evt, String name, Object message) {
+        return showOption(getParentComponent(evt), name, message);
+    }
+    
     /**
      * Do something TODO.
      * <p>Details of the function.</p>
@@ -856,6 +860,10 @@ public abstract class Application extends SwingBean implements Injectable, Local
     
     public Object showOption(Component parent, String name) {
         return show(parent, name, new JOptionPane());
+    }
+    
+    public Object showOption(Component parent, String name, Object message) {
+        return show(parent, name, new JOptionPane(message));
     }
     
     /**
