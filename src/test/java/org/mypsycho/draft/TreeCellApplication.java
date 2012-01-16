@@ -1,5 +1,5 @@
 
-package com.mypsycho.draft;
+package org.mypsycho.draft;
 
 import java.awt.Color;
 import java.awt.GridLayout;

@@ -30,7 +30,8 @@ public class SingleFrameExample3 extends SingleFrameApplication {
         }
     };
     
-    @Override protected void startup() {
+    @Override 
+    protected void startup() {
 
         addApplicationListener(mayExit);
 

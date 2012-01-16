@@ -1,4 +1,4 @@
-package com.mypsycho.test.app;
+package org.mypsycho.test.app;
 
 import java.awt.EventQueue;
 import java.awt.Window;

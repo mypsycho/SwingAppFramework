@@ -1,11 +1,11 @@
-package com.mypsycho.test.text;
+package org.mypsycho.test.text;
 
 import java.util.ResourceBundle;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mypsycho.test.text.LangTest.Here.Me;
 
-import com.mypsycho.test.text.LangTest.Here.Me;
 
 
 /**

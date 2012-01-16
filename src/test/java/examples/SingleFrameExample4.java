@@ -88,7 +88,6 @@ public class SingleFrameExample4 extends SingleFrameApplication {
      * Replace the contents of the textPane with the value of the
      * "defaultText" resource.
      */
-
     public void close() {
         textPane.setText(getDefaultText());
     }
@@ -104,8 +103,7 @@ public class SingleFrameExample4 extends SingleFrameApplication {
         textPane = new JTextPane();
         SwingHelper h = new SwingHelper("textPane", new JScrollPane(textPane,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-                ));
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         show((JComponent) h.get());
     }
 

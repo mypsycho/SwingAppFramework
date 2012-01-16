@@ -1,4 +1,4 @@
-package com.mypsycho.draft;
+package org.mypsycho.draft;
 
 import java.net.URL;
 

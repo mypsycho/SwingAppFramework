@@ -61,11 +61,7 @@ public class JLogin extends JOptionPane {
     public JLogin showDialog(Component parentComponent, String title) {
         JDialog dialog = createDialog(parentComponent, title);
         dialog.setVisible(true); // Blocking method
-
-        if (OK_BUTTON.equals(getValue()))
-            return this;
-        else
-            return null;
+        return OK_BUTTON.equals(getValue()) ? this : null;
     }
 
     public String getLogin() { return login.getText(); } 

@@ -1,4 +1,4 @@
-package com.mypsycho.test.beans;
+package org.mypsycho.test.beans;
 
 import java.util.Locale;
 import java.util.Map;

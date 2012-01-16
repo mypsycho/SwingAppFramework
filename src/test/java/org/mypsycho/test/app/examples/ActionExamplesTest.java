@@ -2,7 +2,7 @@
  * Copyright (C) 2012 Nicolas Peransin. All rights reserved.
  * Use is subject to license terms.
  */
-package com.mypsycho.test.app.examples;
+package org.mypsycho.test.app.examples;
 
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -17,8 +17,8 @@ import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JPopupMenuFixture;
 import org.junit.Test;
+import org.mypsycho.test.app.AbstractAppTestContext;
 
-import com.mypsycho.test.app.AbstractAppTestContext;
 
 import examples.ActionExample2;
 import examples.ActionExample3;

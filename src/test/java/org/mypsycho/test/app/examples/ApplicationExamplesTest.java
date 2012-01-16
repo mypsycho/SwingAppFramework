@@ -2,12 +2,12 @@
  * Copyright (C) 2012 Nicolas Peransin. All rights reserved.
  * Use is subject to license terms.
  */
-package com.mypsycho.test.app.examples;
+package org.mypsycho.test.app.examples;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.junit.Test;
+import org.mypsycho.test.app.AbstractAppTestContext;
 
-import com.mypsycho.test.app.AbstractAppTestContext;
 
 import examples.ApplicationExample1;
 import examples.ApplicationExample2;
