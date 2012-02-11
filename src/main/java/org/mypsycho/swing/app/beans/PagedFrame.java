@@ -34,7 +34,7 @@ import org.mypsycho.swing.app.View;
  * @author PERANSIN Nicolas
  */
 // NOTE: Surprisingly, 'menu bar' property is 'JMenuBar' not 'jMenuBar'
-@Inject(order={ "actions", "JMenuBar", "menuBar", "pageMenuOffset"})
+@Inject(order={ "actionMap", "JMenuBar", "menuBar", "pageMenuOffset"})
 public class PagedFrame extends MenuFrame {
     
     public static final String TABS_VISIBLE_PROP = "tabsVisible";

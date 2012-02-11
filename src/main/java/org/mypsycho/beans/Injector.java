@@ -41,7 +41,11 @@ public class Injector extends PropertyUtilsBean {
     public static final Pattern ATTRIBUT_PATTERN = Pattern.compile("[a-z_]\\w*");
 
     private static String createKey(Locale locale, Class<?> since) {
-        return locale + "@" + since.getCanonicalName();
+        String className = since.getCanonicalName();
+        if (className == null) { // anonymous or inner
+            className = since.getName();
+        }
+        return locale + "@" + className;
     }
 
     Map<String, InjectDescriptor> descriptors = new FastHashMap(); // ThreadSafe
