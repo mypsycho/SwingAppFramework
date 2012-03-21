@@ -26,7 +26,8 @@ import java.util.Date;
 import java.util.Stack;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
-import javax.swing.treetable.*;
+
+import org.mypsycho.swing.treetable.*;
 
 
 /**

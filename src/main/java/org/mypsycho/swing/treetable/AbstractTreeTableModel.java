@@ -1,4 +1,4 @@
-package javax.swing.treetable;
+package org.mypsycho.swing.treetable;
 
 /*
  * @(#)AbstractTreeTableModel.java	1.2 98/10/27

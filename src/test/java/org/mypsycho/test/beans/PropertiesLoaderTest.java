@@ -59,6 +59,7 @@ public class PropertiesLoaderTest {
         PropertiesLoader loader = new PropertiesLoader();
         Map<String, String> props = loader.getProperties(BeanA.class, Locale.ENGLISH);
         Assert.assertEquals("say hello", props.get("y"));
+        Assert.assertEquals("say ${nopack.NoClass#x}", props.get("z"));
     }
 
     @Test
@@ -71,4 +72,6 @@ public class PropertiesLoaderTest {
         Assert.assertEquals("$$1", props.get("e"));
     }
 
+    
+    
 }

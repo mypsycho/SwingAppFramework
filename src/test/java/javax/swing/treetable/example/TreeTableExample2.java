@@ -28,7 +28,8 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
-import javax.swing.treetable.*;
+
+import org.mypsycho.swing.treetable.*;
 
 /**
  * Assembles the UI. The UI consists of a JTreeTable and a status label.
