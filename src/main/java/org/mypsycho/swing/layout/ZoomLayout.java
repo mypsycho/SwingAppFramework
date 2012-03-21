@@ -24,7 +24,7 @@ import javax.swing.JComponent;
 /**
  * Layout similaire au null layout mais permettant de definir une taille de
  * reference qui sera la taille preferee et de faire zoomer les composants.
- * Les composant doivent être ajoutes avec une ZoomConstraint.
+ * Les composant doivent etre ajoutes avec une ZoomConstraint.
  *
  * Si une dimension de reference est negative, un calcul est effectue de
  * maniere a ce que le layout inclut tous les composants sur cet axe.

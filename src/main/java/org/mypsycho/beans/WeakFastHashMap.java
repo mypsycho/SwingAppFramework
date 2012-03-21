@@ -616,7 +616,7 @@ public class WeakFastHashMap<K, V> extends HashMap<K, V> {
             }
         }
 
-        public Object[] toArray(Object[] o) {
+        public <A> A[] toArray(A[] o) {
             if (fast) {
                 return get(map).toArray(o);
             } else {
