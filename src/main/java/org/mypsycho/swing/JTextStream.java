@@ -19,7 +19,7 @@ public abstract class JTextStream extends PrintStream {
     
     private static final OutputStream STUB = new ByteArrayOutputStream(0);
     
-    public static final int DEFAULT_MAX = 2000*100;
+    public static final int DEFAULT_MAX = 2000*1000;
     
     final protected int maxPrintedChar;
     final protected int start = 200;

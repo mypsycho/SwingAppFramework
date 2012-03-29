@@ -5,6 +5,8 @@
 package org.mypsycho.swing.app.utils;
 
 import java.awt.Color;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.io.PrintStream;
 
 import javax.swing.JTextPane;
@@ -25,12 +27,41 @@ import org.mypsycho.swing.TextPaneStream;
  */
 public class SystemTextPane extends JTextPane {
 
-    PrintStream oldStd = System.out;
-    PrintStream oldErr = System.err;
+    PrintStream oldStd = null;
+    PrintStream oldErr = null;
     
     public SystemTextPane() {
         System.setOut(createStream("std", Color.BLUE));
         System.setErr(createStream("err", Color.RED));
+        setEditable(false);
+        
+        addHierarchyListener(new HierarchyListener() {
+            
+            @Override
+            public void hierarchyChanged(HierarchyEvent e) {
+                if (isDisplayable()) {
+                    if (oldStd == null) {
+                        oldStd = System.out;
+                        System.setOut(createStream("std", Color.BLUE));
+                    }
+                    if (oldErr == null) {
+                        oldErr = System.err;
+                        System.setErr(createStream("err", Color.RED));
+                    }
+                } else {
+                    if (oldStd != null) {
+                        System.setOut(oldStd);
+                        oldStd = null;
+                    }
+                    if (oldErr != null) {
+                        System.setErr(oldErr);
+                        oldErr = null;
+                    }
+                    
+                }
+                
+            }
+        });
     }
     
     TextPaneStream createStream(String name, Color c) {
@@ -42,8 +73,4 @@ public class SystemTextPane extends JTextPane {
         return new TextPaneStream(this, TextPaneStream.DEFAULT_MAX, name);
     }
 
-    public void release() {
-        System.setOut(System.out);
-        System.setErr(System.err);
-    }
 }

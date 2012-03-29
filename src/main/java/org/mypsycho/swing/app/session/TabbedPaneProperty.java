@@ -79,7 +79,8 @@ public class TabbedPaneProperty implements PropertySupport {
         if (state instanceof TabbedPaneState){
             JTabbedPane p = (JTabbedPane) c;
             TabbedPaneState tps = (TabbedPaneState) state;
-            if (p.getTabCount() == tps.getTabCount()) {
+            if ((p.getTabCount() == tps.getTabCount())
+                    && p.isEnabledAt(tps.getSelectedIndex())) {
                 p.setSelectedIndex(tps.getSelectedIndex());
             }
         } else {

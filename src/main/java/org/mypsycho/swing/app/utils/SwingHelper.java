@@ -72,6 +72,7 @@ public class SwingHelper extends Swings {
         return add(name, c, null);
     }
 
+    
     public SwingHelper add(String name, Component c, Object constraint) {
         // Compatible JTabbedPane
         if (name == null) {

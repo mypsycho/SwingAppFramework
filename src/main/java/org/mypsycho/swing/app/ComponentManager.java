@@ -35,6 +35,10 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  */
 public class ComponentManager extends ContainerPropagator {
 
+    public static ApplicationContext getContext(JComponent c) {
+        return (ApplicationContext) c.getClientProperty(ApplicationContext.CLIENT_PROPERTY);
+    }
+    
     ApplicationContext context;
 
     PropertyChangeListener localeListener;

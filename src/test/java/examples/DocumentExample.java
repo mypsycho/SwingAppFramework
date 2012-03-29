@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.EventObject;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,26 +46,26 @@ import org.mypsycho.text.TextMap;
  * <p>
  * The application's state is defined by two read-only bound properties:
  * <dl>
- * <dt><strong>File {@link #getFile file}</strong><dt>
+ * <dt><strong>File {@link #getFile file}</strong></dt>
  * <dd>The current text File being edited.</dd>
- * <dt><strong>boolean {@link modified #isModified}</strong><dt>
+ * <dt><strong>boolean {@link #isModified modified}</strong></dt>
  * <dd>True if the current file needs to be saved.</dd>
  * </dl>
  * These properties are updated when the user interacts with the
  * application.  They can be used as binding sources, to monitor
  * the application's state.
- * 
+ * </p>
  * <p> 
  * The application is {@link Application#launch launched} in the
  * main method on the "main" thread.  All the work of actually
  * constructing, {@link #initialize intializing}, and
  * {@link #startup starting} the application actually
  * happens on the EDT.  
- * 
+ * </p>
  * <p> 
  * The resources for this Application are defined in {@code
  * resources/DocumentExample.properties}. 
- * 
+ * </p>
  * <p> 
  * This application defines a small set of actions for opening
  * and saving files: {@link #open open}, {@link #save save}, 
@@ -76,7 +77,7 @@ import org.mypsycho.text.TextMap;
  * has the keyboard focus.  Their enabled state tracks the
  * selection value of the component with the keyboard focus, 
  * as well as the contents of the system clipboard.
- * 
+ * </p>
  * <p>
  * The action code that reads and writes files, runs asynchronously
  * on background threads.  The {@link #open open}, {@link #save save}, 
@@ -85,7 +86,7 @@ import org.mypsycho.text.TextMap;
  * The {@link #showAboutBox showAboutBox} and 
  * {@link #closeAboutBox closeAboutBox} actions do their work
  * synchronously.
- * 
+ * </p>
  * <p>
  * <strong>Warning:</strong> this application is intended as a simple 
  * example, not as a robust text editor.  Read it, don't use it.
@@ -140,7 +141,7 @@ public class DocumentExample extends SingleFrameApplication {
             setMain(sp);
             // Menubar : injected
             // Toolbar : Injected
-            setStatusBar(new StatusBar(getApplication(), getContext().getTaskMonitor()));
+            // statusbar : default
             setTitle(getMainFrameTitle());
         }
     }
@@ -340,6 +341,7 @@ public class DocumentExample extends SingleFrameApplication {
      * happen before the GUI is constructed should be done here.
      */
     @Override protected void initialize(String[] args) {
+        setLocale(Locale.ENGLISH);
         FileFilter fileFilter = new FileNameExtensionFilter(texts.get("txtExtDescription"), "txt");
         
         fc = new JFileChooser();
@@ -520,8 +522,8 @@ public class DocumentExample extends SingleFrameApplication {
                 // no edition work to save
                 return true;
             }
-            String msg = texts.get("confirmExit", getFile());
-            Object confirm = show(e, "confirmExit", new JOptionPane(msg));
+            
+            Object confirm = showOption(e, "confirmExit", texts.get("confirmExit", getFile()));
             return new Integer(JOptionPane.YES_OPTION).equals(confirm);
         }
     }

@@ -25,7 +25,7 @@ public class InjectionTemplate {
     protected static final String ANY = "(.*)";
     protected static final String START = "^%\\{";
     protected static final String END = "\\}$";
-    protected static final String LITERAL = "([a-zA-Z_0-9]+)";
+    protected static final String LITERAL = "([\\-a-zA-Z_0-9]+)";
     
     protected static final String PATH = '(' 
             + OR(LITERAL, "\\(" + LITERAL + "\\)", "\\[\\d+\\]") 

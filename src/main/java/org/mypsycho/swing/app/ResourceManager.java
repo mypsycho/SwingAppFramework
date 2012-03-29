@@ -26,6 +26,7 @@ import org.mypsycho.swing.app.reflect.DerivedFontConverter;
 import org.mypsycho.swing.app.reflect.MenuConverter;
 import org.mypsycho.swing.app.reflect.MnemonicProperty;
 import org.mypsycho.swing.app.reflect.ResourceConverter;
+import org.mypsycho.swing.app.reflect.TableColumnsProperty;
 import org.mypsycho.swing.app.reflect.TableHeaderProperty;
 import org.mypsycho.swing.app.reflect.UiConverter;
 import org.mypsycho.swing.app.reflect.WindowIconProperty;
@@ -91,6 +92,7 @@ public class ResourceManager extends Injector {
             register(new MnemonicProperty.Label());
             register(new MnemonicProperty.Menu());
             register(new TableHeaderProperty());
+            register(new TableColumnsProperty());
             // By default, JFrame expose a property 'JMenuBar' not jMenuBar
             // We register a more convenient name (Note: Frame.menuBar is no more accessible)
             register(new DescriptorExtension(JFrame.class, "menuBar", 

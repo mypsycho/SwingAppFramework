@@ -32,6 +32,8 @@ import org.mypsycho.swing.app.ApplicationContext;
 import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.FrameView;
 import org.mypsycho.swing.app.SingleFrameApplication;
+import org.mypsycho.swing.app.beans.StatusBar;
+import org.mypsycho.swing.app.beans.TaskMonitor;
 import org.mypsycho.swing.app.task.Task;
 import org.mypsycho.swing.app.task.Task.BlockingScope;
 import org.mypsycho.swing.app.task.Task.InputBlocker;

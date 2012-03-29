@@ -6,6 +6,7 @@ package org.mypsycho.swing;
 
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
@@ -40,35 +41,60 @@ public class TextAreaStream extends JTextStream {
         return (JTextArea) super.getText();
     }
     
-    
+    private Runnable refresh = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (content) {
+                if (pending.length() == 0) {
+                    pending = null;
+                    return;
+                }
+                Document doc = getText().getDocument();
+                int nbToRemove = doc.getLength() + pending.length() - maxPrintedChar;
+                try {
+                    if (nbToRemove > 0) {
+                        String begin = doc.getText(nbToRemove, nbToRemove + start);
+                        int line = begin.indexOf('\n');
+                        if (line != -1) {
+                            doc.remove(0, nbToRemove + line);
+                        } else {
+                            doc.remove(0, nbToRemove);
+                        }
+                    }
+                    doc.insertString(doc.getLength(), pending, null);
+                    content.setCaretPosition(doc.getLength());
+                } catch (BadLocationException ble) {
 
+                }
+                pending = null;
+            }
+            
+        }
+    };
+
+    String pending = null;
+    
     /**
      * Write a string.  This method cannot be inherited from the Writer class
      * because it must suppress I/O exceptions.
      * @param s String to be written
      */
-    public void write(String s) {
+    public void write(final String s) {
+        String text = (s != null) ? s : "null";
         synchronized (content) {
-            if (s == null) {
-                s = "null";
+            boolean toInvoke = false;
+            if (pending == null) {
+                pending = text;
+                toInvoke = true;
+            } else {
+                pending += text;
             }
-            
-            Document doc = getText().getDocument();
-            int nbToRemove = doc.getLength() + s.length() - maxPrintedChar;
-            try {
-                if (nbToRemove > 0) {
-                    String begin = doc.getText(nbToRemove, nbToRemove + start);
-                    int line = begin.indexOf('\n');
-                    if (line != -1) {
-                        doc.remove(0, nbToRemove + line);
-                    } else {
-                        doc.remove(0, nbToRemove);
-                    }
+            if (!SwingUtilities.isEventDispatchThread()) {
+                if (toInvoke) {
+                    SwingUtilities.invokeLater(refresh);
                 }
-                doc.insertString(doc.getLength(), s, null);
-                content.setCaretPosition(doc.getLength());
-            } catch (BadLocationException ble) {
-            
+            } else {
+                refresh.run();
             }
         }
     }

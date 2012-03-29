@@ -20,6 +20,7 @@ import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.SingleFrameApplication;
+import org.mypsycho.swing.app.beans.StatusBar;
 import org.mypsycho.swing.app.utils.SwingHelper;
 import org.mypsycho.text.BeanTextMap;
 import org.mypsycho.text.TextMap;

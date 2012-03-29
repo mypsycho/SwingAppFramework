@@ -1,0 +1,58 @@
+<html>
+<body>
+
+This is a very simple example of a SingleFrameApplication that
+loads and saves a single text document.  Although it does not
+possess all of the usual trappings of a single-document app, 
+like versioning or support for undo/redo, it does serve
+to highlight how to use actions, resources, and tasks.
+
+<p>
+The application's state is defined by two read-only bound properties:
+<dl>
+<dt><strong>File <code>file</code></strong></dt>
+<dd>The current text File being edited.</dd>
+<dt><strong>boolean <code>modified</code></strong></dt>
+<dd>True if the current file needs to be saved.</dd>
+</dl>
+These properties are updated when the user interacts with the
+application.  They can be used as binding sources, to monitor
+the application's state.
+</p>
+<p> 
+The application is <code>launched</code> in the
+main method on the "main" thread.  All the work of actually
+constructing, <code>intializing</code>, and
+<code>starting</code> the application actually
+happens on the EDT.  
+</p>
+<p> 
+The resources for this Application are defined in <code>
+resources/DocumentExample.properties</code>. 
+</p>
+<p> 
+This application defines a small set of actions for opening
+and saving files: <code>open</code>, <code>save</code>, 
+and <code>saveAs</code>.  It inherits 
+<code>cut/copy/paste/delete</code> ProxyActions from the
+<code>Application</code> class.  The ProxyActions perform their
+action not on the component they're bound to (menu items and
+toolbar buttons), but on the component that currently 
+has the keyboard focus.  Their enabled state tracks the
+selection value of the component with the keyboard focus, 
+as well as the contents of the system clipboard.
+</p>
+<p>
+The action code that reads and writes files, runs asynchronously
+on background threads.  The <code>open</code>, <code>save</code>, 
+and <code>saveAs</code> actions all return a Task object which
+encapsulates the work that will be done on a background thread.
+The <code>showAboutBox</code> and 
+<code>closeAboutBox</code> actions do their work
+synchronously.
+</p>
+<p>
+<strong>Warning:</strong> this application is intended as a simple 
+example, not as a robust text editor.  Read it, don't use it.
+ </body>
+ </html>

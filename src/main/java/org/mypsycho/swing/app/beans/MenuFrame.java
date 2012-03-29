@@ -9,12 +9,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.List;
 
 import javax.swing.AbstractButton;
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -24,10 +24,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.Scrollable;
+import javax.swing.text.JTextComponent;
 
 import org.mypsycho.beans.Inject;
 import org.mypsycho.swing.TextAreaStream;
+import org.mypsycho.swing.TextPaneStream;
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.View;
@@ -92,25 +96,13 @@ public class MenuFrame extends JFrame {
     public MenuFrame(Application pApp) {
         app = pApp;
 
-        
-        
         // Building main
-
-        console = createDefaultConsole();
-        consoleSplit.setBottomComponent(console);
-        
-        // getContentPane().add(mainPane, BorderLayout.CENTER);
-
-        statusBar = createDefaultStatus();
-        
-        // building status
-        statusBar.setBorder(BorderFactory.createLoweredBevelBorder());
-        getContentPane().add(statusBar, BorderLayout.PAGE_END);
+        setConsole(createDefaultConsole());
+        setStatusBar(createDefaultStatus());
 
         // MessagesPart position
         consoleSplit.setDividerLocation(0.75);
         consoleDivLoc = consoleSplit.getDividerLocation();
-        
     }
     
     /**
@@ -119,8 +111,12 @@ public class MenuFrame extends JFrame {
      *
      * @return
      */
-    private JComponent createDefaultStatus() {
-        return new JLabel(EMPTY_STATUS_BAR);
+    protected JComponent createDefaultStatus() {
+        return new StatusBar(getApplication(), getApplication().getContext().getTaskMonitor());
+//        
+//        JLabel created = new JLabel(EMPTY_STATUS_BAR);
+//        created.setBorder(BorderFactory.createLoweredBevelBorder());
+//        return created;
     }
     
     private Component replaceContentPaneChild(Component newChild, String constraint) {
@@ -170,10 +166,22 @@ public class MenuFrame extends JFrame {
         firePropertyChange(MAIN_PROP, oldValue, main);
     }
     
+    public void clearConsole() {
+        JComponent out = console;
+        if (out instanceof JTextComponent) {
+            ((JTextComponent) out).setText("");
+        }
+    }
     
-    
-    public void setConsole(JComponent component) {
-        
+    public void setConsole(JComponent comp) {
+        JComponent oldValue = console;
+        console = comp;
+        if (comp instanceof Scrollable) {
+            consoleSplit.setBottomComponent(new JScrollPane(console));
+        } else {
+            consoleSplit.setBottomComponent(console);
+        }
+        firePropertyChange(CONSOLE_PROP, oldValue, console);
     }
     
     
@@ -183,12 +191,21 @@ public class MenuFrame extends JFrame {
     }
     
     protected JComponent createDefaultConsole() {
-        JTextArea text = new JTextArea();
-        text.setRows(10);
-        text.setEditable(false);
-        return new JScrollPane(text);        
+        // JTextPane text = new SystemTextPane();
+        return new JTextPane();
     }
 
+    protected PrintStream getConsoleStream() {
+        JComponent out = console;
+        if (out instanceof JTextArea) {
+            return new TextAreaStream((JTextArea) out);
+        } else if (out instanceof JTextPane) {
+            return new TextPaneStream((JTextPane) out);
+        } else {
+            return System.out;
+        }
+        
+    }
  
 
     // public Frame getFrame() { return this; }
@@ -348,16 +365,25 @@ public class MenuFrame extends JFrame {
             label = EMPTY_STATUS_BAR;
         }
     
-        if (!(statusBar instanceof JLabel)) {
+        String old = null;
+        if (statusBar instanceof JLabel) {
+            JLabel comp = (JLabel) statusBar;
+            old = comp.getText();
+            if (label.equals(old)) {
+                return;
+            }
+            comp.setText(label);
+        } else if (statusBar instanceof StatusBar) {
+            StatusBar comp = (StatusBar) statusBar;
+            old = comp.getMessage();
+            if (label.equals(old)) {
+                return;
+            }            
+            comp.setMessage(label);
+        } else {
             return;
         }
         
-        String old = ((JLabel) statusBar).getText();
-        if (label.equals(old)) {
-            return;
-        }
-        
-        ((JLabel) statusBar).setText(label);
         firePropertyChange(STATUS_PROP, old, label);
     }
 

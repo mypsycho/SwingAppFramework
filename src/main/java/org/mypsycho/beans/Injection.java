@@ -151,6 +151,9 @@ public class Injection {
 
 
     protected Injection getChild(Nature kind, Object id) {
+        if (children == null) {
+            return null;
+        }
         for (Injection child : children) {
             if ((kind == child.nature) && id.equals(child.id)) {
                 return child;
@@ -610,15 +613,15 @@ public class Injection {
         
         context.update(type, this, value);
 
+
+        for (Injection child : injections) {
+            child.inject(type, value, context);
+        }
         if (value instanceof Injectable) {
             // Nothing inject when no child
             // Useless to create a context for something null
             ((Injectable) value).initResources(context.clone());
         }
-        for (Injection child : injections) {
-            child.inject(type, value, context);
-        }
-
     }
 
     protected Object convert(Class<?> expected, Object parent, InjectionContext context)

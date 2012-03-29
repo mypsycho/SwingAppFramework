@@ -3,7 +3,7 @@
  * Copyright (C) 2011 Peransin Nicolas.
  * Use is subject to license terms.
  */
-package examples;
+package org.mypsycho.swing.app.beans;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -110,6 +110,10 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
         messageTimer.restart();
     }
 
+    public String getMessage() {
+        return messageLabel.getText();
+    }
+    
     private void initGridBagConstraints(GridBagConstraints c) {
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.NONE;

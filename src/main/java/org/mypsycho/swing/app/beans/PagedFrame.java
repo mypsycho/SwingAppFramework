@@ -8,6 +8,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -293,6 +296,23 @@ public class PagedFrame extends MenuFrame {
         }
     };
 
+    final ItemListener menuPagesListener = new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+            JMenuItem item = (JMenuItem) e.getSource();
+            if (!item.isSelected()) {
+                return;
+            }
+            
+            
+            for (Page page : pages) {
+                if (item == page.menu) {
+                    setSelected(page);
+                    break;
+                }
+            }
+        }
+    };
+
 
     boolean dirty = true;
     
@@ -530,9 +550,10 @@ public class PagedFrame extends MenuFrame {
         }
         if (old != null) {
             for (Page page : pages) {
-                JComponent menu = page.menu;
+                JMenuItem menu = page.menu;
                 if (menu.getParent() != null) {
                     menu.getParent().remove(menu);
+                    menu.removeItemListener(menuPagesListener);
                 }
             }
         }
@@ -561,10 +582,11 @@ public class PagedFrame extends MenuFrame {
             return;
         }
         
-        Container menu = getPageMenuParent();
-        if (menu != null) {
+        Container menuContainer = getPageMenuParent();
+        if (menuContainer != null) {
             int offset = pageMenuOffset[pageMenuOffset.length - 1];
-            menu.add(page.menu, offset + position);
+            page.menu.addItemListener(menuPagesListener);
+            menuContainer.add(page.menu, offset + position);
         }
     }
     
@@ -581,7 +603,7 @@ public class PagedFrame extends MenuFrame {
         return menu;
     }
     
-    void remove(Page page) {
+    public void remove(Page page) {
         
         int position = pages.indexOf(page);
         if (position == -1) {
@@ -598,6 +620,7 @@ public class PagedFrame extends MenuFrame {
 		JComponent menu = page.menu;
 		if (menu.getParent() != null) {
 		    menu.getParent().remove(menu);
+		    page.menu.removeItemListener(menuPagesListener);
 		}
 		dirty = false;
 
