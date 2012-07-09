@@ -76,6 +76,7 @@ public class View extends SwingBean {
 
     public static final String COMPONENT_PROP = "component";
     public static final String MENUBAR_PROP = "menubar";
+    public static final String TOOL_BAR_PROP = "toolbar";
     public static final String TOOL_BARS_PROP = "toolbars";
     public static final String STATUS_BAR_PROP = "statusBar";
 
@@ -372,7 +373,7 @@ public class View extends SwingBean {
         return rootPane;
     }
 
-    private void replaceContentPaneChild(JComponent oldChild, JComponent newChild, String constraint) {
+    private void replaceChild(JComponent oldChild, JComponent newChild, String constraint, String name) {
         Container contentPane = getRootPane().getContentPane();
         if (oldChild != null) {
             contentPane.remove(oldChild);
@@ -380,6 +381,7 @@ public class View extends SwingBean {
         if (newChild != null) {
             contentPane.add(newChild, constraint);
         }
+        firePropertyChange(name, oldChild, newChild);
     }
 
     /**
@@ -406,8 +408,10 @@ public class View extends SwingBean {
     public void setComponent(JComponent component) {
         JComponent oldValue = this.component;
         this.component = component;
-        replaceContentPaneChild(oldValue, this.component, BorderLayout.CENTER);
-        firePropertyChange(COMPONENT_PROP, oldValue, this.component);
+        if (component != null && component.getName() == null) {
+            component.setName(COMPONENT_PROP);
+        }
+        replaceChild(oldValue, this.component, BorderLayout.CENTER, COMPONENT_PROP);
     }
 
     /**
@@ -455,7 +459,7 @@ public class View extends SwingBean {
      */
     public void setToolBars(List<? extends JToolBar> toolBars) {
         SwingHelper.assertNotNull(TOOL_BARS_PROP, toolBars);
-        List<JToolBar> oldValue = getToolBars();
+        // List<JToolBar> oldValue = getToolBars();
         this.toolBars = Collections.unmodifiableList(new ArrayList<JToolBar>(toolBars));
         JComponent oldToolBarsPanel = toolBarsPanel;
         JComponent newToolBarsPanel = null;
@@ -463,12 +467,13 @@ public class View extends SwingBean {
             newToolBarsPanel = toolBars.get(0);
         } else if (this.toolBars.size() > 1) {
             newToolBarsPanel = new JPanel(); // FlowLayout
+            newToolBarsPanel.setName(TOOL_BARS_PROP);
             for (JComponent toolBar : this.toolBars) {
                 newToolBarsPanel.add(toolBar);
             }
         }
-        replaceContentPaneChild(oldToolBarsPanel, newToolBarsPanel, BorderLayout.PAGE_START);
-        firePropertyChange(TOOL_BARS_PROP, oldValue, this.toolBars);
+        replaceChild(oldToolBarsPanel, newToolBarsPanel, BorderLayout.PAGE_START, TOOL_BARS_PROP);
+
     }
 
     /**
@@ -495,7 +500,14 @@ public class View extends SwingBean {
      * @see #getToolBars()
      */
     public final void setToolBar(JToolBar toolBar) {
-        setToolBars((toolBar != null) ? Collections.singletonList(toolBar) : Collections.EMPTY_LIST);
+        if (toolBar != null) {
+            if (toolBar.getName() == null) {
+                toolBar.setName(TOOL_BAR_PROP);
+            }
+            setToolBars(Collections.singletonList(toolBar));
+        } else {
+            setToolBars(Collections.EMPTY_LIST);
+        }
     }
 
     /**
@@ -515,8 +527,7 @@ public class View extends SwingBean {
     public void setStatusBar(JComponent statusBar) {
         JComponent oldValue = this.statusBar;
         this.statusBar = statusBar;
-        replaceContentPaneChild(oldValue, this.statusBar, BorderLayout.PAGE_END);
-        firePropertyChange(STATUS_BAR_PROP, oldValue, this.statusBar);
+        replaceChild(oldValue, this.statusBar, BorderLayout.PAGE_END, STATUS_BAR_PROP);
     }
 
     /**

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.expression.Resolver;
 
@@ -27,6 +28,11 @@ public class Injection {
 
     static final Object NULL_VALUE = new Object();
     
+    // For convience, we ignore warning from attribute with upper-cased initial.
+    // It is a common way to distingue constant from attribute.
+    // Getting those exception is very annoying.
+    public static final Pattern ATTRIBUT_PATTERN = Pattern.compile("[a-z_]\\w*");
+
     
     public enum Nature {
         SIMPLE, INDEXED, MAPPED 
@@ -348,7 +354,11 @@ public class Injection {
                     throw new IllegalStateException("Unexpected nature " + nature);
             }
 
-        } catch (Exception e) {            
+        } catch (NoSuchMethodException e) {
+            if (ATTRIBUT_PATTERN.matcher(""+id).matches()) {
+                getInjector().notify(getCanonicalName(), e.getMessage(), e);
+            }
+        } catch (Exception e) {
             Throwable cause = e;
             while (cause instanceof InvocationTargetException) {
                 cause = ((InvocationTargetException) cause).getTargetException();

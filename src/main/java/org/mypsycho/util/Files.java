@@ -25,7 +25,7 @@ public class Files {
 	
     private static final String JAR_PROTOCOL="jar";
     private static final String FILE_FULL_PROTOCOL="file:";
-    public static String getLocation(Class<?> c) { // In Unix style
+    public static File getLocation(Class<?> c) { // In Unix style
 
         String extension = ".class";
         char pathSeparator = '/';
@@ -35,20 +35,41 @@ public class Files {
         String path = url.getPath();
 
         boolean hasFileProtocol = false;
-        int end = path.length()-fileName.length()-extension.length()-1;
+        int end = path.length() - fileName.length() - extension.length() - 1;
         if (url.getProtocol().equals(JAR_PROTOCOL)) {
             hasFileProtocol = path.startsWith(FILE_FULL_PROTOCOL);
             end = path.lastIndexOf(pathSeparator, end-1);
         }
-        if (!hasFileProtocol)
+        if (!hasFileProtocol) {
             path = FILE_FULL_PROTOCOL + path.substring(0, end);
-        else
+        } else {
             path = path.substring(0, end);
+        }
         URI uri = URI.create(path);
-        System.out.println("uri " + uri.getAuthority());
-        return new File(uri).getAbsolutePath();
+        // System.out.println("uri " + uri.getAuthority());
+        return new File(uri);
+    }
+    
+    public static File getLocationPath(Class<?> c) { // In Unix style
+        return getLocation(c).getAbsoluteFile();
     }
 
+    public static File getLocationArchive(Class<?> c) { // In Unix style
+        String extension = ".class";
+        String fileName = c.getName();
+        // Si pas de package => (-1)+1 = 0 : OK
+        URL url = c.getResource(fileName.substring(fileName.lastIndexOf('.')+1) + extension);
+        if (!url.getProtocol().equals(JAR_PROTOCOL)) {
+            return null;
+        }
+        String path = url.getPath();
+
+        // suppressing '!/' tag
+        int end = path.length() - fileName.length() - extension.length() - 2;
+        boolean withFileProtocol = path.startsWith(FILE_FULL_PROTOCOL);
+        path = ((!withFileProtocol) ? FILE_FULL_PROTOCOL : "") + path.substring(0, end);
+        return new File(URI.create(path));
+    }
 
     public static final String PATH_PARENT = "..";
     public static final String PATH_IDENTITY = ".";

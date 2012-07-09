@@ -34,7 +34,7 @@ import javax.swing.border.CompoundBorder;
  * <p>Detail ... </p>
  * @author Peransin Nicolas
  */
-public class ZoomTest extends JPanel {
+public class ZoomSutPane extends JPanel {
 
     /**
 	 * Generated serialized version
@@ -43,7 +43,7 @@ public class ZoomTest extends JPanel {
 
 	protected LayoutManager getSuperLayout() { return null; };
 
-    public ZoomTest() {
+    public ZoomSutPane() {
 //        super(getSuperLayout());
         try {
             jbInit();
@@ -326,7 +326,7 @@ public class ZoomTest extends JPanel {
 
 
 //Math.floor(0.0);
-        ZoomTest t = new ZoomTest();
+        ZoomSutPane t = new ZoomSutPane();
         f.getContentPane().add(t, BorderLayout.CENTER);
 
 

@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import org.mypsycho.swing.app.session.LocalStorage;
 import org.mypsycho.swing.app.session.SessionStorage;
 import org.mypsycho.swing.app.task.TaskService;
 import org.mypsycho.swing.app.utils.SwingHelper;
+import org.mypsycho.util.Files;
 
 
 
@@ -44,14 +47,17 @@ import org.mypsycho.swing.app.utils.SwingHelper;
 public class ApplicationContext extends SwingBean {
 
     
-    private static final String TRIM_SUFFIX = "Application";
+    private static final String NAME_TRIM_SUFFIX = "Application";
     
     /** Prefix to identify environment in injected context */
     public static final String ENV_PREFIX = "env:";
     /** Prefix to identify plateform in injected context */
     public static final String OS_PROP = ENV_PREFIX + "os";
     /** Prefix to name plateform in injected context */
-    public static final String OSNAME_PROP = OS_PROP + ".name";
+    public static final String OS_DISPLAY_PROP = OS_PROP + ".common-name";
+    public static final String ARCHIVE_PROP = ENV_PREFIX + "AppLibFile";
+    public static final String LIBPATH_PROP = ENV_PREFIX + "AppLibPath";
+    public static final String PATH_PROP = OS_PROP + ".archive";
     public static final String LOOKNFEEL_PROP = ENV_PREFIX + "lnf";
 
     public static final String CLIENT_PROPERTY = "application.context";
@@ -139,14 +145,37 @@ public class ApplicationContext extends SwingBean {
         }
     }
 
+    private void initResourceManager(String name, File f) {
+        if (f != null) {
+            String value;
+            try {
+                value = f.getCanonicalPath();
+            } catch (IOException e) {
+                value = f.getAbsolutePath();
+            }
+            initResourceManager(name, value);
+        }
+    }
+    
+    private void initResourceManager(String name, String value) {
+        if (value != null) {
+            resourceManager.addGlobal(name, value);
+        }
+    }
+    
     protected void initResourceManager() {
         resourceManager.addGlobals(ENV_PREFIX, System.getenv());
         resourceManager.addGlobals(ENV_PREFIX, System.getProperties());
-        resourceManager.addGlobal(OS_PROP, plateform.getId());
-        resourceManager.addGlobal(OSNAME_PROP, plateform.getDisplay());
-        
-        // Application name
+        initResourceManager(OS_PROP, plateform.getId());
+        initResourceManager(OS_DISPLAY_PROP, plateform.getDisplay());
+
         Class<?> appClass = getApplication().getClass();
+        
+        // Application location based on class location
+        initResourceManager(ARCHIVE_PROP, Files.getLocationArchive(appClass));
+        initResourceManager(LIBPATH_PROP, Files.getLocation(appClass));
+        
+        // Application name based on class name
         String simpleName = appClass.getSimpleName();
         String packageName = "noPackage";
         if (appClass.getPackage() != null) {
@@ -154,14 +183,15 @@ public class ApplicationContext extends SwingBean {
         } // else no package : naughty boy !!
         
         resourceManager.addGlobal(ENV_PREFIX + "AppClassName", simpleName);
-        if (TRIM_SUFFIX.equals(simpleName)) {
+        if (NAME_TRIM_SUFFIX.equals(simpleName)) {
             int lastPart = packageName.lastIndexOf('.');
             if (lastPart != -1) {
                 simpleName = packageName.substring(lastPart + 1);
                 packageName = packageName.substring(0, lastPart);
             }
-        } else if (simpleName.endsWith(TRIM_SUFFIX)) { // Meaningless suffix
-            simpleName = simpleName.substring(0, simpleName.length() - TRIM_SUFFIX.length());
+        } else if (simpleName.endsWith(NAME_TRIM_SUFFIX)) { // Meaningless suffix
+            int size = simpleName.length() - NAME_TRIM_SUFFIX.length();
+            simpleName = simpleName.substring(0, size);
         }
         
         resourceManager.addGlobal(ENV_PREFIX + "AppDefaultName", simpleName);

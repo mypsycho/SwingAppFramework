@@ -32,7 +32,11 @@ import org.mypsycho.swing.app.View;
 
 
 /**
- * 
+ * This Paged frame provides a simple approche to add pages to a single frame 
+ * application.
+ * <p>
+ * User can choose to display a tab for each pages.
+ * </p>
  * 
  * @author PERANSIN Nicolas
  */
@@ -299,15 +303,23 @@ public class PagedFrame extends MenuFrame {
     final ItemListener menuPagesListener = new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
             JMenuItem item = (JMenuItem) e.getSource();
-            if (!item.isSelected()) {
-                return;
-            }
-            
-            
+            Page found = null;
             for (Page page : pages) {
                 if (item == page.menu) {
-                    setSelected(page);
+                    found = page;
                     break;
+                }
+            }
+            if (found != null) {
+                if (item.isSelected()) {
+                    setSelected(found);
+                } else {
+                    for (Page page : pages) {
+                        if (page.menu.isSelected()) { // another is selectd 
+                            return;
+                        }
+                    }
+                    item.setSelected(true); // At least one must be selected
                 }
             }
         }

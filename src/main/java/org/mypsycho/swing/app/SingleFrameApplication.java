@@ -165,6 +165,18 @@ public abstract class SingleFrameApplication extends Application {
         view.setComponent(c);
         show(view);
     }
+    
+    /**
+     * Use the root component to be shown in the main frame.
+     * <p>
+     * Root component must be a a JComponent
+     * </p> 
+     *
+     * @param c the main frame's contentPane child
+     */
+    protected void show(SwingHelper h) {
+        show((JComponent) h.root().get());
+    }
 
     /**
      * Initialize and show the JDialog or JFrame.

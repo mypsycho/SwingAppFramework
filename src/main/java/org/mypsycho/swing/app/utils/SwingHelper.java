@@ -160,7 +160,6 @@ public class SwingHelper extends Swings {
 
 
     public <C extends Component> C get(String name) {
-
         return (C) getChild(with, name);
     }
 
@@ -221,11 +220,19 @@ public class SwingHelper extends Swings {
     public SwingHelper label(String name) {
         return add(name, new JLabel());
     }
-
+    
+    public SwingHelper label(String name, Object constraint) {
+        return add(name, new JLabel(), constraint);
+    }
+    
     public SwingHelper button(String name) {
         return add(name, new JButton());
     }
     
+    
+    public SwingHelper button(String name, Object constraint) {
+        return add(name, new JButton(), constraint);
+    }
 
     
 }

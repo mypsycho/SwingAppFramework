@@ -35,10 +35,6 @@ public class Injector extends PropertyUtilsBean {
     public static final String DEFAULT_DEPRECATED_TAG = "@deprecated";
     public static final String DEFAULT_NULL_TAG = "@null";
 
-    // For convience, we ignore warning from attribute with upper-cased initial.
-    // It is a common way to distingue constant from attribute.
-    // Getting those exception is very annoying.
-    public static final Pattern ATTRIBUT_PATTERN = Pattern.compile("[a-z_]\\w*");
 
     private static String createKey(Locale locale, Class<?> since) {
         String className = since.getCanonicalName();
@@ -103,17 +99,6 @@ public class Injector extends PropertyUtilsBean {
             return;
         }
 
-        // Check the pattern of the property, if not a valid name, we can ignore
-        if ((event instanceof String) && (t instanceof NoSuchMethodException)) {
-            String path = (String) event;
-            int propPart = path.indexOf(PropertiesLoader.MEMBER_TOKEN);
-            if (propPart != -1) {
-                path = path.substring(propPart + 1);
-                if (!ATTRIBUT_PATTERN.matcher(path).matches()) {
-                    return; // property is not a valid attribute
-                }
-            }
-        }
         super.notify(event, detail, t);
     }
 
