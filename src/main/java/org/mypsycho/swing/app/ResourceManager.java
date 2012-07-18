@@ -22,6 +22,7 @@ import org.mypsycho.swing.app.reflect.BorderConverter;
 import org.mypsycho.swing.app.reflect.ClientComponentProperty;
 import org.mypsycho.swing.app.reflect.ComponentBoundsProperty;
 import org.mypsycho.swing.app.reflect.ComponentCollection;
+import org.mypsycho.swing.app.reflect.ComponentPopupProperty;
 import org.mypsycho.swing.app.reflect.ComponentProperty;
 import org.mypsycho.swing.app.reflect.DerivedFontConverter;
 import org.mypsycho.swing.app.reflect.MenuConverter;
@@ -86,6 +87,7 @@ public class ResourceManager extends Injector {
 
         // property
         try {
+            register(new ComponentPopupProperty());
             register(new ComponentBoundsProperty());
             register(new WindowIconProperty());
             register(new ComponentProperty());

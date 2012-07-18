@@ -31,6 +31,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.mypsycho.beans.Inject;
 import org.mypsycho.beans.Injectable;
 import org.mypsycho.beans.InjectionContext;
+import org.mypsycho.swing.app.session.SessionBehaviour;
 import org.mypsycho.swing.app.task.DoWaitForEmptyEventQ;
 import org.mypsycho.swing.app.utils.SwingHelper;
 import org.mypsycho.text.Localized;
@@ -242,7 +243,8 @@ public abstract class Application extends SwingBean implements Injectable, Local
     private String[] arguments;
     private Object state = null;
     private boolean ready = false; // The last lifecycle step
-
+    private ViewBehaviour commonBehaviour = null;
+    
     protected Properties properties = new Properties();
 
 
@@ -732,11 +734,18 @@ public abstract class Application extends SwingBean implements Injectable, Local
         return context;
     }
 
+    protected View createView(RootPaneContainer c) {
+        View view = new View(this, c.getRootPane());
+        registerCommonBehavior(view);
+
+        return view;
+    }
+    
     public View show(RootPaneContainer c) {
         SwingHelper.assertNotNull("window", c);
         View view = View.getView(c);
         if (view == null) {
-            view = new View(this, c.getRootPane());
+            view = createView(c);
         }
         show(view);
         return view;
@@ -775,13 +784,6 @@ public abstract class Application extends SwingBean implements Injectable, Local
         view.hide();
     }
 
-    /**
-     * The state of the initial UI.
-     * @return true if the initial UI is ready
-     */
-    public boolean isReady() {
-        return ready;
-    }
 
 
     /**
@@ -906,5 +908,41 @@ public abstract class Application extends SwingBean implements Injectable, Local
 
         return option.getValue();
     }
+
+    /**
+     * The state of the initial UI.
+     * @return true if the initial UI is ready
+     */
+    public boolean isReady() {
+        return ready;
+    }
+
+    protected void registerCommonBehavior(View view) {
+        if (commonBehaviour != null) {
+            view.register(commonBehaviour);
+        }
+    }
+    
+    /**
+     * Returns the commonBehaviour.
+     *
+     * @return the commonBehaviour
+     */
+    public ViewBehaviour getCommonBehaviour() {
+        return commonBehaviour;
+    }
+
+
+    
+    /**
+     * Sets the commonBehaviour.
+     *
+     * @param commonBehaviour the commonBehaviour to set
+     */
+    public void setCommonBehaviour(ViewBehaviour commonBehaviour) {
+        this.commonBehaviour = commonBehaviour;
+    }
+    
+    
 
 }

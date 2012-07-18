@@ -195,6 +195,10 @@ public class MenuFrame extends JFrame {
         return new JTextPane();
     }
 
+    public JComponent getConsole() {
+        return console;
+    }
+    
     protected PrintStream getConsoleStream() {
         JComponent out = console;
         if (out instanceof JTextArea) {

@@ -24,7 +24,7 @@ import org.mypsycho.beans.converter.AbstractTypeConverter;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class ResourceConverter extends AbstractTypeConverter {

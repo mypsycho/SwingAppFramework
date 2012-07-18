@@ -9,7 +9,7 @@ package org.mypsycho.swing.app;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public interface ApplicationComponent {

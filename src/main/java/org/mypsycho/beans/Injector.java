@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.collections.FastHashMap;
 import org.mypsycho.beans.converter.ConverterContainer;
@@ -26,7 +25,7 @@ import org.mypsycho.util.PropertiesLoader;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class Injector extends PropertyUtilsBean {

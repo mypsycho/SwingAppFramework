@@ -11,7 +11,7 @@ import java.util.Collection;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public interface TypeConverter {

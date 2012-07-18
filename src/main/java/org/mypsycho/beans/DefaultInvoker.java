@@ -22,7 +22,7 @@ import org.apache.commons.beanutils.MethodUtils;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class DefaultInvoker implements Invoker {

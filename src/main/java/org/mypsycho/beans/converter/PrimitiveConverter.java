@@ -19,7 +19,7 @@ import java.util.Set;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class PrimitiveConverter extends AbstractTypeConverter {

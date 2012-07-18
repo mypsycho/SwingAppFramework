@@ -376,6 +376,10 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
 
     protected boolean isMethodArgumentValid(Class<?> pType) {
         // Source Component ? accessible by the action event
+        if (pType.isAssignableFrom(Component.class)) {
+            return true;
+        }
+                
         if (pType.isAssignableFrom(ActionEvent.class) 
                 && EventObject.class.isAssignableFrom(pType)) {
             return true;
@@ -474,6 +478,9 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
      * @param actionEvent the ActionEvent that trigged this Action
      */
     protected Object getActionArgument(Class<?> pType, ActionEvent actionEvent) {
+        if (pType.isInstance(actionEvent.getSource())) {
+            return actionEvent.getSource();
+        }
         if (pType.isAssignableFrom(ActionEvent.class)) {
             return actionEvent;
         }

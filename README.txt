@@ -10,6 +10,10 @@ is required. I hope the client code will be significantly reduced once
 migration performed.
 
 
+Runtime Dependences:
+    . apache-commons-beanutils 1.8.3
+    . apache-commons-loggings 1.1.1
+    
 The main ideas are:
 
 - No need to invoke resource manager in most case :
@@ -40,7 +44,7 @@ The main ideas are:
 
 
 - Simple reference and overridable hierarchical references are supported:
-  Ex: 
+  For example: 
     Reference = Some text
     toolbar[0].button.text = ${Reference}
     menu[0].button.text = ${Reference}
@@ -54,7 +58,7 @@ The main ideas are:
     components(pane2) = %{Template}
     components(pane2).border = titled(Some title)
 
-  Is equivalent to:
+  is equivalent to:
   
     Reference = Some text
     toolbar[0].button.text = Some text
@@ -96,18 +100,19 @@ The main ideas are:
   Creates a menu of 2 buttons 'open' and 'save' in a menu bar.
 
 
-- Some annoying details have been cleaned: 
-    Strategy for Plateform type is open : 
+- Some annoying details from original framework have been cleaned: 
+    . Strategy for Plateform type is open : 
       A default strategy is provided, a user strategy can be defined using java.util.ServiceLoader
-    Application lifecycles are modifiable and extensible.
-    View strategies are not bound to a class of Application but can be reused.
-    Property interpretation syntax is extensible and fully modifiable.
-    Property interpretation syntax can call java.lang.System properties.
-    Default Application name and vendor are defined using reflection.
-    Properties and java files are in the same package.
-    Nested classes are supported using the java name (with $ as separator). 
+    . Application lifecycles are modifiable and extensible.
+    . View strategies are not bound to a class of Application but can be reused.
+    . Property interpretation syntax is extensible and fully modifiable.
+    . Property interpretation syntax can call java.lang.System properties.
+    . Default Application name and vendor are defined using reflection.
+    . Properties and java files are in the same package.
+    . Nested classes are supported using the java name (with $ as separator). 
 
-- Contains some nice components: 
+
+- Contains combined components: 
     Tree Table, 
     CheckBox Tree, 
     auto-fireAction text field,
@@ -116,18 +121,14 @@ The main ideas are:
     ...
     
 
-Runtime Dependences
-    apache-commons-beanutils 1.8.3
-    apache-commons-loggings 1.1.1
+* To be improved:
+    . Most of comments are obsolete.
+    . Error management in TaskService (and application in general)
+    . Not tested : PagedFrame
+    . Migrate all examples
+    . Improve property syntax to have a better reference mechanism (maybe a reflection call) 
+    . Need of more JUnit
 
-To be improved:
-- Most of comments are obsolete.
-- Error management in TaskService (and application in general)
-- Not tested : PagedFrame
-- Migrate all examples
-- Improve property syntax to have a better reference mechanism (maybe a reflection call) 
-- Need of JUnit
-- ...
 
 
 The code is organized as a Maven project and it's been built for
@@ -135,7 +136,7 @@ JDK 1.6.
 
 * Building the Source Code
 
-The javaws.jar file isn't needed at run-time and is included 
+The javaws.jar file is not needed at run-time and is included 
 automatically by the Java Web Start launcher.  The pathname for javaws.jar
 is specified in nbproject/project.properties, see jnlp.classpath and
 osx.jnlp.classpath.  If you're using another IDE, you may need to 

@@ -12,7 +12,7 @@ import java.util.Collections;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class CompositeBehaviour implements ViewBehaviour {

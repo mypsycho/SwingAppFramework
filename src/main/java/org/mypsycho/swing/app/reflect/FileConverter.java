@@ -16,7 +16,7 @@ import org.mypsycho.swing.app.ResourceManager;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class FileConverter extends AbstractTypeConverter {

@@ -326,7 +326,7 @@ public class PagedFrame extends MenuFrame {
     };
 
 
-    boolean dirty = true;
+    boolean dirty = false;
     
     /**
      * Using reflection force this object to be public 

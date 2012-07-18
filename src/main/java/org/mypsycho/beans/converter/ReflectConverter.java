@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class ReflectConverter extends AbstractTypeConverter {

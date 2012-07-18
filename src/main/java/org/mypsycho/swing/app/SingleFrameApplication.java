@@ -82,8 +82,14 @@ public abstract class SingleFrameApplication extends Application {
 
     public static final String MAIN_FRAME_NAME = FrameView.MAIN_FRAME_NAME;
 
-    ViewBehaviour secondaryBehaviour = new SessionBehaviour();
-
+    
+    /**
+     * 
+     */
+    public SingleFrameApplication() {
+        setCommonBehaviour(new SessionBehaviour());
+    }
+    
     /**
      * Return the JFrame used to show this application.
      * <p>
@@ -178,33 +184,7 @@ public abstract class SingleFrameApplication extends Application {
         show((JComponent) h.root().get());
     }
 
-    /**
-     * Initialize and show the JDialog or JFrame.
-     * <p>
-     * This method is intended for showing "secondary" windows, like message dialogs, about boxes,
-     * and so on. Unlike the {@code mainFrame}, dismissing a secondary window will not exit the
-     * application.
-     * <p>
-     * Session state is only automatically saved if the specified JDialog has a name, and then only
-     * for component descendants that are named.
-     * <p>
-     * Throws an IllegalArgumentException if {@code c} is null
-     *
-     * @param c the main frame's contentPane child
-     * @see #show(JComponent)
-     * @see #show(JFrame)
-     * @see #configureWindow
-     */
-    public View show(RootPaneContainer c) {
-        SwingHelper.assertNotNull("window", c);
-        View view = View.getView(c);
-        if (view == null) {
-            view = new View(this, c.getRootPane());
-            view.register(secondaryBehaviour);
-        }
-        show(view);
-        return view;
-    }
+
 
 
     /* Prototype support for the View type */
@@ -212,13 +192,14 @@ public abstract class SingleFrameApplication extends Application {
 
     
     /**
-     * Gets the main view of the application
+     * Gets the main view of the application.
+     * 
      * @return the main view of the application
      */
     public FrameView getMainView() {
         if (mainView == null) {
             mainView = new FrameView(this);
-            mainView.register(secondaryBehaviour);
+            registerCommonBehavior(mainView);
         }
         return mainView;
     }
@@ -227,7 +208,7 @@ public abstract class SingleFrameApplication extends Application {
     public void show(View view) {
         if ((mainView == null) && (view instanceof FrameView)) {
             mainView = (FrameView) view;
-            view.register(secondaryBehaviour);
+            registerCommonBehavior(mainView);
         }
         super.show(view);
     }

@@ -10,6 +10,7 @@ import java.awt.LayoutManager;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -83,7 +84,8 @@ public class SwingHelper extends Swings {
         Container parent = (Container) getContainer(with);
         if (constraint == null) {
             // Some well-known container constraint
-            if ((parent instanceof JSplitPane) || (parent.getLayout() instanceof BoxLayout)) {
+            if ((parent instanceof JSplitPane) 
+                    || (parent.getLayout() instanceof BoxLayout)) {
                 constraint = name;
             }
         }
@@ -229,10 +231,40 @@ public class SwingHelper extends Swings {
         return add(name, new JButton());
     }
     
-    
     public SwingHelper button(String name, Object constraint) {
         return add(name, new JButton(), constraint);
     }
 
+    public SwingHelper check(String name) {
+        return add(name, new JCheckBox());
+    }
+    
+    public SwingHelper check(String name, Object constraint) {
+        return add(name, new JCheckBox(), constraint);
+    }
+    
+    public SwingHelper vsplit(String name) {
+        return vsplit(name, null);
+    }
+    
+    public SwingHelper hsplit(String name) {
+        return hsplit(name, null);
+    }
+
+    public SwingHelper vsplit(String name, Object constraint) {
+        return with(name, new JSplitPane(JSplitPane.VERTICAL_SPLIT), constraint);
+    }
+    
+    public SwingHelper hsplit(String name, Object constraint) {
+        return with(name, new JSplitPane(JSplitPane.HORIZONTAL_SPLIT), constraint);
+    }
+    
+    public SwingHelper scroll(String name, Component view) {
+        return scroll(name, view, null);
+    }
+    
+    public SwingHelper scroll(String name, Component view, Object constraint) {
+        return add(name, new JScrollPane(view), constraint);
+    }
     
 }

@@ -14,7 +14,7 @@ import org.apache.commons.beanutils.DynaBean;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public interface Invoker {

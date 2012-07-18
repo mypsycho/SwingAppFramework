@@ -28,6 +28,7 @@ import javax.swing.JPopupMenu;
 
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationContext;
+import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.SingleFrameApplication;
 import org.mypsycho.swing.app.SwingBean;
 import org.mypsycho.swing.app.View;
@@ -49,6 +50,7 @@ public class ActionMapExample extends SingleFrameApplication {
     private static final Insets ZERO_INSETS = new Insets(0,0,0,0);
 
     @Override protected void startup() {
+        addApplicationListener(ApplicationListener.console);
         View view = getMainView();
         SwingHelper h = new SwingHelper(new GridBagLayout());
         
@@ -110,18 +112,18 @@ public class ActionMapExample extends SingleFrameApplication {
         private final Application application;
         
         Icon icon;
-        
-        JPopupMenu menu = new JPopupMenu();
-        
-        
-        /**
-         * Returns the menu.
-         *
-         * @return the menu
-         */
-        public JPopupMenu getMenu() {
-            return menu;
-        }
+//        
+//        JPopupMenu menu = new JPopupMenu();
+//        
+//        
+//        /**
+//         * Returns the menu.
+//         *
+//         * @return the menu
+//         */
+//        public JPopupMenu getMenu() {
+//            return menu;
+//        }
 
 
         public Icon getIcon() {
@@ -163,7 +165,7 @@ public class ActionMapExample extends SingleFrameApplication {
             setLayout(new GridBagLayout());
             
             setBorder(BorderFactory.createTitledBorder(getClass().getSimpleName()));
-            addMouseListener(new PopupMenuListener());
+//            addMouseListener(new PopupMenuListener());
             addMouseListener(new SelectionListener());
             scene = new Scene();
             scene.addPropertyChangeListener(this);
@@ -181,25 +183,25 @@ public class ActionMapExample extends SingleFrameApplication {
         }
         
 
-        /* This is essentially boilerplate: popup the specified menu when
-         * the platform-specific mouse press/release event occurs.
-         */
-        private class PopupMenuListener extends MouseAdapter {
-
-            public void mousePressed(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-        }
+//        /* This is essentially boilerplate: popup the specified menu when
+//         * the platform-specific mouse press/release event occurs.
+//         */
+//        private class PopupMenuListener extends MouseAdapter {
+//
+//            public void mousePressed(MouseEvent e) {
+//                maybeShowPopup(e);
+//            }
+//
+//            public void mouseReleased(MouseEvent e) {
+//                maybeShowPopup(e);
+//            }
+//
+//            private void maybeShowPopup(MouseEvent e) {
+//                if (e.isPopupTrigger()) {
+//                    menu.show(e.getComponent(), e.getX(), e.getY());
+//                }
+//            }
+//        }
 
 
         public final Scene getScene() { // Public for testability

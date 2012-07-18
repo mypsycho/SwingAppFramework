@@ -15,7 +15,7 @@ import javax.swing.RootPaneContainer;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class MainFrameBehaviour extends WindowAdapter implements ViewBehaviour {

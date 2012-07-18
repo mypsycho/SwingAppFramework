@@ -13,7 +13,6 @@ import java.io.Serializable;
 
 /**
  * @author PERANSIN Nicolas
- * @version 1.0
  */
 public class ZoomConstraint implements Serializable {
 
@@ -27,10 +26,6 @@ public class ZoomConstraint implements Serializable {
     public Rectangle bounds = new Rectangle(0, 0, NOT_DEFINED, NOT_DEFINED);
 
     protected int font = -1;
-//    protected float fontF = 10.0f;
-//    protected int thickness = -1;
-
-
 
     // Seulement un zoom de taille
     public ZoomConstraint() {}

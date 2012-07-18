@@ -13,7 +13,6 @@ import java.awt.Dimension;
  *
  * @author PERANSIN Nicolas
  */
-
 public class IsoZoomLayout extends ZoomLayout {
 
 	/**

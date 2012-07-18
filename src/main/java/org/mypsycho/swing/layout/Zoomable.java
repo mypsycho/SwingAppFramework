@@ -6,9 +6,7 @@ package org.mypsycho.swing.layout;
 
 /**
  * @author PERANSIN Nicolas
- * @version 1.0
  */
-
 public interface Zoomable {
     public void zoom(float zoomX, float zoomY);
 

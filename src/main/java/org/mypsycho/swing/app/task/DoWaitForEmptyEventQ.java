@@ -19,7 +19,7 @@ import javax.swing.JPanel;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public abstract class DoWaitForEmptyEventQ extends Task<Void, Void> {

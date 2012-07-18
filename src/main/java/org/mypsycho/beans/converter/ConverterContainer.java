@@ -13,7 +13,7 @@ import java.util.Map;
  * Class for ...
  * <p>Details</p>
  *
- * @author nperansi
+ * @author Peransin Nicolas
  *
  */
 public class ConverterContainer extends ReflectConverter {

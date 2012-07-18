@@ -5,12 +5,12 @@
 package org.mypsycho.swing.app.reflect;
 
 import java.awt.Component;
-import java.awt.Rectangle;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.mypsycho.beans.DescriptorExtension;
+import org.mypsycho.swing.app.beans.ComponentPopupMenu;
 
 
 
@@ -21,22 +21,22 @@ import org.mypsycho.beans.DescriptorExtension;
  * @author Peransin Nicolas
  *
  */
-public class ComponentBoundsProperty extends DescriptorExtension {
+public class ComponentPopupProperty extends DescriptorExtension {
 
-    public ComponentBoundsProperty() throws IntrospectionException {
-        super(Component.class, "bounds");
+    public ComponentPopupProperty() throws IntrospectionException {
+        super(Component.class, "popup");
     }
 
     @Override
     public Object get(Object bean)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return ((Component) bean).getBounds();
+        return ComponentPopupMenu.getPopMenu((Component) bean);
     }
 
     @Override
     public void set(Object bean, Object value)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        ((Component) bean).setBounds((Rectangle) value);
+        ((ComponentPopupMenu) value).register((Component) bean);
     }
 
     /*
@@ -46,7 +46,7 @@ public class ComponentBoundsProperty extends DescriptorExtension {
      */
     @Override
     public Class<?> getPropertyType(boolean collection) {
-        return Rectangle.class;
+        return ComponentPopupMenu.class;
     }
 
     @Override
