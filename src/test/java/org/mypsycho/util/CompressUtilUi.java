@@ -52,6 +52,7 @@ public class CompressUtilUi {
                     model = new ZipEntryTreeModel(coded);
                 }
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                @SuppressWarnings("serial")
                 JTree tree = new JTree(model) {
                     public String convertValueToText(Object value, boolean selected,
                                 boolean expanded, boolean leaf, int row, boolean hasFocus) {

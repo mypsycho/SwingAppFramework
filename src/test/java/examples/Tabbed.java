@@ -58,6 +58,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
  * Contains a JLabel to show the text and
  * a JButton to close the tab it belongs to
  */
+@SuppressWarnings("serial")
 public class Tabbed extends JPanel {
 
     private final JTabbedPane pane;

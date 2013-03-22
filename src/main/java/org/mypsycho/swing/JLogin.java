@@ -21,6 +21,7 @@ import javax.swing.JTextField;
  * <p>Detail ... </p>
  * @author Peransin Nicolas
  */
+@SuppressWarnings("serial")
 public class JLogin extends JOptionPane {
     
     

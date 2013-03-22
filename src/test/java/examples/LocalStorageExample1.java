@@ -90,8 +90,10 @@ public class LocalStorageExample1 extends Application {
     }
 
     public void loadMap() throws IOException {
-        Object map = getContext().getLocalStorage().load(file);
-        listModel.setMap((LinkedHashMap<String, String>) map);
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) 
+                getContext().getLocalStorage().load(file);
+        listModel.setMap(map);
         showFileMessage("loadedFile", file);
     }
 
@@ -154,6 +156,7 @@ public class LocalStorageExample1 extends Application {
      * The value of each ListModel element is just a string:
      * "key = value".
      */
+    @SuppressWarnings("serial")
     private static class MapListModel extends AbstractListModel {
 
         private final LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();

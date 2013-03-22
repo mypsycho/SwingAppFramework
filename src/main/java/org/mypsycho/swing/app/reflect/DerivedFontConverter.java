@@ -5,6 +5,8 @@
 package org.mypsycho.swing.app.reflect;
 
 import java.awt.Font;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.mypsycho.beans.InjectionContext;
@@ -21,7 +23,7 @@ import org.mypsycho.beans.converter.AbstractTypeConverter;
  */
 public class DerivedFontConverter extends AbstractTypeConverter {
 
-    public static final String DERIVED_FONT = "derived";
+    public static final List<String> DERIVED_FONTS = Arrays.asList("derived", "*");
     
     public DerivedFontConverter() {
         super(Font.class);
@@ -39,7 +41,7 @@ public class DerivedFontConverter extends AbstractTypeConverter {
         if (value != null) {
             Object[] decode = decode(value);
             
-            if (DERIVED_FONT.equals(decode[0])) {
+            if (DERIVED_FONTS.contains(decode[0])) {
                 try {
                     InjectionContext iContext = (InjectionContext) context;
                     Object target = iContext.getParent();

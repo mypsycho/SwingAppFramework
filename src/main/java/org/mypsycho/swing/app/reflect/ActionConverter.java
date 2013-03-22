@@ -21,11 +21,13 @@ import org.mypsycho.swing.app.beans.ProxyAction;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * Create an javax.swing.Action object.
+ * <p>
+ * if the value starts with '->', action is proxied to the following expression
+ * otherwize an ApplicationAction object is created.
+ * </p>
  *
  * @author Peransin Nicolas
- *
  */
 public class ActionConverter extends AbstractTypeConverter {
 

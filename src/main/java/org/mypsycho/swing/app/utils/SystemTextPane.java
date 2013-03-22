@@ -25,6 +25,7 @@ import org.mypsycho.swing.TextPaneStream;
  *
  * @author Peransin Nicolas
  */
+@SuppressWarnings("serial")
 public class SystemTextPane extends JTextPane {
 
     PrintStream oldStd = null;

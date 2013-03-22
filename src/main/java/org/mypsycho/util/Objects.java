@@ -96,12 +96,14 @@ public class Objects {
     
     
 
+    @SuppressWarnings("unchecked")
     public static <C> C[] concatArrays(C[] origin, C... newValues) {
         // This may cause hazardous results 
         return concatArrays((Class<C>) origin.getClass().getComponentType(), 
                     origin, newValues);
     }
         
+    @SuppressWarnings("unchecked")
     public static <C> C[] concatArrays(Class<C> type, C[] origin, C... newValues) {
         C[] result = (C[]) Array.newInstance(type, origin.length+newValues.length);
         System.arraycopy(origin, 0, result, 0, origin.length);

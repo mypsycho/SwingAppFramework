@@ -18,6 +18,7 @@ import javax.swing.Action;
  * @author Peransin Nicolas
  *
  */
+@SuppressWarnings("serial")
 public class ProxyAction extends AbstractTypedAction {
     
     final  javax.swing.Action delegate;

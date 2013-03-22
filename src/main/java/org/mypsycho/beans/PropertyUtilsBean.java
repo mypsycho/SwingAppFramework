@@ -1260,7 +1260,9 @@ public class PropertyUtilsBean {
                 Array.set(bean, index, value);
                 return;
             } else if (bean instanceof List) {
-                ((List<Object>) bean).set(index, value);
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>) bean;
+                list.set(index, value);
                 return;
             }
         }
@@ -1389,7 +1391,9 @@ public class PropertyUtilsBean {
         }
 
         if (bean instanceof Map) {
-            setPropertyOfMapBean((Map<String, ?>) bean, name, value);
+            @SuppressWarnings("unchecked")
+            Map<String, ?> map = (Map<String, ?>) bean;
+            setPropertyOfMapBean(map, name, value);
         } else if (resolver.isMapped(name)) {
             setMappedProperty(bean, name, value);
         } else if (resolver.isIndexed(name)) {
@@ -1470,7 +1474,9 @@ public class PropertyUtilsBean {
                             + propertyName);
         }
 
-        ((Map<String, Object>) bean).put(propertyName, value);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) bean;
+        map.put(propertyName, value);
     }
 
     /**

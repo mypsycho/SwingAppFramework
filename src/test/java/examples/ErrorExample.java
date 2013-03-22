@@ -22,10 +22,8 @@ public class ErrorExample extends SingleFrameExample3 {
 
     public void onButton(ActionEvent e) {
         
-//        show(e, "error", new ErrorPane("Ooops!\nWrong button",  
-//                new RuntimeException("You fail to exit", new Exception()), null));
-        
-        show(e, "error", new ErrorPane("Ah\nAh\nAh", null, null));
+        showOption(e, "error", new ErrorPane("Ah\nAh\nAh", 
+                new Exception("Wrong path"), null));
     }
     
     public static void main(String[] args) {

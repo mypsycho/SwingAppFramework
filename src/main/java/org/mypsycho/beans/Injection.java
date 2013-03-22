@@ -8,6 +8,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.ref.Reference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -28,9 +29,8 @@ public class Injection {
 
     static final Object NULL_VALUE = new Object();
     
-    // For convience, we ignore warning from attribute with upper-cased initial.
-    // It is a common way to distingue constant from attribute.
-    // Getting those exception is very annoying.
+    // For convenience, we ignore warning from attribute with upper-cased initial.
+    // It is a basic way to distinguish constant (not injectable property) from attribute.
     public static final Pattern ATTRIBUT_PATTERN = Pattern.compile("[a-z_]\\w*");
 
     
@@ -41,8 +41,8 @@ public class Injection {
     static final Nature[] NATURES = Nature.values();
 
 
-    // ArrayList is trim define to trim
-    ArrayList<Injection> children = new ArrayList<Injection>(); // Create once compiled
+    // ArrayList is explicitly used to save memory (trim)
+    ArrayList<Injection> children = new ArrayList<Injection>();
     Nature childrenNature = null;
 
 
@@ -52,7 +52,8 @@ public class Injection {
     final Nature nature;
     final Object id;
 
-    String definition = null; // How to create the value !
+    // How to create the value !
+    String definition = null;
     int size = -1;
     Reference<?> cache = null;
 
@@ -245,6 +246,7 @@ public class Injection {
                     return compare((Comparable<?>) o1.id, o2.id);
                 }
 
+                @SuppressWarnings("unchecked")
                 <T> int compare(Comparable<T> o1, Object o2) {
                     return o1.compareTo((T) o2);
                 }
@@ -341,7 +343,7 @@ public class Injection {
         try {
 
             switch (nature) {
-                case SIMPLE: // type est null
+                case SIMPLE:
                     injectSimple(bean, context);
                     break;
 
@@ -355,6 +357,13 @@ public class Injection {
             }
 
         } catch (NoSuchMethodException e) {
+            Inject inject = bean.getClass().getAnnotation(Inject.class);
+            if ((inject != null) && inject.deferred().length > 0) {
+                if (Arrays.asList(inject.deferred()).contains(id)) {
+                    return;
+                }
+            }
+            
             if (ATTRIBUT_PATTERN.matcher(""+id).matches()) {
                 getInjector().notify(getCanonicalName(), e.getMessage(), e);
             }

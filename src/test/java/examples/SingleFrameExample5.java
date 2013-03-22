@@ -119,7 +119,7 @@ public class SingleFrameExample5 extends SingleFrameApplication {
      * limit the heap's growth.
      */
 
-    @Action(enabledProperty = "nextImageEnabled")
+    @Action(enabled = "nextImageEnabled")
     public ShowImageTask nextImage() {
         ShowImageTask task = null;
         if (imageIndex < (imageLocations.size() - 1)) {
@@ -130,7 +130,7 @@ public class SingleFrameExample5 extends SingleFrameApplication {
         return task;
     }
 
-    @Action(enabledProperty = "previousImageEnabled")
+    @Action(enabled = "previousImageEnabled")
     public ShowImageTask previousImage() {
         ShowImageTask task = null;
         if (imageIndex > 0) {

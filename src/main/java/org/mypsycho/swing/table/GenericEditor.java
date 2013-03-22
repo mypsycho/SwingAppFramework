@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 /**
- * Code from API.
  * The Editor does not rely on TableModel to fetch the class of the cell.
  * The TableModel can only provide 1 class for 1 column.
  * 
@@ -27,6 +26,8 @@ import javax.swing.border.LineBorder;
  */
 public class GenericEditor extends DefaultCellEditor {
 
+    private static final long serialVersionUID = 3668933684480176108L;
+    
     private static final Class<?>[] argTypes = new Class[]{ String.class };
     Constructor<?> constructor = null;
     Method         getter = null;
@@ -98,6 +99,8 @@ public class GenericEditor extends DefaultCellEditor {
     }
 
     public static class NumberEditor extends GenericEditor {
+        private static final long serialVersionUID = GenericEditor.serialVersionUID;
+
         public NumberEditor(Class<? extends Number> numberClass) {
             super(numberClass);
             ((JTextField)getComponent()).setHorizontalAlignment(JTextField.RIGHT);
@@ -106,6 +109,8 @@ public class GenericEditor extends DefaultCellEditor {
 
     
     public static class BooleanEditor extends DefaultCellEditor {
+        private static final long serialVersionUID = GenericEditor.serialVersionUID;
+
         public BooleanEditor() {
             super(new JCheckBox());
             JCheckBox checkBox = (JCheckBox)getComponent();

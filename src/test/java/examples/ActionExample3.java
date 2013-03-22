@@ -17,7 +17,7 @@ import org.mypsycho.swing.app.Action;
  * <pre>
  *
  * 
- * &#064;Action(enabledProperty = &quot;clearEnabled&quot;)
+ * &#064;Action(enabled = &quot;clearEnabled&quot;)
  * public void clearTitle() {
  *     appFrame.setTitle(textField.getText());
  *     setClearEnabled(true);
@@ -42,7 +42,7 @@ public class ActionExample3 extends ActionExample2 {
     }
 
     @Override
-    @Action(enabledProperty = "clearEnabled")
+    @Action(enabled = "clearEnabled")
     public void clearTitle() {
         super.clearTitle();
         setClearEnabled(false);
@@ -53,9 +53,9 @@ public class ActionExample3 extends ActionExample2 {
     }
 
     public void setClearEnabled(boolean clearEnabled) {
-        boolean oldValue = this.clearEnabled;
+        boolean old = this.clearEnabled;
         this.clearEnabled = clearEnabled;
-        firePropertyChange("clearEnabled", oldValue, this.clearEnabled);
+        firePropertyChange("clearEnabled", old, clearEnabled);
     }
 
     public static void main(String[] args) {

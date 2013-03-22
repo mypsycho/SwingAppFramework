@@ -59,6 +59,7 @@ import javax.swing.UIManager;
  * 
  * @author Alan Moore
  */
+@SuppressWarnings("serial")
 public class LineNumberView extends JComponent {
     // This is for the border to the right of the line numbers.
     // There's probably a UIDefaults value that could be used for this.

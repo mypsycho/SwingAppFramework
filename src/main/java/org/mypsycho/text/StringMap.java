@@ -13,9 +13,13 @@ import java.util.Locale;
  * <p>Details</p>
  *
  * @author Peransin Nicolas
- *
  */
 public class StringMap extends TextMap {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6288491537887754904L;
 
     /**
      * 

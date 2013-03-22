@@ -28,7 +28,8 @@ public class ReflectConverter extends AbstractTypeConverter {
     }
 
 
-    @SuppressWarnings("rawtypes")
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Object convert(Class<?> expected, String value, Object context)
             throws IllegalArgumentException {

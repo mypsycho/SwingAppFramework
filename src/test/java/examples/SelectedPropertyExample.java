@@ -66,7 +66,7 @@ public class SelectedPropertyExample extends SingleFrameApplication {
         setSelected(!isSelected());
     }
 
-    @Action(selectedProperty = "selected") 
+    @Action(selected = "selected") 
     public void toggleAction(EventObject e, AbstractButton src) {
         System.out.println(e.toString());
     }

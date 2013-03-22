@@ -72,6 +72,8 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  */
 public class View extends SwingBean {
 
+    public static final String PROP_NAME = "view";
+    
     public static final String VIEW_MARKER = "Application.view";
 
     public static final String COMPONENT_PROP = "component";
@@ -279,7 +281,7 @@ public class View extends SwingBean {
         if (name == null) {
             return null;
         }
-        return "view(" + name + ")";
+        return PROP_NAME + "(" + name + ")";
     }
 
     protected void release() {
@@ -506,7 +508,7 @@ public class View extends SwingBean {
             }
             setToolBars(Collections.singletonList(toolBar));
         } else {
-            setToolBars(Collections.EMPTY_LIST);
+            setToolBars(Collections.<JToolBar>emptyList());
         }
     }
 

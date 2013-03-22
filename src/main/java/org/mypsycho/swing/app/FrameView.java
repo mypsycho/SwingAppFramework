@@ -23,7 +23,7 @@ public class FrameView extends View {
     }
     
     public FrameView(Application application, JFrame f) {
-        this(application, MAIN_FRAME_NAME, f);
+        this(application, f.getName(), f);
     }
     
     public FrameView(Application application, String name) {
@@ -32,7 +32,7 @@ public class FrameView extends View {
     
     public FrameView(Application application, String name, JFrame f) {
         this(application);
-        f.setName(name);
+        f.setName((name != null) ? name : MAIN_FRAME_NAME);
         setFrame(f);
     }
 
@@ -121,6 +121,7 @@ public class FrameView extends View {
             throw new IllegalStateException("frame already set");
         }
         this.frame = frame;
+        frame.setName(MAIN_FRAME_NAME);
 
         register(frame.getRootPane());
         firePropertyChange("frame", null, this.frame);

@@ -109,6 +109,7 @@ public class DocumentExample extends SingleFrameApplication {
     
 
     /* Class must be public for the properties to be injected */
+    @SuppressWarnings("serial")
     public class AppFrame extends MenuFrame {
         AppFrame() {
             super(DocumentExample.this);
@@ -255,7 +256,8 @@ public class DocumentExample extends SingleFrameApplication {
     protected void fileTaskfailed(File file, String taskName, Throwable e) {
         logger.log(Level.WARNING, "couldn't  " + taskName + " " + file, e);
         String id = taskName + "Failed";
-        show(getMainFrame(), id, new JOptionPane(texts.get(id, getFile())));
+        String message = texts.get(id, getFile(), e.getMessage());
+        showOption(getMainFrame(), id, message);
     }
     
     /**
@@ -310,7 +312,7 @@ public class DocumentExample extends SingleFrameApplication {
      * 
      * @see #getFile
      */
-    @Action(enabledProperty = "modified") 
+    @Action(enabled = "modified") 
     public Task<?, ?> save() {
         return new SaveFileTask(getFile());
     }

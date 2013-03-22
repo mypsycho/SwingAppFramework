@@ -44,6 +44,8 @@ import javax.swing.KeyStroke;
  */
 public class InputBlockerPane extends JOptionPane {
 
+    private static final long serialVersionUID = -4641857212581584090L;
+
     public static final String ON_ESCAPE_ACTION_KEY = "onEscape";
 
     Task<?, ?> task;

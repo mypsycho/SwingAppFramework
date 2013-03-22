@@ -232,6 +232,7 @@ public class ApplicationContext extends SwingBean {
         return resourceManager;
     }
     
+    @SuppressWarnings("unchecked")
     public final <T> T getResource(Class<T> type, String name) {
         TypeConverter converter = getResourceManager().getConverter();
         String value = application.getProperty(name);

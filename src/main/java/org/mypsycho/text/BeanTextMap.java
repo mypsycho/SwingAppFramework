@@ -18,6 +18,11 @@ public class BeanTextMap extends TextMap {
     /**
      * 
      */
+    private static final long serialVersionUID = -6516651136309788561L;
+
+    /**
+     * 
+     */
     public BeanTextMap() {
         super();
         // TODO Auto-generated constructor stub

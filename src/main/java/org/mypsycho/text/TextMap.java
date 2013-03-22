@@ -27,6 +27,12 @@ import java.util.Locale;
 public class TextMap extends HashMap<String, String> {
 
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7824868843882702006L;
+
+
     public enum EnumPrefix {
         none {
 

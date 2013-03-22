@@ -73,6 +73,8 @@ import java.util.WeakHashMap;
  */
 public class WeakFastHashMap<K, V> extends HashMap<K, V> {
 
+    private static final long serialVersionUID = 5325467134228088859L;
+
     /**
      * The underlying map we are managing.
      */

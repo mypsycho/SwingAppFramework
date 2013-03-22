@@ -14,6 +14,7 @@ import javax.swing.tree.TreeNode;
  */
 
 public class DefaultCheckTreeModel extends DefaultTreeModel implements CheckTreeModel {
+    private static final long serialVersionUID = -1875604487001167147L;
 
     public DefaultCheckTreeModel(CheckTreeNode root) {
         super(root);

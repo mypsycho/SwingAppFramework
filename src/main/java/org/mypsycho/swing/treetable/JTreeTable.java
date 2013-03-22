@@ -40,6 +40,8 @@ import java.util.EventObject;
  * @author Scott Violet
  */
 public class JTreeTable extends JTable {
+    private static final long serialVersionUID = -1875604487001167147L;
+
     /** A subclass of JTree. */
     protected TreeTableCellRenderer tree;
     protected TreeTableModel treeTableModel = null;
@@ -215,8 +217,9 @@ public class JTreeTable extends JTable {
     /**
      * A TreeCellRenderer that displays a JTree.
      */
-    public class TreeTableCellRenderer extends JTree implements
-    TableCellRenderer {
+    public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
+        private static final long serialVersionUID = -1875604487001167147L;
+
         /** Last table/tree row asked to renderer. */
         protected int visibleRow;
 
@@ -369,7 +372,9 @@ public class JTreeTable extends JTable {
      * a change in the ListSelectionModel happens, the paths are updated
      * in the DefaultTreeSelectionModel.
      */
-    class ListToTreeSelectionModelWrapper extends DefaultTreeSelectionModel { 
+    class ListToTreeSelectionModelWrapper extends DefaultTreeSelectionModel {
+        private static final long serialVersionUID = -1875604487001167147L;
+
         /** Set to true when we are updating the ListSelectionModel. */
         protected boolean         updatingListSelectionModel;
 

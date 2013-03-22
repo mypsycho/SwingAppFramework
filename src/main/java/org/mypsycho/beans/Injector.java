@@ -43,6 +43,7 @@ public class Injector extends PropertyUtilsBean {
         return locale + "@" + className;
     }
 
+    @SuppressWarnings("unchecked")
     Map<String, InjectDescriptor> descriptors = new FastHashMap(); // ThreadSafe
 
     Locale locale = Locale.getDefault();

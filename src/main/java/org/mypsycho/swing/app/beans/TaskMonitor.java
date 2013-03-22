@@ -248,7 +248,9 @@ public class TaskMonitor extends SwingBean {
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
             if (ApplicationContext.TASK_SERVICES_PROPERTY.equals(propertyName)) {
+                @SuppressWarnings("unchecked")
                 List<TaskService> oldList = (List<TaskService>) e.getOldValue();
+                @SuppressWarnings("unchecked")
                 List<TaskService> newList = (List<TaskService>) e.getNewValue();
                 for (TaskService oldTaskService : oldList) {
                     oldTaskService.removePropertyChangeListener(taskServicePCL);
@@ -271,7 +273,9 @@ public class TaskMonitor extends SwingBean {
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
             if (TaskService.TASKS_PROPERTY.equals(propertyName)) {
+                @SuppressWarnings("unchecked")
                 List<Task<?, ?>> oldList = (List<Task<?, ?>>) e.getOldValue();
+                @SuppressWarnings("unchecked")
                 List<Task<?, ?>> newList = (List<Task<?, ?>>) e.getNewValue();
                 updateTasks(oldList, newList);
             }

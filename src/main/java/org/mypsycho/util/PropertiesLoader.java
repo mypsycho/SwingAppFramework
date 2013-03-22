@@ -153,26 +153,24 @@ public class PropertiesLoader {
             throw new UnsupportedOperationException();
         }
 
+        @SuppressWarnings("unchecked")
         public Set<String> keySet() {
             return map.keySet();
         }
 
+        @SuppressWarnings("unchecked")
         public Collection<String> values() {
             resolve();
             return map.values();
         }
 
+        @SuppressWarnings("unchecked")
         public Set<java.util.Map.Entry<String, String>> entrySet() {
             resolve();
             return map.entrySet();
         }
 
-        /**
-         * Do something TODO.
-         * <p>
-         * Details of the function.
-         * </p>
-         */
+        @SuppressWarnings("unchecked")
         void resolve() {
             if (map.getFast()) { // already resolved
                 return;

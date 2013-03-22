@@ -20,16 +20,16 @@ import org.mypsycho.swing.app.utils.SwingHelper;
 /**
  * Initializing {@code @Action} properties from resources.
  * <p>
- * This example is nearly identical to {@link ActionExample1 ActionExample1}.
- * We've just added a a ResourceBundle,
- * {@code resources/ActionExample2.properties}, that contains
- * resources for the {@code Action's} {@code text}
+ * This example is nearly identical to {@link ActionExample1}.
+ * We've just added a Property-ResourceBundle,
+ * {@code ActionExample2.properties}, that contains
+ * resources for the {@code Action}'s {@code text}
  * and {@code shortDescription} properties:
  * <pre>
- * setTitle.Action.text = &amp;Set Window Title
- * setTitle.Action.shortDescription = Set the Window's title
- * clearTitle.Action.text = &amp;Clear Window's Title
- * clearTitle.Action.shortDescription = Clear the Window's title
+ * ... (clearTitle).action.text = &amp;Set Window Title
+ * ... (clearTitle).action.tooltip = Set the Window's title
+ * ... (clearTitle).action.text = &amp;Clear Window's Title
+ * ... (clearTitle).action.tooltip = Clear the Window's title
  * </pre>
  * Action resources are automatically loaded from a
  * ResourceBundle with the same name as the actions class, i.e.
@@ -64,9 +64,9 @@ public class ActionExample2 extends Application {
         SwingHelper helper = new SwingHelper("appFrame", new JFrame());
         helper.add("field", new JTextField(), BorderLayout.CENTER);
         helper.with("buttons", new FlowLayout(), BorderLayout.PAGE_END) //
-                .add("clear", new JButton())
-                .add("update", new JButton());
-        appFrame = (JFrame) helper.root().get();
+                .add("clearTitle", new JButton())
+                .add("updateTitle", new JButton());
+        appFrame = helper.root().<JFrame>get();
         textField = helper.get("field");
 
     	appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

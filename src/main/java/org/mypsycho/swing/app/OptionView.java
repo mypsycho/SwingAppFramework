@@ -21,6 +21,8 @@ import javax.swing.JDialog;
  */
 public class OptionView extends View {
 
+    public static final String PROP_NAME = "option";
+    
     final Component parent;
     
     /**
@@ -47,6 +49,17 @@ public class OptionView extends View {
                     viewName, window);
         }
         
+    }
+    
+    protected String getViewProperty(Window window) {
+        if (window == null) {
+            return null;
+        }
+        String name = window.getName();
+        if (name == null) {
+            return null;
+        }
+        return "option(" + name + ")";
     }
     
     

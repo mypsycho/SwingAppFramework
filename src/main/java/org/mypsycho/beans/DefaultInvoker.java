@@ -220,7 +220,9 @@ public class DefaultInvoker implements Invoker {
             Array.set(bean, index, value);
         } else if (bean instanceof List) {
             // Modify the specified value in the List
-            ((List<Object>) bean).set(index, value);
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) bean;
+            list.set(index, value);
         } else {
             throw new IllegalArgumentException("Class '" + bean.getClass() + "' is not indexed");
         }
@@ -276,14 +278,17 @@ public class DefaultInvoker implements Invoker {
         Object invokeResult = invokeMethod(readMethod, bean, EMPTY_OBJECT_ARRAY);
         /* test and fetch from the map */
         if (invokeResult instanceof Map) {
-            ((Map<String, Object>) invokeResult).put(key, value);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) invokeResult;
+            map.put(key, value);
         }
-
     }
 
     public void setMapped(Object bean, String key, Object value) {
         if (bean instanceof Map) {
-            ((Map<String, Object>) bean).put(key, value);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) bean;
+            map.put(key, value);
         } else {
             throw new IllegalArgumentException("Class '" + bean.getClass() + "' is not mapped");
         }

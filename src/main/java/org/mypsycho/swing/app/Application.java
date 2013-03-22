@@ -31,7 +31,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.mypsycho.beans.Inject;
 import org.mypsycho.beans.Injectable;
 import org.mypsycho.beans.InjectionContext;
-import org.mypsycho.swing.app.session.SessionBehaviour;
 import org.mypsycho.swing.app.task.DoWaitForEmptyEventQ;
 import org.mypsycho.swing.app.utils.SwingHelper;
 import org.mypsycho.text.Localized;
@@ -97,16 +96,14 @@ import org.mypsycho.text.Localized;
  * {@link #exit}.
  * <p>
  * Simple single frame applications like the example can be defined more easily with the
- * {@link SingleFrameApplication
- * SingleFrameApplication} {@code Application} subclass.
+ * {@link SingleFrameApplication} {@code Application} subclass.
  * <p>
  * All of the Application's methods are called (must be called) on the EDT.
  * <p>
- * All but the most trivial applications should define a ResourceBundle in the resources subpackage
- * with the same name as the application class (like {@code resources/MyApplication.properties}).
+ * All but the most trivial applications should define a Property-based ResourceBundle in same 
+ * package (like {@code MyApplication.properties}).
  * This ResourceBundle contains resources shared by the entire application and should begin with the
  * following the standard Application resources:
- *
  * <pre>
  * Application.name = A short name, typically just a few words
  * Application.id = Suitable for Application specific identifiers, like file names
@@ -118,6 +115,7 @@ import org.mypsycho.text.Localized;
  * Application.description =  One brief sentence
  * Application.lookAndFeel = either system, default, or a LookAndFeel class name
  * </pre>
+ * Default value are provided using Class and Package name.
  * <p>
  * The {@code Application.lookAndFeel} resource is used to initialize the
  * {@code UIManager lookAndFeel} as follows:
@@ -133,7 +131,7 @@ import org.mypsycho.text.Localized;
  * @see UIManager#setLookAndFeel
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-@Inject(order="actionMap")
+@Inject(order="actionMap", deferred={View.PROP_NAME, OptionView.PROP_NAME})
 public abstract class Application extends SwingBean implements Injectable, Localized {
 
     // Lifecycle list is not a enum to allow aggregation
@@ -737,7 +735,6 @@ public abstract class Application extends SwingBean implements Injectable, Local
     protected View createView(RootPaneContainer c) {
         View view = new View(this, c.getRootPane());
         registerCommonBehavior(view);
-
         return view;
     }
     
@@ -821,7 +818,7 @@ public abstract class Application extends SwingBean implements Injectable, Local
     }
 
 
-    private static Component getParentComponent(EventObject evt) {
+    private static Component getSourceComponent(EventObject evt) {
         if ((evt == null) || !(evt.getSource() instanceof Component)) {
             return null;
         }
@@ -829,69 +826,44 @@ public abstract class Application extends SwingBean implements Injectable, Local
     }
     
     public Object showOption(EventObject evt, String name) {
-        return showOption(getParentComponent(evt), name);
+        return showOption(getSourceComponent(evt), name);
     }
     
     public Object showOption(EventObject evt, String name, Object message) {
-        return showOption(getParentComponent(evt), name, message);
+        return showOption(getSourceComponent(evt), name, message);
     }
     
-    /**
-     * Do something TODO.
-     * <p>Details of the function.</p>
-     *
-     * @param pagedFrame
-     * @param option
-     */
-    public Object show(EventObject evt, JOptionPane option) {
-        return show(getParentComponent(evt), option);
+    public Object showOption(EventObject evt, JOptionPane option) {
+        return showOption(getSourceComponent(evt), option);
     }
     
-    
-    /**
-     * Do something TODO.
-     * <p>Details of the function.</p>
-     *
-     * @param pagedFrame
-     * @param option
-     */
-    public Object show(EventObject evt, String name, JOptionPane option) {
-        return show(getParentComponent(evt), name, option);
+    public Object showOption(EventObject evt, String name, JOptionPane option) {
+        return showOption(getSourceComponent(evt), name, option);
     }
-    
     
     public Object showOption(Component parent, String name) {
-        return show(parent, name, new JOptionPane());
+        return showOption(parent, name, new JOptionPane());
     }
     
     public Object showOption(Component parent, String name, Object message) {
-        return show(parent, name, new JOptionPane(message));
+        return showOption(parent, name, new JOptionPane(message));
+    }
+    public Object showOption(Component parent, JOptionPane option) {
+        return showOption(parent, option.getName(), option);
     }
     
-    /**
-     * Do something TODO.
-     * <p>Details of the function.</p>
-     *
-     * @param pagedFrame
-     * @param option
-     */
-    public Object show(Component parent, JOptionPane option) {
-        return show(parent, option.getName(), option);
-    }
-
-    
-    public Object show(Component parent, String name, JOptionPane option) {
+    public Object showOption(Component parent, String name, JOptionPane option) {
         option.setName(name);
 
         option.setComponentOrientation(((parent == null) ?
                 JOptionPane.getRootFrame() : parent).getComponentOrientation());
 
         JDialog dialog = option.createDialog(parent, name + "Option");
-        dialog.setName(name + "Option");
+        dialog.setName(name);
 
         if (option.getMessage() instanceof Component) {
             // Message with component can be big
-            // If the dialog is not resizable, it can extend outside the sceen !! 
+            // If the dialog is not resizable, it can extend outside the screen !! 
             dialog.setResizable(true); 
         }
         
@@ -907,6 +879,26 @@ public abstract class Application extends SwingBean implements Injectable, Local
         dialog.dispose();
 
         return option.getValue();
+    }
+    
+    @Deprecated /** Use showOption */
+    public Object show(EventObject evt, JOptionPane option) {
+        return showOption(getSourceComponent(evt), option);
+    }
+    
+    @Deprecated /** Use showOption */
+    public Object show(EventObject evt, String name, JOptionPane option) {
+        return showOption(getSourceComponent(evt), name, option);
+    }
+    
+    @Deprecated /** Use showOption */
+    public Object show(Component parent, JOptionPane option) {
+        return showOption(parent, option.getName(), option);
+    }
+    
+    @Deprecated /** Use showOption */
+    public Object show(Component parent, String name, JOptionPane option) {
+        return showOption(parent, name, option);
     }
 
     /**

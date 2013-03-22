@@ -152,6 +152,7 @@ public class SwingHelper extends Swings {
         return ((Container) getContainer(with)).getComponents();
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends Component> C get(String name, String... path) {
         Component c = get(name);
         for (String step : path) {
@@ -161,6 +162,7 @@ public class SwingHelper extends Swings {
     }
 
 
+    @SuppressWarnings("unchecked")
     public <C extends Component> C get(String name) {
         return (C) getChild(with, name);
     }
@@ -214,6 +216,7 @@ public class SwingHelper extends Swings {
         throw new IllegalArgumentException("No component named " + name);
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends Component> C get() {
         return (C) with;
     }

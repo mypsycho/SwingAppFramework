@@ -26,7 +26,8 @@ import org.mypsycho.swing.app.SingleFrameApplication;
  */
 public class SingleFrameExample1 extends SingleFrameApplication {
 
-    @Override protected void startup() {
+    @Override 
+    protected void startup() {
         JLabel label = new JLabel("Hello World");
         label.setFont(new Font("LucidaSans", Font.PLAIN, 32));
         show(label);

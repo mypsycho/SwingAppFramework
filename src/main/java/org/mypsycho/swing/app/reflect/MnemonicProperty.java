@@ -213,7 +213,9 @@ public abstract class MnemonicProperty<T> extends DescriptorExtension {
             mnemonicKey = mnemonicKey(sci.next());
         }
 
-        configure((T) bean, text, mnemonicKey, mnemonicIndex);
+        @SuppressWarnings("unchecked")
+        T bean2 = (T) bean;
+        configure(bean2, text, mnemonicKey, mnemonicIndex);
     }
 
 

@@ -24,7 +24,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationContext;
@@ -74,7 +73,7 @@ public class ActionMapExample extends SingleFrameApplication {
         c.gridwidth = GridBagConstraints.REMAINDER;
         h.add("sceneA", new DerivedScenePanelB(this), c);
 
-        view.setComponent((JComponent) h.get());
+        view.setComponent(h.<JComponent>get());
         show(view);
     }
 
@@ -107,6 +106,7 @@ public class ActionMapExample extends SingleFrameApplication {
      * Subclasses can override the {@code create} and {@code remove} methods to 
      * change the corresponding actions.
      */
+    @SuppressWarnings("serial")
     public static class BaseScenePanel extends JPanel implements PropertyChangeListener {
         private final Scene scene;
         private final Application application;
@@ -256,18 +256,18 @@ public class ActionMapExample extends SingleFrameApplication {
     }
 
 
+    @SuppressWarnings("serial")
     public static class DerivedScenePanelA extends BaseScenePanel {
         public DerivedScenePanelA(Application application) {
             super(application);
         }
-
     }
 
+    @SuppressWarnings("serial")
     public static class DerivedScenePanelB extends BaseScenePanel {
         public DerivedScenePanelB(Application application) {
             super(application);
         }
-
     }
 
 

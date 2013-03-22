@@ -34,12 +34,13 @@ import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
- *
+ * This OptionPane is used to show Application information on '?\About' menu 
+ * item of MenuFrame. 
  *
  * @author PERANSIN Nicolas
  * @version 1.0
  */
-
+@SuppressWarnings("serial")
 public class AboutPane extends JOptionPane {
 
     public static final String LICENCE_PROP = "Application.license";
@@ -71,15 +72,15 @@ public class AboutPane extends JOptionPane {
         // Let construct the view
         SwingHelper h = new SwingHelper("message", new BorderLayout(5, 5));
         h.with("header", new BorderLayout(5, 0), BorderLayout.PAGE_START)
-            .add("icon", new JLabel(), BorderLayout.LINE_START)
+            .label("icon", BorderLayout.LINE_START)
             .with("props", new BorderLayout(10, 0), BorderLayout.CENTER)
                 .add("labels", new GridLayout(0, 1), BorderLayout.LINE_START)
                 .add("info", new GridLayout(0, 1), BorderLayout.CENTER)
                 .back()
             .back();
         h.with("detail", new JTabbedPane(), BorderLayout.CENTER)
-            .add("system", new JScrollPane(createPropertiesTable(System.getProperties())))
-            .add("env", new JScrollPane(createPropertiesTable(System.getenv())));
+            .scroll("system", createPropertiesTable(System.getProperties()))
+            .scroll("env", createPropertiesTable(System.getenv()));
         URL license = SwingHelper.getDefaultResource(parent, "license");
         if (license != null) {
             try {

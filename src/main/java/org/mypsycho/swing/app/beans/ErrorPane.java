@@ -20,8 +20,8 @@ import javax.swing.JTextArea;
 import org.mypsycho.swing.TextAreaStream;
 import org.mypsycho.swing.app.utils.SwingHelper;
 
+@SuppressWarnings("serial")
 public class ErrorPane extends JOptionPane {
-
 
     final Throwable detail;
     
@@ -58,7 +58,7 @@ public class ErrorPane extends JOptionPane {
             Component messagePane = container.getComponent(1);
             h.add("message", messagePane);
 
-            tabs[0] = new TabPage((JTabbedPane) h.get(), 0);
+            tabs[0] = new TabPage(h.<JTabbedPane>get(), 0);
             if (detail != null) {
                 final JTextArea stackTraceText = new JTextArea(20, 50);
                 stackTraceText.setTabSize(2);

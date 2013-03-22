@@ -6,11 +6,9 @@
 
 package examples;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.mypsycho.swing.app.SingleFrameApplication;
-import org.mypsycho.swing.app.utils.SwingHelper;
 
 /**
  * Hello world using the framework syntax.
@@ -23,8 +21,9 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  */
 public class SingleFrameExample2 extends SingleFrameApplication {
     
-    @Override protected void startup() {
-        show((JComponent) new SwingHelper("label", new JLabel()).get());
+    @Override 
+    protected void startup() {
+        show(new JLabel());
     }
     public static void main(String[] args) {
         new SingleFrameExample2().launch(args);

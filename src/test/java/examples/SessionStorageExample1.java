@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
@@ -88,7 +87,8 @@ public class SessionStorageExample1 extends Application {
     private JFrame mainFrame = null;
     private JTabbedPane tabbedPane = null;
 
-    // Yes, this is a bit strange.
+
+    @SuppressWarnings("serial")
     private class TabColorTableModel extends AbstractTableModel {
 
         public int getColumnCount() {

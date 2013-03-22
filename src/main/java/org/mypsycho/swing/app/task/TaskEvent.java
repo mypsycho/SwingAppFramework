@@ -15,6 +15,7 @@ import java.util.EventObject;
  * @see TaskListener
  * @see Task
  */
+@SuppressWarnings("serial")
 public class TaskEvent<T> extends EventObject {
 
     private final T value;

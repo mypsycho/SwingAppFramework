@@ -116,8 +116,9 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  * @see ApplicationContext#getActionMap(Object)
  * @see ResourceMap
  */
+@SuppressWarnings("serial")
 // Mnemonic and displayedMnemonicIndex are overriden if "text" property is set afterward.
-@Inject(order={ "text" }) 
+@Inject(order={ "text" }, deferred=ApplicationAction.TASK_PROP) 
 public class ApplicationAction extends AbstractTypedAction implements Injectable {
 
     public static final String METHOD_SEPARATOR = "#";
@@ -316,8 +317,8 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
             return;
         }
 
-        enabledProperty = detail.enabledProperty();
-        selectedProperty = detail.selectedProperty();
+        enabledProperty = detail.enabled();
+        selectedProperty = detail.selected();
         block = detail.block();
 
         /* If enabledProperty is specified, lookup up the is/set methods and
@@ -569,6 +570,7 @@ public class ApplicationAction extends AbstractTypedAction implements Injectable
         }
     }
 
+    @SuppressWarnings("unchecked")
     <T> T getProperty(String method, String name) {
         if (method != null) {
             try {

@@ -28,7 +28,6 @@ import javax.swing.event.ChangeListener;
 import org.mypsycho.beans.Inject;
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
-import org.mypsycho.swing.app.View;
 
 
 /**
@@ -42,6 +41,7 @@ import org.mypsycho.swing.app.View;
  */
 // NOTE: Surprisingly, 'menu bar' property is 'JMenuBar' not 'jMenuBar'
 @Inject(order={ "actionMap", "JMenuBar", "menuBar", "pageMenuOffset"})
+@SuppressWarnings("serial")
 public class PagedFrame extends MenuFrame {
     
     public static final String TABS_VISIBLE_PROP = "tabsVisible";
@@ -325,15 +325,7 @@ public class PagedFrame extends MenuFrame {
         }
     };
 
-
     boolean dirty = false;
-    
-    /**
-     * Using reflection force this object to be public 
-     */ 
-    public PagedFrame(View v) {
-        this(v.getApplication());
-    }
     
     /**
      * Using reflection force this object to be public 
@@ -349,7 +341,7 @@ public class PagedFrame extends MenuFrame {
         return ((AbstractButton) ae.getSource()).isSelected();
     }
     
-    @Action(selectedProperty = CONSOLE_VISIBLE_PROP)
+    @Action(selected = CONSOLE_VISIBLE_PROP)
     public void showConsole(ActionEvent ae) {
         setConsoleVisible(isSourceSelected(ae));
     }
@@ -434,7 +426,7 @@ public class PagedFrame extends MenuFrame {
     // true => Container == TabbedPane
     // false => Container == JPanel CardLayout
     // By default not visible
-    @Action(selectedProperty = TABS_VISIBLE_PROP)
+    @Action(selected = TABS_VISIBLE_PROP)
     public void showTabs(ActionEvent ae) {
         setTabsVisible(isSourceSelected(ae));
     }

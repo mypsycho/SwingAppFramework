@@ -800,6 +800,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> implements Localized 
      * @see #addTaskListener
      * @see #removeTaskListener
      */
+    @SuppressWarnings("unchecked")
     public TaskListener<T, V>[] getTaskListeners() {
         return taskListeners.toArray(new TaskListener[taskListeners.size()]);
     }

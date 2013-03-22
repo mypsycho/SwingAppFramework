@@ -18,8 +18,10 @@ import org.mypsycho.beans.converter.TypeConverter;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * Create border using javax.swing.BorderFactory syntax
+ * <p>
+ * Use BorderFactory factory call without 'create' prefix.
+ * </p>
  *
  * @author Peransin Nicolas
  *

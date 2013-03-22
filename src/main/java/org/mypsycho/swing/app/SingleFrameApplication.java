@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved.
  * Copyright (C) 2010 Illya Yalovyy. All rights reserved.
+ * Copyright (C) 2012 Peransin Nicolas. All rights reserved.
  * Use is subject to license terms.
  */
 package org.mypsycho.swing.app;
@@ -52,9 +53,7 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  * <pre>
  * class MyApplication extends SingleFrameApplication {
  *     &#064;Override protected void startup() {
- *         JLabel label = new JLabel();
- *         label.setName("label");
- *         show(label);
+ *         show(new JLabel());
  *     }
  * }
  * </pre>
@@ -67,22 +66,19 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  * Application.id = MyApplication
  * Application.title = My Hello World Application
  * Application.version = 1.0
- * Application.vendor = Illya Yalovyy
- * Application.vendorId = Etf
- * Application.homepage = http://kenai.com/projects/bsaf
- * Application.description =  An example of SingleFrameApplication
+ * Application.description = An example of SingleFrameApplication
  * Application.lookAndFeel = system
  * Application.icon=app_icon.png
  *
- * mainFrame.title = ${Application.title} ${Application.version}
- * label.text = Hello World
+ * view(mainFrame).title = ${Application.title} ${Application.version}
+ * # 'component' is the default id 
+ * view(mainFrame)(component).text = Hello World
  * </pre>
  */
 public abstract class SingleFrameApplication extends Application {
 
     public static final String MAIN_FRAME_NAME = FrameView.MAIN_FRAME_NAME;
 
-    
     /**
      * 
      */
@@ -181,10 +177,8 @@ public abstract class SingleFrameApplication extends Application {
      * @param c the main frame's contentPane child
      */
     protected void show(SwingHelper h) {
-        show((JComponent) h.root().get());
+        show(h.root().<JComponent>get());
     }
-
-
 
 
     /* Prototype support for the View type */
@@ -202,6 +196,14 @@ public abstract class SingleFrameApplication extends Application {
             registerCommonBehavior(mainView);
         }
         return mainView;
+    }
+    
+    protected View createView(RootPaneContainer c) {
+        if ((mainView == null) && (c instanceof JFrame)) {
+            getMainView().setFrame((JFrame) c);
+            return getMainView();
+        }
+        return super.createView(c);
     }
 
     @Override

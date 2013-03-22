@@ -86,6 +86,7 @@ public class InjectorTest {
 
     public static class BeanB extends Bean {}
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testBase() throws Exception {
         Injector injector = new Injector() {
@@ -109,6 +110,7 @@ public class InjectorTest {
         Assert.assertEquals("value", bean.getList().get(1));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testInheritance() throws Exception {
         Injector injector = new Injector() {

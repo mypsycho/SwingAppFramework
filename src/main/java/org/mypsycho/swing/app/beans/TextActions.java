@@ -74,6 +74,7 @@ public class TextActions extends SwingBean {
 
 
     private final javax.swing.Action markerAction = new javax.swing.AbstractAction() {
+        private static final long serialVersionUID = 1L;
         @Override
         public void actionPerformed(ActionEvent e) {
         }
@@ -277,23 +278,23 @@ public class TextActions extends SwingBean {
         actionMap.get(actionName).actionPerformed(actionEvent);
     }
 
-    @Action(enabledProperty = "enabled(" + cutAction + ")")
+    @Action(enabled = "enabled(" + cutAction + ")")
     public void cut(ActionEvent e) {
         invokeTextAction(cutAction, e);
     }
 
-    @Action(enabledProperty = "enabled(" + copyAction + ")")
+    @Action(enabled = "enabled(" + copyAction + ")")
     public void copy(ActionEvent e) {
         invokeTextAction(copyAction, e);
     }
 
 
-    @Action(enabledProperty = "enabled(" + pasteAction + ")")
+    @Action(enabled = "enabled(" + pasteAction + ")")
     public void paste(ActionEvent e) {
         invokeTextAction(pasteAction, e);
     }
 
-    @Action(enabledProperty = "enabled(" + deleteAction + ")")
+    @Action(enabled = "enabled(" + deleteAction + ")")
     public void delete(ActionEvent e) {
         /* The DefaultEditorKit.deleteNextCharAction is bound to the delete 
          * key in text components.  The name appears to be a misnomer,
@@ -306,7 +307,7 @@ public class TextActions extends SwingBean {
     }
 
 
-    @Action(enabledProperty = "enabled(" + DefaultEditorKit.selectAllAction + ")")
+    @Action(enabled = "enabled(" + DefaultEditorKit.selectAllAction + ")")
     public void selectAll(ActionEvent e) {
         invokeTextAction(DefaultEditorKit.selectAllAction, e);
     }

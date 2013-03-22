@@ -20,6 +20,12 @@ public class EnumTextMap extends TextMap {
     /**
      * 
      */
+    private static final long serialVersionUID = -309691924972866089L;
+
+
+    /**
+     * 
+     */
     public EnumTextMap() {
     }
 
@@ -70,10 +76,13 @@ public class EnumTextMap extends TextMap {
     }
     
 
+    
     @Override
     public String get(Object key, Object... args) {
         if (key instanceof Enum) {
             return new EnumMessage((Enum<?>) key, getLocale()) {
+                private static final long serialVersionUID = EnumTextMap.serialVersionUID;
+
                 protected MessageFormat createFormat(String pattern) {
                     // Should/could use ExtendedMessageFormat from commons.apache.org
                     return (MessageFormat) EnumTextMap.this.createFormat(pattern);

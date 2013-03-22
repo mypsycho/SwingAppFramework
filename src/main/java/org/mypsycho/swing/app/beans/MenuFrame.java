@@ -34,18 +34,19 @@ import org.mypsycho.swing.TextAreaStream;
 import org.mypsycho.swing.TextPaneStream;
 import org.mypsycho.swing.app.Action;
 import org.mypsycho.swing.app.Application;
-import org.mypsycho.swing.app.View;
 import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
- *
+ * 
  *
  * @author PERANSIN Nicolas
  */
 //as actions are referenced by toolbar or menu, they must be injected first
-@Inject(order={ "actionMap" }) 
+@Inject(order="actionMap" ) 
 public class MenuFrame extends JFrame {
+
+    private static final long serialVersionUID = -1515838027794229212L;
 
     protected static final String EMPTY_STATUS_BAR = " "; // In a JLabel, empty text 
     
@@ -80,19 +81,14 @@ public class MenuFrame extends JFrame {
 
 
 
-    Application app;
+    final Application app;
+    
 
-    
     /**
-     * Using reflection force this object to be public 
-     */ 
-    public MenuFrame(View v) {
-        this(v.getApplication());
-    }
-    
-    /**
-     * Using reflection force this object to be public 
-     */ 
+     * A Menu frame without main component.
+     * 
+     * @param pApp
+     */
     public MenuFrame(Application pApp) {
         app = pApp;
 
@@ -106,6 +102,17 @@ public class MenuFrame extends JFrame {
     }
     
     /**
+     * A Menu frame with main component.
+     * 
+     * @param pApp
+     * @param compo
+     */
+    public MenuFrame(Application pApp, JComponent compo) {
+        this(pApp);
+        setMain(compo);
+    }
+    
+    /**
      * Do something TODO.
      * <p>Details of the function.</p>
      *
@@ -113,10 +120,6 @@ public class MenuFrame extends JFrame {
      */
     protected JComponent createDefaultStatus() {
         return new StatusBar(getApplication(), getApplication().getContext().getTaskMonitor());
-//        
-//        JLabel created = new JLabel(EMPTY_STATUS_BAR);
-//        created.setBorder(BorderFactory.createLoweredBevelBorder());
-//        return created;
     }
     
     private Component replaceContentPaneChild(Component newChild, String constraint) {
@@ -176,6 +179,7 @@ public class MenuFrame extends JFrame {
     public void setConsole(JComponent comp) {
         JComponent oldValue = console;
         console = comp;
+        outStream = null;
         if (comp instanceof Scrollable) {
             consoleSplit.setBottomComponent(new JScrollPane(console));
         } else {
@@ -199,16 +203,21 @@ public class MenuFrame extends JFrame {
         return console;
     }
     
-    protected PrintStream getConsoleStream() {
-        JComponent out = console;
-        if (out instanceof JTextArea) {
-            return new TextAreaStream((JTextArea) out);
-        } else if (out instanceof JTextPane) {
-            return new TextPaneStream((JTextPane) out);
-        } else {
-            return System.out;
+    transient PrintStream outStream = null;
+    public PrintStream getConsoleStream() {
+        if (outStream != null) {
+            return outStream;
         }
         
+        JComponent out = console;
+        if (out instanceof JTextArea) {
+            outStream = new TextAreaStream((JTextArea) out);
+        } else if (out instanceof JTextPane) {
+            outStream =new TextPaneStream((JTextPane) out);
+        } else {
+            outStream = System.out;
+        }
+        return outStream;
     }
  
 
@@ -218,7 +227,7 @@ public class MenuFrame extends JFrame {
         return ((AbstractButton) ae.getSource()).isSelected();
     }
     
-    @Action(selectedProperty = CONSOLE_VISIBLE_PROP)
+    @Action(selected = CONSOLE_VISIBLE_PROP)
     public void showConsole(ActionEvent ae) {
         setConsoleVisible(isSourceSelected(ae));
     }
@@ -324,11 +333,11 @@ public class MenuFrame extends JFrame {
         } else {
             option = new JOptionPane("No readme file", JOptionPane.WARNING_MESSAGE);
         }
-        app.show(this, "help", option);
+        app.showOption(this, "help", option);
     }
     
     public void showAbout() {
-        app.show(this, "about", new AboutPane(app));        
+        app.showOption(this, "about", new AboutPane(app));        
     }
 
     public Application getApplication() {
@@ -337,7 +346,7 @@ public class MenuFrame extends JFrame {
 
 
 
-    @Action(selectedProperty = STATUS_VISIBLE_PROP)
+    @Action(selected = STATUS_VISIBLE_PROP)
     public void showStatus(ActionEvent ae) {
         setStatusVisible(isSourceSelected(ae));
     }

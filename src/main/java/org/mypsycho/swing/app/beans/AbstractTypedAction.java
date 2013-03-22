@@ -10,12 +10,15 @@ import javax.swing.KeyStroke;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * This class provides common synonyms for Action property.
+ * <p>
+ * Those supplementary names are convenient for property descriptors.
+ * </p> 
  *
  * @author Peransin Nicolas
  *
  */
+@SuppressWarnings("serial")
 public abstract class AbstractTypedAction extends AbstractAction {
 
     public static final String ENABLED_KEY = "enabled";

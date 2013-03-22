@@ -393,92 +393,91 @@ public class TreeTableExample2 {
     /**
      * A renderer that will give an indicator when a cell is being reloaded.
      */
+    @SuppressWarnings("serial")
     class IndicatorRenderer extends DefaultTableCellRenderer {
-	/** Makes sure the number of displayed in an internationalized
-	 * manner. */
-	protected NumberFormat       formatter;
-	/** Row that is currently being painted. */
-	protected int                lastRow;
-	
+        /** Makes sure the number of displayed in an internationalized
+         * manner. */
+        protected NumberFormat       formatter;
+        /** Row that is currently being painted. */
+        protected int                lastRow;
 
-	IndicatorRenderer() {
-	    setHorizontalAlignment(JLabel.RIGHT);
-	    formatter = NumberFormat.getInstance();
-	}
 
-	/**
-	 * Invoked as part of DefaultTableCellRenderers implemention. Sets
-	 * the text of the label.
-	 */
-	public void setValue(Object value) { 
-	    setText((value == null) ? "---" : formatter.format(value)); 
-	}
+        IndicatorRenderer() {
+            setHorizontalAlignment(JLabel.RIGHT);
+            formatter = NumberFormat.getInstance();
+        }
 
-	/**
-	 * Returns this.
-	 */
-	public Component getTableCellRendererComponent(JTable table,
-			    Object value, boolean isSelected, boolean hasFocus,
-			    int row, int column) {
-	    super.getTableCellRendererComponent(table, value, isSelected,
-						hasFocus, row, column);
-	    lastRow = row;
-	    return this;
-	}
+        /**
+         * Invoked as part of DefaultTableCellRenderers implemention. Sets
+         * the text of the label.
+         */
+        public void setValue(Object value) { 
+            setText((value == null) ? "---" : formatter.format(value)); 
+        }
 
-	/**
-	 * If the row being painted is also being reloaded this will draw
-	 * a little indicator.
-	 */
-	public void paint(Graphics g) {
-	    if (lastRow == reloadRow) {
-		int       width = getWidth();
-		int       height = getHeight();
+        /**
+         * Returns this.
+         */
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected,
+                    hasFocus, row, column);
+            lastRow = row;
+            return this;
+        }
 
-		g.setColor(getBackground());
-		g.fillRect(0, 0, width, height);
-		g.setColor(getForeground());
+        /**
+         * If the row being painted is also being reloaded this will draw
+         * a little indicator.
+         */
+        public void paint(Graphics g) {
+            if (lastRow == reloadRow) {
+                int       width = getWidth();
+                int       height = getHeight();
 
-		int       diameter = Math.min(width, height);
+                g.setColor(getBackground());
+                g.fillRect(0, 0, width, height);
+                g.setColor(getForeground());
 
-		if (reloadCounter < 5) {
-		    g.fillArc((width - diameter) / 2, (height - diameter) / 2,
-			      diameter, diameter, 90, -(reloadCounter * 90));
-		}
-		else {
-		    g.fillArc((width - diameter) / 2, (height - diameter) / 2,
-			      diameter, diameter, 90,
-			      (4 - reloadCounter % 4) * 90);
-		}
-	    }
-	    else {
-		super.paint(g);
-	    }
-	}
+                int       diameter = Math.min(width, height);
+
+                if (reloadCounter < 5) {
+                    g.fillArc((width - diameter) / 2, (height - diameter) / 2,
+                            diameter, diameter, 90, -(reloadCounter * 90));
+                }
+                else {
+                    g.fillArc((width - diameter) / 2, (height - diameter) / 2,
+                            diameter, diameter, 90,
+                            (4 - reloadCounter % 4) * 90);
+                }
+            }
+            else {
+                super.paint(g);
+            }
+        }
     }
 
 
     public static void main(String[] args) {
-	if (args.length > 0) {
-	    for (int counter = args.length - 1; counter >= 0; counter--) {
-		new TreeTableExample2(args[counter]);
-	    }
-	}
-	else {
-	    String            path;
-
-	    try {
-		path = System.getProperty("user.home");
-		if (path != null) {
-		    new TreeTableExample2(path);
-		}
-	    }
-	    catch (SecurityException se) {
-		path = null;
-	    }
-	    if (path == null) {
-		System.out.println("Could not determine home directory");
-	    }
-	}
+        if (args.length > 0) {
+            for (int counter = args.length - 1; counter >= 0; counter--) {
+                new TreeTableExample2(args[counter]);
+            }
+        } else {
+            String path;
+            try {
+                path = System.getProperty("user.home");
+                if (path != null) {
+                    new TreeTableExample2(path);
+                }
+            }
+            catch (SecurityException se) {
+                path = null;
+            }
+            if (path == null) {
+                System.out.println("Could not determine home directory");
+            }
+        }
     }
 }

@@ -22,15 +22,17 @@ import javax.swing.Timer;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import org.mypsycho.beans.Inject;
 import org.mypsycho.beans.Injectable;
 import org.mypsycho.beans.InjectionContext;
 import org.mypsycho.beans.InjectionStack;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.utils.SwingHelper;
 
-
+@Inject(deferred=DefaultInputBlocker.DIALOG_PROP)
 public class DefaultInputBlocker extends Task.InputBlocker implements Injectable {
 
+    public static final String DIALOG_PROP = "dialog";
 
     private JDialog modalDialog = null;
 
@@ -166,6 +168,7 @@ BlockingDialogTimer.delay = 250
     /* Note: unfortunately, the busy cursor is reset when the modal
      * dialog is shown.
      */
+    @SuppressWarnings("serial")
     private static class BusyGlassPane extends JPanel {
 
         BusyGlassPane() {

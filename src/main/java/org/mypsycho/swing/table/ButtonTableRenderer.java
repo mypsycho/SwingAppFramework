@@ -14,7 +14,6 @@ import java.awt.event.MouseListener;
 
 import javax.swing.ButtonModel;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.MouseInputAdapter;
@@ -23,17 +22,20 @@ import javax.swing.table.TableCellRenderer;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * Renderer to a button as a renderer in a Table.
+ * <p>
+ * Use a button as renderer and propagate mouse event.
+ * </p>
  *
  * @author Peransin Nicolas
  */
-public class ButtonTableRenderer extends JPanel implements TableCellRenderer {
+public abstract class ButtonTableRenderer extends JPanel implements TableCellRenderer {
 
 
+    private static final long serialVersionUID = 2720561484642951621L;
+    
     JButton editor = new JButton("...");
     TableCellRenderer defaultRenderer;
-
 
 
     protected boolean editorAlwaysShown;
@@ -142,11 +144,13 @@ public class ButtonTableRenderer extends JPanel implements TableCellRenderer {
         return true;
     }
 
-    /*abstract*/ public void editCell(JTable source, int row, int col) {
-        // TODO Call a JDialog
-        JOptionPane.showMessageDialog(source, "Edition of " + row, 
-                    "Edit value", JOptionPane.WARNING_MESSAGE);
-    }
+    public abstract void editCell(JTable source, int row, int col);
+    
+//    {
+//        // TODO Call a JDialog
+//        JOptionPane.showMessageDialog(source, "Edition of " + row, 
+//                    "Edit value", JOptionPane.WARNING_MESSAGE);
+//    }
 
     Cell lastPointed = new Cell(); 
     Cell pointed = new Cell();

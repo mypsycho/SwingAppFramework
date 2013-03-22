@@ -18,7 +18,8 @@ import javax.swing.tree.TreePath;
 
 public class DefaultCheckTreeNode extends DefaultMutableTreeNode 
             implements MutableCheckTreeNode {
-    
+    private static final long serialVersionUID = -1875604487001167147L;
+
     boolean allSelected = false;
     boolean someSelected = false;
     

@@ -400,6 +400,7 @@ public class SessionStorage {
     public void restore(Component root, String fileName) throws IOException {
         checkSaveRestoreArgs(root, fileName);
         LocalStorage lst = getContext().getLocalStorage();
+        @SuppressWarnings("unchecked")
         Map<String, Object> stateMap = (Map<String, Object>) (lst.load(fileName));
         if (stateMap != null) {
             restoreTree(Collections.singletonList(root), stateMap);

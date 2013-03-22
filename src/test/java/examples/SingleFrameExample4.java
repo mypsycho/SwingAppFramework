@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
@@ -21,18 +20,20 @@ import javax.swing.JToolBar;
 import org.mypsycho.swing.app.Application;
 import org.mypsycho.swing.app.ApplicationListener;
 import org.mypsycho.swing.app.SingleFrameApplication;
-import org.mypsycho.swing.app.utils.SwingHelper;
 
 
 /**
- * A simple demo of the @Action annotation.
+ * A simple demo of the shared Action injection.
  * <p>
- * This example only defines two @Actions explicitly: open and close. The open action allows the
- * user to choose a file and load it into the textPane, and close just replaces the textPane's
- * contents with the value of the "defaultText" resource. The example inherits
+ * This example only defines two explicitly: open and close. The open 
+ * action allows the user to choose a file and load it into the textPane, and 
+ * close just replaces the textPane's contents with the value of the 
+ * "defaultText" resource.
  * 
- * @Actions named cut/copy/paste/delete and quit from the Application
- *          class. All of the actions are exposed in the menus and/or toolbar.
+ * Actions named cut/copy/paste/delete and quit from the Application context 
+ * are common actions accessible to all component. 
+ * All of the actions are exposed in the menus and/or toolbar.
+ * 
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 public class SingleFrameExample4 extends SingleFrameApplication {
@@ -98,13 +99,11 @@ public class SingleFrameExample4 extends SingleFrameApplication {
 
     @Override
     protected void startup() {
-        getMainView().setToolBar(new JToolBar("toolbar"));
+        getMainView().setToolBar(new JToolBar());
         
         textPane = new JTextPane();
-        SwingHelper h = new SwingHelper("textPane", new JScrollPane(textPane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+        show(new JScrollPane(textPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-        show((JComponent) h.get());
     }
 
     public static void main(String[] args) {

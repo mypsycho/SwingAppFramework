@@ -29,6 +29,7 @@ import org.mypsycho.swing.app.utils.SwingHelper;
  */
 public class LocaleExample3 extends SingleFrameApplication {
     
+    @SuppressWarnings("serial")
     public class LocalePane extends Box {
         
         public Application getApplication() {

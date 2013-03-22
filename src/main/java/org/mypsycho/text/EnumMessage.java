@@ -54,6 +54,11 @@ import org.apache.commons.beanutils.ContextClassLoaderLocal;
  */
 public class EnumMessage extends BeanMessageFormat {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6577756882430832052L;
+
     public interface Message {
         String[] args();
     }
@@ -72,7 +77,8 @@ public class EnumMessage extends BeanMessageFormat {
     };
 
     static private class Cache<K extends Enum<K>> extends EnumMap<K, String> {
-
+        private static final long serialVersionUID = EnumMessage.serialVersionUID;
+        
         public Cache(Class<K> clazz, Locale locale) {
             super(clazz);
 
@@ -161,6 +167,7 @@ public class EnumMessage extends BeanMessageFormat {
     }
 
     static <K extends Enum<K>> Cache<?> getPatterns(Class<K> clazz, Locale locale) {
+        @SuppressWarnings("unchecked")
         Map<CacheKey, Cache<?>> caches = (Map<CacheKey, Cache<?>>) CACHE_BY_CLASSLOADER.get();
         CacheKey key = new CacheKey(clazz, locale);
         synchronized (caches) {
@@ -185,6 +192,7 @@ public class EnumMessage extends BeanMessageFormat {
      * @param locale
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static <K extends Enum<?>> String getPattern(K messageId, Locale locale) {
         return (String) getPatterns(messageId.getClass(), locale).get(messageId);
     }

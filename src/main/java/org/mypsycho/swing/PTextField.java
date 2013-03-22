@@ -19,6 +19,7 @@ import javax.swing.text.Document;
  * <p>Detail ... </p>
  * @author Peransin Nicolas
  */
+@SuppressWarnings("serial")
 public class PTextField extends JTextField {
 
 

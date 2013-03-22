@@ -26,15 +26,18 @@ public class InjectionTemplate {
     protected static final String START = "^%\\{";
     protected static final String END = "\\}$";
     protected static final String LITERAL = "([\\-a-zA-Z_0-9]+)";
+    protected static final String ROOT = "([\\-\\@\\~\\!\\§a-zA-Z_0-9]+)";
+    protected static final String INDEX = "\\[\\d+\\]";
+    protected static final String MKEY = "\\(" + LITERAL + "\\)";
     
     protected static final String PATH = '(' 
-            + OR(LITERAL, "\\(" + LITERAL + "\\)", "\\[\\d+\\]") 
-            + N(OR("\\." + LITERAL, "\\(" + LITERAL + "\\)", "\\[\\d+\\]"), "*") + ')';
+            + OR(ROOT, MKEY, INDEX) 
+            + N(OR("\\." + LITERAL, MKEY, INDEX)) + ')';
     
     protected static final String ARG = "\\{" + LITERAL + "=" + ANY + "\\}";
     protected static final String VALUE = "=" + ANY;
             
-    protected static final String REG = START + PATH + N(ARG, "*") + N(VALUE, "?") + END;
+    protected static final String REG = START + PATH + N(ARG) + N(VALUE, "?") + END;
     protected Pattern pattern = Pattern.compile(REG);
     protected Pattern argsPattern = Pattern.compile("\\}\\{");
     protected Pattern argPattern = Pattern.compile("\\=");
@@ -49,6 +52,10 @@ public class InjectionTemplate {
             or = (or == null) ? E(reg) : (or + '|' + E(reg));
         }
         return "(" + or + ")";
+    }
+    
+    protected static String N(String reg) {
+        return N(reg, "*");
     }
     
     protected static String N(String reg, String time) {

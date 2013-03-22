@@ -31,6 +31,8 @@ import org.mypsycho.swing.app.task.Task;
  * this one is sufficient for the examples that need one.
  * </p>
  */
+
+@SuppressWarnings("serial")
 public class StatusBar extends JPanel implements PropertyChangeListener {
     private static final Insets ZERO_INSET = new Insets(0,0,0,0);
     private final JLabel messageLabel = new JLabel() ;

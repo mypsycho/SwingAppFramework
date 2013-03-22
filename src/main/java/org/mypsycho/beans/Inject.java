@@ -23,4 +23,6 @@ public @interface Inject {
     Class<?> until() default Object.class;
 
     String[] order() default {};
+    
+    String[] deferred() default {};
 }

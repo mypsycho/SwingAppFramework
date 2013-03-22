@@ -28,6 +28,7 @@ public class PrimitiveConverter extends AbstractTypeConverter {
     static final TypeConverter CHAR_CONVERTER = new TypeConverter() {
 
         Character defaultPrimitive = new Character((char) 0);
+        @SuppressWarnings("unchecked")
         List<? extends Class<?>> classes = Arrays.asList(Character.class, Character.TYPE);
 
         public Collection<? extends Class<?>> getSupported() {

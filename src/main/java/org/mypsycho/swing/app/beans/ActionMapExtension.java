@@ -12,11 +12,12 @@ import org.mypsycho.beans.AbstractCollectionExtension;
 
 
 /**
- * Class for ...
- * <p>Details</p>
+ * Adapt ActionMap class to Map&lt;String -&gt; Action&gt; signature.
+ * <p>
+ * Usefull for injection.
+ * </p>
  *
  * @author Peransin Nicolas
- *
  */
 public class ActionMapExtension extends AbstractCollectionExtension {
 

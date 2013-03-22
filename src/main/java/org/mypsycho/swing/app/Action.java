@@ -72,12 +72,12 @@ public @interface Action {
 	/**
 	 * The parameter binds the enabled state of the @Action to the current value of a property.
 	 */
-    String enabledProperty() default "";
+    String enabled() default "";
 
 	/**
 	 * The parameter binds the selected state of the @Action to the current value of a property.
 	 */
-    String selectedProperty() default "";
+    String selected() default "";
 
 	/**
 	 * The parameter indicates that the GUI should be blocked while the background task is running.

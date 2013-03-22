@@ -10,10 +10,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.mypsycho.swing.CompoundIcon;
 
 
-
-
 public class DefaultCheckTreeCellRenderer extends DefaultTreeCellRenderer 
             implements CheckTreeCellRenderer {
+    
+    private static final long serialVersionUID = -1875604487001167147L;
     
     static final protected Icon SOME_ICON     = getDefaultIcon("someChecked.gif");
     static final protected Icon SELECT_ICON   = getDefaultIcon("checked.gif");

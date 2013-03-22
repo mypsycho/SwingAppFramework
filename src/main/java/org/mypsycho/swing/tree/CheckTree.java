@@ -14,7 +14,8 @@ import javax.swing.tree.TreePath;
 
 public class CheckTree extends JTree {
 
-    
+    private static final long serialVersionUID = -1508143876759040614L;
+
     public CheckTree(CheckTreeNode root) {
         this(root, false);
     }

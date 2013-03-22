@@ -190,6 +190,7 @@ public class BlockingExample1 extends SingleFrameApplication {
      * org.jdesktop.swingx.painter.BusyPainter.  I've made some
      * simplifications to keep the example small.
      */
+    @SuppressWarnings("serial")
     private static class BusyIndicator extends JComponent implements ActionListener {
         private int frame = -1;  // animation frame index
         private final int nBars = 8;  

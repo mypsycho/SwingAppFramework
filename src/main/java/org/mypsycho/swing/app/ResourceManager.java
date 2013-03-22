@@ -6,8 +6,6 @@ package org.mypsycho.swing.app;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -25,6 +23,7 @@ import org.mypsycho.swing.app.reflect.ComponentCollection;
 import org.mypsycho.swing.app.reflect.ComponentPopupProperty;
 import org.mypsycho.swing.app.reflect.ComponentProperty;
 import org.mypsycho.swing.app.reflect.DerivedFontConverter;
+import org.mypsycho.swing.app.reflect.DialogPaneProperty;
 import org.mypsycho.swing.app.reflect.MenuConverter;
 import org.mypsycho.swing.app.reflect.MnemonicProperty;
 import org.mypsycho.swing.app.reflect.ResourceConverter;
@@ -44,30 +43,18 @@ import org.mypsycho.swing.app.reflect.WindowIconProperty;
  */
 public class ResourceManager extends Injector {
 
-    private static final String[] IGNORED_METHODS = { "#view" };
     
     public final UtilsListener defaultListener = new UtilsListener() {
 
         @Override
         public void handle(Object event, String detail, Throwable t) {
             // trim usual case
-            if ((t instanceof NoSuchMethodException) && (event instanceof String)) {
-                String path = (String) event;
-                // Well a known dynamic property
-                for (String prefix : ignoredPrefixes) {
-                    if (path.endsWith(prefix)) {
-                        return;
-                    }
-                }
-            }
             Level lvl = (t instanceof NestedNullException) ? Level.CONFIG : Level.INFO;
             getApplication().exceptionThrown(lvl, "resourceManager:" + event, detail, t);
-
         }
     };
 
     final ApplicationContext context;
-    final List<String> ignoredPrefixes = new ArrayList<String>(IGNORED_METHODS.length);
     
     public ResourceManager(ApplicationContext parent) {
 
@@ -104,14 +91,12 @@ public class ResourceManager extends Injector {
             
             register(ClientComponentProperty.createComponentInstance());
             register(ClientComponentProperty.createWindowInstance());
+            register(new DialogPaneProperty());
             
         } catch (IntrospectionException e) {
             throw new RuntimeException(e);
         }
 
-        for (String ignored : IGNORED_METHODS) {
-            ignoredPrefixes.add(getApplication().getClass().getName() + ignored);
-        }
         register(defaultListener);
     }
 

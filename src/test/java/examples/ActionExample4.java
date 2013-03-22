@@ -161,7 +161,7 @@ public class ActionExample4 extends SingleFrameApplication {
      *
      * @see #go
      */
-    @Action(enabledProperty = "stopEnabled")
+    @Action(enabled = "stopEnabled")
     public void stop() {
         if ((doListFiles != null) && !doListFiles.isCancelled()) {
             if (doListFiles.cancel(true)) {
@@ -223,6 +223,7 @@ public class ActionExample4 extends SingleFrameApplication {
 
     /* Trivial ListModel that represents all of the files found so far.
      */
+    @SuppressWarnings("serial")
     private static class FileListModel extends AbstractListModel {
 
         private final ArrayList<File> files = new ArrayList<File>();
